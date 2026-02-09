@@ -35,7 +35,7 @@ A Chrome extension for debugging SEO, AdTech (Prebid.js, GPT), and tracking (GA4
 ## Installation
 
 ### From Chrome Web Store
-Coming soon
+[Install from Chrome Web Store](https://chromewebstore.google.com/detail/web-publisher-debugger/pokhcojolaodbjgchijleddjmpchchjd)
 
 ### Manual Installation (Development)
 
