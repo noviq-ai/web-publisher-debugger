@@ -1,6 +1,11 @@
 import type { PrebidData, PrebidEvent, BidderInfo, WinningBid, ConsentMetadata } from '../../shared/types/prebid'
 import { safeSendMessage } from '../utils/safe-messaging'
 
+const DEBUG = false
+function log(...args: unknown[]) {
+  if (DEBUG) console.log(...args)
+}
+
 const MSG_PREBID_DATA = 'PREBID_DATA'
 
 // 収集データの初期状態
@@ -40,51 +45,51 @@ let collectedData: PrebidData = createInitialData()
 const bidderStatsMap = new Map<string, BidderInfo>()
 
 export function initPrebidCollector() {
-  console.log('[WPD] initPrebidCollector called')
+  log('[WPD] initPrebidCollector called')
 
   // 注入スクリプトからのメッセージを受信
   window.addEventListener('message', (event) => {
     if (event.source !== window) return
     if (!event.data.type?.startsWith('WPD_')) return
 
-    console.log('[WPD] Received postMessage:', event.data.type)
+    log('[WPD] Received postMessage:', event.data.type)
 
     switch (event.data.type) {
       // Phase 1: 初期データ（Prebid検出時、auctionInit時）
       case 'WPD_PREBID_INITIAL':
-        console.log('[WPD] Processing initial Prebid data')
+        log('[WPD] Processing initial Prebid data')
         processInitialData(event.data.payload)
         break
 
       // Phase 3: オークション後データ
       case 'WPD_PREBID_AUCTION':
-        console.log('[WPD] Processing auction data')
+        log('[WPD] Processing auction data')
         processAuctionData(event.data.payload)
         break
 
       // Phase 4: 勝利入札更新（bidWon後）
       case 'WPD_PREBID_WINNING':
-        console.log('[WPD] Processing winning bids update')
+        log('[WPD] Processing winning bids update')
         processWinningBidsUpdate(event.data.payload)
         break
 
       // イベント
       case 'WPD_PREBID_EVENT':
-        console.log('[WPD] Prebid event received:', event.data.payload?.eventType)
+        log('[WPD] Prebid event received:', event.data.payload?.eventType)
         collectedData.events.push(event.data.payload)
         notifyUpdate()
         break
 
       // 未検出
       case 'WPD_PREBID_NOT_FOUND':
-        console.log('[WPD] Prebid.js not found on this page')
+        log('[WPD] Prebid.js not found on this page')
         collectedData.detected = false
         notifyUpdate()
         break
 
       // 後方互換性: 旧形式のデータ（WPD_PREBID_DATA）
       case 'WPD_PREBID_DATA':
-        console.log('[WPD] Processing legacy Prebid data')
+        log('[WPD] Processing legacy Prebid data')
         processLegacyData(event.data.payload)
         break
     }
@@ -95,11 +100,11 @@ export function initPrebidCollector() {
 }
 
 function injectScript() {
-  console.log('[WPD] Injecting script...')
+  log('[WPD] Injecting script...')
   const script = document.createElement('script')
   script.src = chrome.runtime.getURL('injected.js')
   script.onload = () => {
-    console.log('[WPD] Injected script loaded and removed')
+    log('[WPD] Injected script loaded and removed')
     script.remove()
   }
   script.onerror = (e) => {
@@ -502,7 +507,7 @@ function processLegacyData(raw: unknown) {
 }
 
 function notifyUpdate() {
-  console.log('[WPD] Prebid notifyUpdate, bidders:', collectedData.bidders.length)
+  log('[WPD] Prebid notifyUpdate, bidders:', collectedData.bidders.length)
   safeSendMessage({
     type: MSG_PREBID_DATA,
     payload: collectedData,
@@ -520,6 +525,6 @@ export function addPrebidEvent(event: PrebidEvent) {
 
 // injected.jsにPrebidデータの再収集をリクエスト
 export function requestPrebidDataCollection() {
-  console.log('[WPD] Requesting Prebid data collection from injected script')
+  log('[WPD] Requesting Prebid data collection from injected script')
   window.postMessage({ type: 'WPD_COLLECT_PREBID' }, '*')
 }

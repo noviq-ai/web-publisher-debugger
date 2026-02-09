@@ -19,6 +19,9 @@ const tabDataStore = new Map<number, TabData>()
 // Side Panelとのポート接続
 let sidePanelPort: chrome.runtime.Port | null = null
 
+// サイドパネルが表示中のタブID（アクティベーション用）
+let activePanelTabId: number | null = null
+
 chrome.runtime.onConnect.addListener((port) => {
   log('[WPD-SW] Port connected:', port.name)
   if (port.name === 'sidepanel') {
@@ -26,6 +29,7 @@ chrome.runtime.onConnect.addListener((port) => {
     port.onDisconnect.addListener(() => {
       log('[WPD-SW] Side panel disconnected')
       sidePanelPort = null
+      activePanelTabId = null
     })
   }
 })
@@ -84,6 +88,7 @@ chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) =>
     case MessageType.GET_TAB_DATA:
       {
         const requestedTabId = message.tabId
+        activePanelTabId = requestedTabId ?? null
         const data = tabDataStore.get(requestedTabId!) || {}
         log('[WPD-SW] GET_TAB_DATA for tab:', requestedTabId, 'has seo:', !!data.seo)
         sendResponse(data)
@@ -93,6 +98,7 @@ chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) =>
     case MessageType.REQUEST_REFRESH:
       {
         const targetTabId = message.tabId
+        activePanelTabId = targetTabId ?? null
         log('[WPD-SW] REQUEST_REFRESH for tab:', targetTabId)
         if (targetTabId) {
           chrome.tabs.sendMessage(targetTabId, { type: MessageType.COLLECT_DATA }).catch((err) => {
@@ -145,11 +151,18 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   tabDataStore.delete(tabId)
 })
 
-// タブ更新時にデータをリセット
+// タブ更新時にデータをリセット + ページ完了時に自動アクティベーション
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (changeInfo.status === 'loading') {
     log('[WPD-SW] Tab loading, clearing data:', tabId)
     tabDataStore.delete(tabId)
+  }
+  // ページ読み込み完了 + サイドパネル接続中 + 対象タブ → Content Scriptを自動アクティベーション
+  if (changeInfo.status === 'complete' && sidePanelPort && tabId === activePanelTabId) {
+    log('[WPD-SW] Tab complete, auto-activating content script:', tabId)
+    chrome.tabs.sendMessage(tabId, { type: MessageType.COLLECT_DATA }).catch((err) => {
+      log('[WPD-SW] Failed to auto-activate tab:', err.message)
+    })
   }
 })
 

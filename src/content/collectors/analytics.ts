@@ -1,6 +1,11 @@
 import type { AnalyticsData, PixelData, PixelEvent, PixelType, Ga4Config, Ga4Consent } from '../../shared/types/analytics'
 import { safeSendMessage } from '../utils/safe-messaging'
 
+const DEBUG = false
+function log(...args: unknown[]) {
+  if (DEBUG) console.log(...args)
+}
+
 const MSG_ANALYTICS_DATA = 'ANALYTICS_DATA'
 
 let analyticsData: AnalyticsData = {
@@ -248,7 +253,7 @@ function detectPixels() {
 }
 
 function notifyUpdate() {
-  console.log('[WPD] Analytics notifyUpdate')
+  log('[WPD] Analytics notifyUpdate')
   analyticsData.collectedAt = Date.now()
   safeSendMessage({
     type: MSG_ANALYTICS_DATA,

@@ -1,6 +1,11 @@
 import type { GtmData, DataLayerEvent } from '../../shared/types/gtm'
 import { safeSendMessage } from '../utils/safe-messaging'
 
+const DEBUG = false
+function log(...args: unknown[]) {
+  if (DEBUG) console.log(...args)
+}
+
 const MSG_GTM_DATA = 'GTM_DATA'
 
 let gtmData: GtmData = {
@@ -51,7 +56,7 @@ function detectGtm() {
 }
 
 function notifyUpdate() {
-  console.log('[WPD] GTM notifyUpdate')
+  log('[WPD] GTM notifyUpdate')
   gtmData.collectedAt = Date.now()
   safeSendMessage({
     type: MSG_GTM_DATA,

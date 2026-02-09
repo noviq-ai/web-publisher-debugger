@@ -1,4 +1,9 @@
 // GPT (Google Publisher Tag) Data Collector
+const DEBUG = false
+function log(...args: unknown[]) {
+  if (DEBUG) console.log(...args)
+}
+
 import { safeSendMessage } from '../utils/safe-messaging'
 import type {
   GptData,
@@ -50,7 +55,7 @@ interface GptInitialPayload {
 }
 
 export function processGptInitialData(payload: GptInitialPayload): void {
-  console.log('[GPT Collector] Processing initial data:', payload)
+  log('[GPT Collector] Processing initial data:', payload)
 
   gptData.detected = true
   gptData.version = payload.version
@@ -83,7 +88,7 @@ interface GptSlotsUpdatePayload {
 }
 
 export function processGptSlotsUpdate(payload: GptSlotsUpdatePayload): void {
-  console.log('[GPT Collector] Processing slots update:', payload.slots.length, 'slots')
+  log('[GPT Collector] Processing slots update:', payload.slots.length, 'slots')
 
   // 既存のスロットを更新または追加
   payload.slots.forEach((newSlot) => {
@@ -120,7 +125,7 @@ interface GptEventPayload {
 }
 
 export function processGptEvent(payload: GptEventPayload): void {
-  console.log('[GPT Collector] Processing event:', payload.eventType, payload.slotElementId)
+  log('[GPT Collector] Processing event:', payload.eventType, payload.slotElementId)
 
   const event: GptEvent = {
     eventType: payload.eventType as GptEventType,
@@ -179,7 +184,7 @@ export function processGptEvent(payload: GptEventPayload): void {
 
 // GPT Not Found の処理
 export function processGptNotFound(): void {
-  console.log('[GPT Collector] GPT not found')
+  log('[GPT Collector] GPT not found')
   gptData.detected = false
   notifyListeners()
 }
@@ -223,7 +228,7 @@ export function resetGptData(): void {
 
 // GPT Collectorを初期化（Content Scriptから呼ばれる）
 export function initGptCollector(): void {
-  console.log('[GPT Collector] Initializing')
+  log('[GPT Collector] Initializing')
 
   // injected.jsからのメッセージをリッスン
   window.addEventListener('message', (event) => {
@@ -248,6 +253,6 @@ export function initGptCollector(): void {
 
 // GPTデータの再収集をリクエスト
 export function requestGptDataCollection(): void {
-  console.log('[GPT Collector] Requesting data collection')
+  log('[GPT Collector] Requesting data collection')
   window.postMessage({ type: 'WPD_COLLECT_GPT' }, '*')
 }

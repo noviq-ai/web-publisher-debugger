@@ -19,6 +19,6 @@ export function safeSendMessage(message: unknown): void {
         err.message?.includes('Receiving end does not exist')) {
       return
     }
-    console.log('[WPD] sendMessage failed:', err.message)
+    // Suppress unexpected errors in production
   })
 }

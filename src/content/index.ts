@@ -13,6 +13,9 @@ function log(...args: unknown[]) {
 
 log('[WPD] Content script loaded')
 
+// Content Script はサイドパネルから COLLECT_DATA を受け取るまで初期化しない
+let initialized = false
+
 // Message types (duplicated to avoid external imports that break content script bundling)
 const MessageType = {
   SEO_DATA: 'SEO_DATA',
@@ -169,13 +172,22 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   log('[WPD] Received message from SW:', message.type)
 
   if (message.type === MessageType.COLLECT_DATA) {
-    // injected.jsにPrebid/GPTデータの再収集をリクエスト
-    requestPrebidDataCollection()
-    requestGptDataCollection()
-    // 少し待ってからデータを収集（injected.jsからの応答を待つ）
-    setTimeout(() => {
-      collectAllData()
-    }, 200)
+    if (!initialized) {
+      // 初回: コレクターを初期化し、injected.jsを注入
+      initialized = true
+      init()
+      // init() は injected.ts を注入し、Prebid/GPT を非同期検出する
+      // 検出後にイベント駆動でデータが自動送信される
+      // SEO データは init() 内で即座に収集・送信される
+    } else {
+      // 既に初期化済み → 再収集のみ
+      requestPrebidDataCollection()
+      requestGptDataCollection()
+      setTimeout(() => {
+        collectAllData()
+      }, 200)
+    }
+    return
   }
 
   // Prebid Query: Side Panel -> SW -> Content Script -> Injected Script
@@ -215,5 +227,5 @@ window.addEventListener('message', (event) => {
   }
 })
 
-// 初期化実行
-init()
+// 初期化はサイドパネルからの COLLECT_DATA メッセージで遅延実行される
+// init() は呼ばない
