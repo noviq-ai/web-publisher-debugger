@@ -42,9 +42,9 @@ export const Message: React.FC<MessageProps> = ({ message, isLoading }) => {
                 return (
                   <div
                     key={key}
-                    className="w-fit rounded-2xl bg-primary px-3 py-2 text-right text-primary-foreground"
+                    className="w-fit max-w-full rounded-2xl bg-primary px-3 py-2 text-primary-foreground ml-auto"
                   >
-                    <div className="text-sm whitespace-pre-wrap">{text}</div>
+                    <div className="text-sm whitespace-pre-wrap break-words">{text}</div>
                   </div>
                 )
               }
