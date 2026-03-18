@@ -43,19 +43,19 @@ export const App: React.FC = () => {
       case 'seo':
         return (
           <div className="flex-1 overflow-y-auto">
-              <SeoPage data={seoData} isLoading={isLoading} />
+              <SeoPage data={seoData} isLoading={isLoading} onReload={reloadPage} />
           </div>
         )
       case 'adtech':
         return (
           <div className="flex-1 overflow-y-auto">
-              <AdTechPage data={prebidData} gptData={gptData} isLoading={isLoading} />
+              <AdTechPage data={prebidData} gptData={gptData} isLoading={isLoading} onReload={reloadPage} />
           </div>
         )
       case 'tracking':
         return (
           <div className="flex-1 overflow-y-auto">
-            <TrackingPage gtmData={gtmData} analyticsData={analyticsData} isLoading={isLoading} />
+            <TrackingPage gtmData={gtmData} analyticsData={analyticsData} isLoading={isLoading} onReload={reloadPage} />
           </div>
         )
     }

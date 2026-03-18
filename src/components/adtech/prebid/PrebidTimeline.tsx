@@ -30,6 +30,7 @@ interface EventBidderInfo {
   bidder?: string
   bidders?: string[]
   cpm?: number
+  currency?: string
   adUnitCode?: string
 }
 
@@ -48,12 +49,14 @@ const extractBidderInfo = (eventType: string, data: unknown): EventBidderInfo =>
       return {
         bidder: d.bidderCode as string | undefined,
         cpm: d.cpm as number | undefined,
+        currency: d.currency as string | undefined,
         adUnitCode: d.adUnitCode as string | undefined,
       }
     case 'BID_WON':
       return {
         bidder: d.bidder as string | undefined,
         cpm: d.cpm as number | undefined,
+        currency: d.currency as string | undefined,
         adUnitCode: d.adUnitCode as string | undefined,
       }
     case 'BID_TIMEOUT':
@@ -103,7 +106,7 @@ export const PrebidTimeline: React.FC<PrebidTimelineProps> = ({ events }) => {
                         <span className="text-[10px] px-1.5 py-0.5 bg-red-500/10 text-red-600 dark:text-red-400 rounded">{bidderInfo.bidders.join(', ')}</span>
                       )}
                       {bidderInfo.cpm !== undefined && (
-                        <span className="text-[10px] text-green-600 dark:text-green-400 font-mono">${bidderInfo.cpm.toFixed(2)}</span>
+                        <span className="text-[10px] text-green-600 dark:text-green-400 font-mono">{bidderInfo.cpm.toFixed(2)} {bidderInfo.currency ?? 'USD'}</span>
                       )}
                     </div>
                     <span className="text-[10px] text-muted-foreground tabular-nums shrink-0">{new Date(event.timestamp).toLocaleTimeString()}</span>

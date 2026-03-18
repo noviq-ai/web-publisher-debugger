@@ -11,26 +11,15 @@ interface TrackingPageProps {
   gtmData: GtmData | null
   analyticsData: AnalyticsData | null
   isLoading: boolean
+  onReload: () => void
 }
 
-// ページリロードを実行
-const reloadPage = async () => {
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-    if (tab?.id) {
-      chrome.tabs.reload(tab.id)
-    }
-  } catch (e) {
-    console.error('Failed to reload page:', e)
-  }
-}
-
-export const TrackingPage: React.FC<TrackingPageProps> = ({ gtmData, analyticsData, isLoading }) => {
+export const TrackingPage: React.FC<TrackingPageProps> = ({ gtmData, analyticsData, isLoading, onReload }) => {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-4">
         <div className="text-sm text-muted-foreground">Loading tracking data...</div>
-        <Button variant="outline" size="sm" onClick={reloadPage} className="gap-2">
+        <Button variant="outline" size="sm" onClick={onReload} className="gap-2">
           <IconRefresh className="h-3.5 w-3.5" />
           Reload Page
         </Button>
@@ -59,7 +48,7 @@ export const TrackingPage: React.FC<TrackingPageProps> = ({ gtmData, analyticsDa
           <p className="text-xs text-muted-foreground/70 mt-1 mb-4">
             GTM, GA4, and pixel data will appear when detected
           </p>
-          <Button variant="outline" size="sm" onClick={reloadPage} className="gap-2">
+          <Button variant="outline" size="sm" onClick={onReload} className="gap-2">
             <IconRefresh className="h-3.5 w-3.5" />
             Reload Page
           </Button>

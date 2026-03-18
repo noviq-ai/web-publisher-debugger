@@ -17,26 +17,15 @@ import {
 interface SeoPageProps {
   data: SeoData | null
   isLoading: boolean
+  onReload: () => void
 }
 
-// ページリロードを実行
-const reloadPage = async () => {
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-    if (tab?.id) {
-      chrome.tabs.reload(tab.id)
-    }
-  } catch (e) {
-    console.error('Failed to reload page:', e)
-  }
-}
-
-export const SeoPage: React.FC<SeoPageProps> = ({ data, isLoading }) => {
+export const SeoPage: React.FC<SeoPageProps> = ({ data, isLoading, onReload }) => {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-4">
         <div className="text-sm text-muted-foreground">Loading SEO data...</div>
-        <Button variant="outline" size="sm" onClick={reloadPage} className="gap-2">
+        <Button variant="outline" size="sm" onClick={onReload} className="gap-2">
           <RefreshCw className="h-3.5 w-3.5" />
           Reload Page
         </Button>
@@ -50,7 +39,7 @@ export const SeoPage: React.FC<SeoPageProps> = ({ data, isLoading }) => {
         <Search className="h-8 w-8 mx-auto mb-3 text-muted-foreground/50" />
         <p className="text-sm text-muted-foreground">No SEO data collected yet.</p>
         <p className="text-xs text-muted-foreground/70 mt-1 mb-4">Navigate to a page to see SEO analysis.</p>
-        <Button variant="outline" size="sm" onClick={reloadPage} className="gap-2">
+        <Button variant="outline" size="sm" onClick={onReload} className="gap-2">
           <RefreshCw className="h-3.5 w-3.5" />
           Reload Page
         </Button>

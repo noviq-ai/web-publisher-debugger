@@ -1,7 +1,7 @@
 import React from 'react'
 import type { WinningBid } from '@/shared/types/prebid'
 import { Badge } from '@/components/ui/badge'
-import { Trophy, DollarSign, Clock } from 'lucide-react'
+import { Trophy, Clock } from 'lucide-react'
 import { Section } from '@/components/common'
 
 interface WinningBidsProps {
@@ -28,8 +28,8 @@ export const WinningBids: React.FC<WinningBidsProps> = ({ bids, title = 'Winning
               <Badge variant={isWon ? 'default' : 'secondary'} className={`text-[10px] px-1.5 py-0 h-4 ${badgeClass}`}>{bid.bidder}</Badge>
             </div>
             <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-              <span className={`flex items-center gap-0.5 font-medium ${cpmClass}`}>
-                <DollarSign className="h-3 w-3" />{bid.cpm.toFixed(2)} {bid.currency}
+              <span className={`font-medium ${cpmClass}`}>
+                {bid.cpm.toFixed(2)} {bid.currency}
               </span>
               <span>{bid.width}×{bid.height}</span>
               <span className="flex items-center gap-0.5"><Clock className="h-3 w-3" />{bid.timeToRespond}ms</span>

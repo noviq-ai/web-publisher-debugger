@@ -104,6 +104,7 @@ export interface BidderInfo {
   avgBidCpm: number
   avgResponseTime: number
   timeoutCount: number
+  currency: string
 }
 
 export interface AdUnitInfo {

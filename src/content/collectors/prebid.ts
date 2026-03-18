@@ -292,6 +292,7 @@ function processAuctionData(payload: AuctionPayload) {
       cpm: bid.cpm,
       timeToRespond: bid.timeToRespond || 0,
       status: bid.status,
+      currency: bid.currency,
     })
   })
 
@@ -309,6 +310,7 @@ function processAuctionData(payload: AuctionPayload) {
         avgBidCpm: 0,
         avgResponseTime: 0,
         timeoutCount: 1,
+        currency: 'USD',
       })
     }
   })
@@ -391,6 +393,7 @@ function extractBiddersFromAdUnits(adUnits: Array<{ bids?: Array<{ bidder: strin
           avgBidCpm: 0,
           avgResponseTime: 0,
           timeoutCount: 0,
+          currency: 'USD',
         })
       }
     })
@@ -415,6 +418,7 @@ function extractBiddersFromModules(modules: string[]) {
           avgBidCpm: 0,
           avgResponseTime: 0,
           timeoutCount: 0,
+          currency: 'USD',
         })
       }
     })
@@ -423,7 +427,7 @@ function extractBiddersFromModules(modules: string[]) {
 /**
  * Bidder統計を更新（累積）
  */
-function updateBidderStats(bidderCode: string, stats: { cpm: number; timeToRespond: number; status?: string }) {
+function updateBidderStats(bidderCode: string, stats: { cpm: number; timeToRespond: number; status?: string; currency?: string }) {
   const existing = bidderStatsMap.get(bidderCode) || {
     code: bidderCode,
     bidCount: 0,
@@ -431,11 +435,13 @@ function updateBidderStats(bidderCode: string, stats: { cpm: number; timeToRespo
     avgBidCpm: 0,
     avgResponseTime: 0,
     timeoutCount: 0,
+    currency: 'USD',
   }
 
   existing.bidCount++
   existing.avgBidCpm =
     (existing.avgBidCpm * (existing.bidCount - 1) + stats.cpm) / existing.bidCount
+  if (stats.currency) existing.currency = stats.currency
 
   if (stats.timeToRespond > 0) {
     existing.avgResponseTime =

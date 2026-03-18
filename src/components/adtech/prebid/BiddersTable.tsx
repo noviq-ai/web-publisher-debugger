@@ -65,7 +65,7 @@ export const BiddersTable: React.FC<BiddersTableProps> = ({ bidders }) => {
                   <td className="text-right py-1.5 px-1">
                     <span className="flex items-center justify-end gap-0.5 tabular-nums">
                       <TrendingUp className="h-3 w-3 text-muted-foreground" />
-                      ${bidder.avgBidCpm.toFixed(2)}
+                      {bidder.bidCount > 0 ? `${bidder.avgBidCpm.toFixed(2)} ${bidder.currency}` : '-'}
                     </span>
                   </td>
                   <td className="text-right py-1.5 px-1">
