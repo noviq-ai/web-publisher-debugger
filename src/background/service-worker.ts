@@ -8,6 +8,25 @@ function log(...args: unknown[]) {
 
 log('[WPD-SW] Service Worker loaded')
 
+// アップデート時にsync→localへ設定を移行してsyncをクリア
+chrome.runtime.onInstalled.addListener(async (details) => {
+  if (details.reason === 'update') {
+    try {
+      const syncResult = await chrome.storage.sync.get(['settings'])
+      if (syncResult.settings) {
+        const localResult = await chrome.storage.local.get(['settings'])
+        if (!localResult.settings) {
+          await chrome.storage.local.set({ settings: syncResult.settings })
+        }
+        await chrome.storage.sync.remove('settings')
+        log('[WPD-SW] Migrated settings from sync to local')
+      }
+    } catch (e) {
+      log('[WPD-SW] Migration error:', e)
+    }
+  }
+})
+
 // Side Panelをアクションクリックで開く設定
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
