@@ -98,8 +98,8 @@ export const AiPage: React.FC<AiPageProps> = ({
 
   useEffect(() => {
     // Check if running in Chrome extension context
-    if (typeof chrome !== 'undefined' && chrome.storage?.sync) {
-      chrome.storage.sync.get(['settings'], (result) => {
+    if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+      chrome.storage.local.get(['settings'], (result) => {
         if (result.settings) {
           const provider = result.settings.aiProvider || 'anthropic'
           setAiProvider(provider)

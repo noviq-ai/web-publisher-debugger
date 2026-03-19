@@ -19,8 +19,8 @@ export function useTheme() {
 
   useEffect(() => {
     // Load saved theme
-    if (typeof chrome !== 'undefined' && chrome.storage?.sync) {
-      chrome.storage.sync.get(['settings'], (result) => {
+    if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+      chrome.storage.local.get(['settings'], (result) => {
         const savedTheme = result.settings?.theme as Theme | undefined
         if (savedTheme) {
           setThemeState(savedTheme)
@@ -57,10 +57,10 @@ export function useTheme() {
     applyTheme(newTheme)
 
     // Save theme
-    if (typeof chrome !== 'undefined' && chrome.storage?.sync) {
-      chrome.storage.sync.get(['settings'], (result) => {
+    if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+      chrome.storage.local.get(['settings'], (result) => {
         const settings = result.settings || {}
-        chrome.storage.sync.set({ settings: { ...settings, theme: newTheme } })
+        chrome.storage.local.set({ settings: { ...settings, theme: newTheme } })
       })
     } else {
       localStorage.setItem('theme', newTheme)

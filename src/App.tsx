@@ -9,8 +9,8 @@ export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabId | null>(null)
 
   useEffect(() => {
-    if (typeof chrome !== 'undefined' && chrome.storage?.sync) {
-      chrome.storage.sync.get(['settings'], (result) => {
+    if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+      chrome.storage.local.get(['settings'], (result) => {
         const tab = result.settings?.defaultTab ?? defaultSettings.defaultTab
         setActiveTab(tab)
       })

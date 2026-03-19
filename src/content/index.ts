@@ -42,7 +42,7 @@ async function getSettings() {
     }
   }
   try {
-    const result = await chrome.storage.sync.get(['settings'])
+    const result = await chrome.storage.local.get(['settings'])
     return result.settings || {
       enableAdTech: true,
       enableGtm: true,

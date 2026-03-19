@@ -22,8 +22,8 @@ export const Options: React.FC = () => {
   const [saved, setSaved] = useState(false)
 
   useEffect(() => {
-    if (typeof chrome !== 'undefined' && chrome.storage?.sync) {
-      chrome.storage.sync.get(['settings'], (result) => {
+    if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+      chrome.storage.local.get(['settings'], (result) => {
         if (result.settings) {
           setSettings(result.settings)
         }
@@ -38,8 +38,8 @@ export const Options: React.FC = () => {
   }, [])
 
   const handleSave = async () => {
-    if (typeof chrome !== 'undefined' && chrome.storage?.sync) {
-      await chrome.storage.sync.set({ settings })
+    if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+      await chrome.storage.local.set({ settings })
     } else {
       // Dev mode: save to localStorage
       localStorage.setItem('settings', JSON.stringify(settings))
