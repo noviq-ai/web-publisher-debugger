@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import type { SeoData } from '@/shared/types/seo'
-import { ExternalLink, ImageOff } from 'lucide-react'
+import { IconExternalLink, IconPhotoOff } from '@tabler/icons-react'
 import { Section } from '@/components/common'
 
 // Twitter/X Icon
@@ -33,7 +33,7 @@ const TwitterPreview: React.FC<{ twitter: SeoData['twitter'] }> = ({ twitter }) 
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-              <ImageOff className="h-8 w-8" />
+              <IconPhotoOff size={32} />
             </div>
           )}
         </div>
@@ -52,7 +52,7 @@ const TwitterPreview: React.FC<{ twitter: SeoData['twitter'] }> = ({ twitter }) 
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                <ImageOff className="h-4 w-4" />
+                <IconPhotoOff size={16} />
               </div>
             )}
           </div>
@@ -85,7 +85,7 @@ const TwitterField: React.FC<{ label: string; value: string | null; isUrl?: bool
           className="text-primary hover:underline inline-flex items-center gap-1 truncate"
         >
           <span className="truncate">{value}</span>
-          <ExternalLink className="h-2.5 w-2.5 shrink-0" />
+          <IconExternalLink size={10} className="shrink-0" />
         </a>
       ) : (
         <span className="truncate" title={value}>{value}</span>

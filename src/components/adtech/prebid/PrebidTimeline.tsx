@@ -1,6 +1,6 @@
 import React from 'react'
 import type { PrebidEvent } from '@/shared/types/prebid'
-import { Activity } from 'lucide-react'
+import { IconListTree } from '@tabler/icons-react'
 import { Section } from '@/components/common'
 
 interface PrebidTimelineProps {
@@ -80,7 +80,7 @@ export const PrebidTimeline: React.FC<PrebidTimelineProps> = ({ events }) => {
   if (events.length === 0) return null
 
   return (
-    <Section title="Event Timeline" icon={<Activity className="h-3.5 w-3.5" />} count={events.length} defaultOpen>
+    <Section title="Event Timeline" icon={<IconListTree size={14} />} count={events.length} defaultOpen>
       <div className="max-h-64 overflow-auto">
         <div className="relative">
           <div className="absolute left-[5px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-blue-500/50 to-blue-500/10" />

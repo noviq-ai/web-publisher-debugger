@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Code, ChevronRight, Check, X } from 'lucide-react'
+import { IconCode, IconChevronRight, IconCheck, IconX } from '@tabler/icons-react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/shared/lib/utils'
 import { Section } from '@/components/common'
@@ -23,9 +23,10 @@ const StructuredDataItem: React.FC<{ item: JsonLdItem }> = ({ item }) => {
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full flex items-center gap-2 p-2 hover:bg-muted/50 transition-colors text-left"
       >
-        <ChevronRight
+        <IconChevronRight
+          size={12}
           className={cn(
-            'h-3 w-3 text-muted-foreground transition-transform',
+            'text-muted-foreground transition-transform',
             isExpanded && 'rotate-90'
           )}
         />
@@ -35,12 +36,12 @@ const StructuredDataItem: React.FC<{ item: JsonLdItem }> = ({ item }) => {
         <div className="flex-1" />
         {item.isValid ? (
           <div className="flex items-center gap-1 text-[10px] text-green-600">
-            <Check className="h-3 w-3" />
+            <IconCheck size={12} />
             <span>Valid</span>
           </div>
         ) : (
           <div className="flex items-center gap-1 text-[10px] text-destructive">
-            <X className="h-3 w-3" />
+            <IconX size={12} />
             <span>Invalid</span>
           </div>
         )}
@@ -63,7 +64,7 @@ export const StructuredData: React.FC<StructuredDataProps> = ({ items }) => {
   return (
     <Section
       title="Structured Data"
-      icon={<Code className="h-3.5 w-3.5" />}
+      icon={<IconCode size={14} />}
       badge={
         items.length > 0 ? (
           <div className="flex items-center gap-1">

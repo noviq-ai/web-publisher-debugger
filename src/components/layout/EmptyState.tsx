@@ -1,4 +1,4 @@
-import { Bot, Settings, Sparkles } from 'lucide-react'
+import { IconRobot, IconSettings, IconSparkles } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 
@@ -23,7 +23,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         className="relative mb-6"
       >
         <div className="relative p-4 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg">
-          <Bot className="h-8 w-8 text-white" />
+          <IconRobot size={32} className="text-white" />
         </div>
         <motion.div
           initial={{ opacity: 0, scale: 0 }}
@@ -31,7 +31,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           transition={{ delay: 0.3 }}
           className="absolute -top-1 -right-1 p-1 rounded-full bg-yellow-400"
         >
-          <Sparkles className="h-3 w-3 text-yellow-900" />
+          <IconSparkles size={12} className="text-yellow-900" />
         </motion.div>
       </motion.div>
 
@@ -96,7 +96,7 @@ export const ApiKeyMissing: React.FC = () => {
         transition={{ type: 'spring', stiffness: 260, damping: 20 }}
         className="p-4 rounded-full bg-muted mb-6"
       >
-        <Bot className="h-8 w-8 text-muted-foreground" />
+        <IconRobot size={32} className="text-muted-foreground" />
       </motion.div>
 
       <motion.p
@@ -127,7 +127,7 @@ export const ApiKeyMissing: React.FC = () => {
             }
           }
         }}>
-          <Settings className="h-4 w-4 mr-2" />
+          <IconSettings size={16} className="mr-2" />
           Open Settings
         </Button>
       </motion.div>

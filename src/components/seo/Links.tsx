@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link2, ExternalLink, ArrowRight, LinkIcon } from 'lucide-react'
+import { IconLink, IconExternalLink, IconArrowRight } from '@tabler/icons-react'
 import { Section } from '@/components/common'
 
 interface LinksProps {
@@ -29,7 +29,7 @@ export const Links: React.FC<LinksProps> = ({ internal, external, nofollow }) =>
   return (
     <Section
       title="Links"
-      icon={<Link2 className="h-3.5 w-3.5" />}
+      icon={<IconLink size={14} />}
       badge={
         total > 0 ? (
           <span className="text-[10px] text-muted-foreground">{total} total</span>
@@ -38,19 +38,19 @@ export const Links: React.FC<LinksProps> = ({ internal, external, nofollow }) =>
     >
       <div className="space-y-1.5">
         <LinkStat
-          icon={<ArrowRight className="h-3.5 w-3.5" />}
+          icon={<IconArrowRight size={14} />}
           label="Internal Links"
           value={internal}
           color="blue-500"
         />
         <LinkStat
-          icon={<ExternalLink className="h-3.5 w-3.5" />}
+          icon={<IconExternalLink size={14} />}
           label="External Links"
           value={external}
           color="green-500"
         />
         <LinkStat
-          icon={<LinkIcon className="h-3.5 w-3.5" />}
+          icon={<IconLink size={14} />}
           label="Nofollow Links"
           value={nofollow}
           color="orange-500"

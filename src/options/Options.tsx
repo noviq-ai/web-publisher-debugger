@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { type Settings, type AiProvider, type TabId, defaultSettings } from '@/shared/types'
-import { Check, ExternalLink, HelpCircle, Shield, Sparkles } from 'lucide-react'
+import { IconCheck, IconExternalLink, IconHelpCircle, IconShield, IconSparkles } from '@tabler/icons-react'
 import ClaudeIcon from '@/components/assets/claude'
 import OpenaiIcon from '@/components/assets/openai'
 import { PageHeader } from '@/components/common/PageHeader'
@@ -69,7 +69,7 @@ export const Options: React.FC = () => {
             href="help.html"
             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            <HelpCircle className="h-4 w-4" />
+            <IconHelpCircle size={16} />
             Help
           </a>
         }
@@ -79,7 +79,7 @@ export const Options: React.FC = () => {
         <SectionCard>
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-primary" />
+              <IconSparkles size={20} className="text-primary" />
               <h2 className="text-lg font-semibold">AI Assistant</h2>
               <span className="text-[10px] font-medium uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/10 text-primary">
                 Beta
@@ -91,7 +91,7 @@ export const Options: React.FC = () => {
 
             {/* Privacy Notice */}
             <div className="flex items-start gap-3 p-4 rounded-lg bg-primary/5 border border-primary/10">
-              <Shield className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+              <IconShield size={20} className="text-primary mt-0.5 shrink-0" />
               <div className="text-sm text-muted-foreground space-y-1">
                 <p className="font-medium text-foreground">Privacy-first design</p>
                 <p>
@@ -150,7 +150,7 @@ export const Options: React.FC = () => {
                       className="text-primary hover:underline inline-flex items-center gap-1"
                     >
                       Anthropic Console
-                      <ExternalLink className="h-3 w-3" />
+                      <IconExternalLink size={12} />
                     </a>
                   </p>
                 </div>
@@ -176,7 +176,7 @@ export const Options: React.FC = () => {
                       className="text-primary hover:underline inline-flex items-center gap-1"
                     >
                       OpenAI Platform
-                      <ExternalLink className="h-3 w-3" />
+                      <IconExternalLink size={12} />
                     </a>
                   </p>
                 </div>
@@ -257,7 +257,7 @@ export const Options: React.FC = () => {
         <Button onClick={handleSave} className="w-full h-11 text-base font-medium">
           {saved ? (
             <>
-              <Check className="h-4 w-4" />
+              <IconCheck size={16} />
               Saved!
             </>
           ) : (

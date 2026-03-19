@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { IconChevronDown, IconChevronRight } from '@tabler/icons-react'
 
 interface SectionProps {
   title: string
@@ -30,9 +30,9 @@ export const Section: React.FC<SectionProps> = ({ title, icon, count, badge, def
           {badge}
         </div>
         {isOpen ? (
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          <IconChevronDown size={16} className="text-muted-foreground" />
         ) : (
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          <IconChevronRight size={16} className="text-muted-foreground" />
         )}
       </button>
       {isOpen && <div className="px-3 pb-3">{children}</div>}

@@ -1,7 +1,8 @@
 import React from 'react'
 import type { WinningBid } from '@/shared/types/prebid'
 import { Badge } from '@/components/ui/badge'
-import { Trophy, Clock } from 'lucide-react'
+import { IconClock } from '@tabler/icons-react'
+import { IconLaurelWreath1, IconLaurelWreath } from '@tabler/icons-react'
 import { Section } from '@/components/common'
 
 interface WinningBidsProps {
@@ -19,7 +20,7 @@ export const WinningBids: React.FC<WinningBidsProps> = ({ bids, title = 'Winning
   const badgeClass = isWon ? 'bg-green-600' : ''
 
   return (
-    <Section title={title} icon={<Trophy className="h-3.5 w-3.5" />} count={bids.length} defaultOpen>
+    <Section title={title} icon={isWon ? <IconLaurelWreath1 size={14} /> : <IconLaurelWreath size={14} />} count={bids.length} defaultOpen>
       <div className="space-y-2">
         {bids.map((bid, idx) => (
           <div key={idx} className={`border rounded-md p-2 ${bgClass}`}>
@@ -32,7 +33,7 @@ export const WinningBids: React.FC<WinningBidsProps> = ({ bids, title = 'Winning
                 {bid.cpm.toFixed(2)} {bid.currency}
               </span>
               <span>{bid.width}×{bid.height}</span>
-              <span className="flex items-center gap-0.5"><Clock className="h-3 w-3" />{bid.timeToRespond}ms</span>
+              <span className="flex items-center gap-0.5"><IconClock size={12} />{bid.timeToRespond}ms</span>
             </div>
           </div>
         ))}

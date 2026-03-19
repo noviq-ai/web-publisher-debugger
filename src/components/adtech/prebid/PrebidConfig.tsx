@@ -1,6 +1,6 @@
 import React from 'react'
 import type { PrebidData } from '@/shared/types/prebid'
-import { Activity } from 'lucide-react'
+import { IconSettings2 } from '@tabler/icons-react'
 import { Section, ConfigRow, StatusIndicator } from '@/components/common'
 
 interface PrebidConfigProps {
@@ -9,7 +9,7 @@ interface PrebidConfigProps {
 
 export const PrebidConfig: React.FC<PrebidConfigProps> = ({ config }) => {
   return (
-    <Section title="Configuration" icon={<Activity className="h-3.5 w-3.5" />}>
+    <Section title="Configuration" icon={<IconSettings2 size={14} />}>
       <div className="space-y-0">
         <ConfigRow label="Price Granularity" value={<span className="font-mono">{config.priceGranularity || 'medium'}</span>} />
         <ConfigRow label="Consent Management" value={<StatusIndicator enabled={config.consentManagement} />} />

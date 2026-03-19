@@ -1,6 +1,6 @@
 import React from 'react'
 import type { GptData } from '@/shared/types/gpt'
-import { Activity } from 'lucide-react'
+import { IconSettings2 } from '@tabler/icons-react'
 import { Section, ConfigRow, StatusIndicator } from '@/components/common'
 
 interface GptConfigProps {
@@ -9,7 +9,7 @@ interface GptConfigProps {
 
 export const GptConfig: React.FC<GptConfigProps> = ({ config }) => {
   return (
-    <Section title="Configuration" icon={<Activity className="h-3.5 w-3.5" />}>
+    <Section title="Configuration" icon={<IconSettings2 size={14} />}>
       <div className="space-y-0">
         <ConfigRow label="Initial Load" value={<StatusIndicator enabled={!config.initialLoadDisabled} label={config.initialLoadDisabled ? 'Disabled' : 'Enabled'} />} />
         <ConfigRow label="Single Request (SRA)" value={<StatusIndicator enabled={config.singleRequest} />} />

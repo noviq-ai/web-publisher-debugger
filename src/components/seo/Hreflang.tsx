@@ -1,5 +1,5 @@
 import React from 'react'
-import { Globe, ExternalLink } from 'lucide-react'
+import { IconGlobe, IconExternalLink } from '@tabler/icons-react'
 import { Section } from '@/components/common'
 
 interface HreflangItem {
@@ -65,7 +65,7 @@ export const Hreflang: React.FC<HreflangProps> = ({ items }) => {
   return (
     <Section
       title="Hreflang"
-      icon={<Globe className="h-3.5 w-3.5" />}
+      icon={<IconGlobe size={14} />}
       badge={
         items.length > 0 ? (
           <span className="text-[10px] text-muted-foreground">{items.length} languages</span>
@@ -93,7 +93,7 @@ export const Hreflang: React.FC<HreflangProps> = ({ items }) => {
                 title={item.href}
               >
                 <span className="truncate">{item.href}</span>
-                <ExternalLink className="h-2.5 w-2.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <IconExternalLink size={10} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
               </a>
             </div>
           ))}

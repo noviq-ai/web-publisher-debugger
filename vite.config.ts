@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 import { fileURLToPath, URL } from 'node:url'
 import fs from 'fs'
@@ -28,7 +29,7 @@ function chromeExtensionPlugin() {
 }
 
 export default defineConfig({
-  plugins: [react(), chromeExtensionPlugin()],
+  plugins: [tailwindcss(), react(), chromeExtensionPlugin()],
   resolve: {
     alias: {
       '@': path.resolve(fileURLToPath(new URL('.', import.meta.url)), 'src')

@@ -1,4 +1,4 @@
-import { Sparkles } from 'lucide-react'
+import { IconSparkles } from '@tabler/icons-react'
 
 export const ThinkingMessage: React.FC = () => {
   return (
@@ -9,7 +9,7 @@ export const ThinkingMessage: React.FC = () => {
       <div className="flex items-start justify-start gap-3">
         <div className="-mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border">
           <div className="animate-pulse">
-            <Sparkles className="size-4" />
+            <IconSparkles size={16} />
           </div>
         </div>
 

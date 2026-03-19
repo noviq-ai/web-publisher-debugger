@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import type { SeoData, PrebidData, GtmData, AnalyticsData, AiContext, AiProvider } from '@/shared/types'
-import type { LucideIcon } from 'lucide-react'
+import type { Icon } from '@tabler/icons-react'
 import { useChat } from '@/ai/use-chat'
 import { createAnthropicProvider } from '@/ai/providers/anthropic'
 import { createOpenAIProvider } from '@/ai/providers/openai'
 import { createDataTools, getToolDescriptions } from '@/ai/tools'
 import type { ToolContext, ToolPermissions } from '@/ai/tools'
-import { Search, BarChart3, Tag, LineChart, Plus } from 'lucide-react'
+import { IconSearch, IconChartBar, IconTag, IconChartLine, IconPlus } from '@tabler/icons-react'
 
 import { Messages } from '@/components/chat'
 import type { ChatMessage } from '@/components/chat/types'
@@ -47,7 +47,7 @@ const QUICK_PROMPTS = [
 export interface ContextOption {
   key: keyof Pick<AiContext, 'includeSeo' | 'includeAdTech' | 'includeGtm' | 'includeAnalytics'>
   label: string
-  icon: LucideIcon
+  icon: Icon
   hasData: boolean
 }
 
@@ -269,13 +269,13 @@ export const AiPage: React.FC<AiPageProps> = ({
   }, [model, chatId, generateUUID, saveUserMessage, sendMessage])
 
   const contextOptions: ContextOption[] = [
-    { key: 'includeSeo', label: 'SEO', icon: Search, hasData: !!seoData },
-    { key: 'includeAdTech', label: 'AdTech', icon: BarChart3, hasData: !!prebidData?.detected },
-    { key: 'includeGtm', label: 'GTM', icon: Tag, hasData: !!gtmData?.detected },
+    { key: 'includeSeo', label: 'SEO', icon: IconSearch, hasData: !!seoData },
+    { key: 'includeAdTech', label: 'AdTech', icon: IconChartBar, hasData: !!prebidData?.detected },
+    { key: 'includeGtm', label: 'GTM', icon: IconTag, hasData: !!gtmData?.detected },
     {
       key: 'includeAnalytics',
       label: 'Analytics',
-      icon: LineChart,
+      icon: IconChartLine,
       hasData: !!analyticsData?.ga4 || (analyticsData?.pixels?.length ?? 0) > 0,
     },
   ]
@@ -316,7 +316,7 @@ export const AiPage: React.FC<AiPageProps> = ({
           onClick={handleNewChat}
           title="新しいチャット"
         >
-          <Plus className="h-4 w-4" />
+          <IconPlus size={16} />
         </Button>
       </div>
 

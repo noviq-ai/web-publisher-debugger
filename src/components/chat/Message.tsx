@@ -1,4 +1,4 @@
-import { Loader2, Database, CheckCircle2 } from 'lucide-react'
+import { IconLoader2, IconDatabase, IconCircleCheck } from '@tabler/icons-react'
 import { AnimatedMarkdown } from '@nvq/flowtoken'
 import { cn } from '@/shared/lib/utils'
 import type { ChatMessage, WeatherData } from './types'
@@ -90,7 +90,7 @@ export const Message: React.FC<MessageProps> = ({ message, isLoading }) => {
                     key={toolCallId}
                     className="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 py-2 text-sm text-muted-foreground"
                   >
-                    <Loader2 className="size-4 animate-spin" />
+                    <IconLoader2 size={16} className="animate-spin" />
                     <span>Getting weather{input?.city ? ` for ${input.city}` : ''}...</span>
                   </div>
                 )
@@ -103,7 +103,7 @@ export const Message: React.FC<MessageProps> = ({ message, isLoading }) => {
                     key={toolCallId}
                     className="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 py-2 text-sm text-muted-foreground"
                   >
-                    <Loader2 className="size-4 animate-spin" />
+                    <IconLoader2 size={16} className="animate-spin" />
                     <span>Preparing weather request...</span>
                   </div>
                 )
@@ -128,7 +128,7 @@ export const Message: React.FC<MessageProps> = ({ message, isLoading }) => {
                     key={toolCallId}
                     className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-1.5 text-xs text-green-600 dark:text-green-400"
                   >
-                    <CheckCircle2 className="size-3.5" />
+                    <IconCircleCheck size={14} />
                     <span>Fetched {label}</span>
                   </div>
                 )
@@ -141,7 +141,7 @@ export const Message: React.FC<MessageProps> = ({ message, isLoading }) => {
                     key={toolCallId}
                     className="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 py-1.5 text-xs text-muted-foreground"
                   >
-                    <Database className="size-3.5 animate-pulse" />
+                    <IconDatabase size={14} className="animate-pulse" />
                     <span>Fetching {label}...</span>
                   </div>
                 )

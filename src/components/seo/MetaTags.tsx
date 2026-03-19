@@ -1,6 +1,6 @@
 import React from 'react'
 import type { SeoData } from '@/shared/types/seo'
-import { FileText, ExternalLink, Check, X, AlertTriangle } from 'lucide-react'
+import { IconFileText, IconExternalLink, IconCheck, IconX, IconAlertTriangle } from '@tabler/icons-react'
 import { Section } from '@/components/common'
 
 interface MetaTagsProps {
@@ -23,11 +23,11 @@ const MetaRow: React.FC<MetaRowProps> = ({ label, value, maxLength, isUrl }) => 
     <div className="flex items-start py-1.5 border-b border-border/30 last:border-b-0">
       <div className="flex items-center gap-1.5 w-24 shrink-0">
         {isEmpty ? (
-          <X className="h-3 w-3 text-red-500" />
+          <IconX size={12} className="text-red-500" />
         ) : isOverLimit ? (
-          <AlertTriangle className="h-3 w-3 text-yellow-500" />
+          <IconAlertTriangle size={12} className="text-yellow-500" />
         ) : (
-          <Check className="h-3 w-3 text-green-500" />
+          <IconCheck size={12} className="text-green-500" />
         )}
         <span className="text-[11px] text-muted-foreground">{label}</span>
       </div>
@@ -42,7 +42,7 @@ const MetaRow: React.FC<MetaRowProps> = ({ label, value, maxLength, isUrl }) => 
             className="text-[11px] text-primary hover:underline inline-flex items-center gap-1 break-all"
           >
             <span className="truncate">{value}</span>
-            <ExternalLink className="h-2.5 w-2.5 shrink-0" />
+            <IconExternalLink size={10} className="shrink-0" />
           </a>
         ) : (
           <span className="text-[11px] break-words">{value}</span>
@@ -59,7 +59,7 @@ const MetaRow: React.FC<MetaRowProps> = ({ label, value, maxLength, isUrl }) => 
 
 export const MetaTags: React.FC<MetaTagsProps> = ({ data }) => {
   return (
-    <Section title="Meta Tags" icon={<FileText className="h-3.5 w-3.5" />} defaultOpen>
+    <Section title="Meta Tags" icon={<IconFileText size={14} />} defaultOpen>
       <div className="space-y-0">
         <MetaRow label="Title" value={data.title} maxLength={60} />
         <MetaRow label="Description" value={data.description} maxLength={160} />

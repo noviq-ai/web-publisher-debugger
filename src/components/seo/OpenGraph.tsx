@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import type { SeoData } from '@/shared/types/seo'
-import { Share2, ExternalLink, ImageOff } from 'lucide-react'
+import { IconShare, IconExternalLink, IconPhotoOff } from '@tabler/icons-react'
 import { Section } from '@/components/common'
 
 interface OpenGraphProps {
@@ -25,7 +25,7 @@ const OgpPreview: React.FC<{ ogp: SeoData['ogp'] }> = ({ ogp }) => {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-              <ImageOff className="h-8 w-8" />
+              <IconPhotoOff size={32} />
             </div>
           )}
         </div>
@@ -62,7 +62,7 @@ const OgpField: React.FC<{ label: string; value: string | null; isUrl?: boolean 
           className="text-primary hover:underline inline-flex items-center gap-1 truncate"
         >
           <span className="truncate">{value}</span>
-          <ExternalLink className="h-2.5 w-2.5 shrink-0" />
+          <IconExternalLink size={10} className="shrink-0" />
         </a>
       ) : (
         <span className="truncate" title={value}>{value}</span>
@@ -75,7 +75,7 @@ export const OpenGraph: React.FC<OpenGraphProps> = ({ ogp }) => {
   const hasContent = ogp.title || ogp.description || ogp.image
 
   return (
-    <Section title="Open Graph" icon={<Share2 className="h-3.5 w-3.5" />} defaultOpen={!!hasContent}>
+    <Section title="Open Graph" icon={<IconShare size={14} />} defaultOpen={!!hasContent}>
       {hasContent ? (
         <div className="space-y-3">
           <OgpPreview ogp={ogp} />

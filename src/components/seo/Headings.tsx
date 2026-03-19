@@ -1,5 +1,5 @@
 import React from 'react'
-import { Heading } from 'lucide-react'
+import { IconHeading } from '@tabler/icons-react'
 import { cn } from '@/shared/lib/utils'
 import { Section } from '@/components/common'
 
@@ -39,7 +39,7 @@ export const Headings: React.FC<HeadingsProps> = ({ headings }) => {
   return (
     <Section
       title="Heading Structure"
-      icon={<Heading className="h-3.5 w-3.5" />}
+      icon={<IconHeading size={14} />}
       badge={
         totalHeadings > 0 ? (
           <span className="text-[10px] text-muted-foreground">{totalHeadings} headings</span>

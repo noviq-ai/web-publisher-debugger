@@ -8,28 +8,28 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
-  ArrowLeft,
-  Bot,
-  Search,
-  MonitorPlay,
-  BarChart3,
-  Database,
-  Shield,
-  ChevronDown,
-  ChevronRight,
-  Globe
-} from 'lucide-react'
+  IconArrowLeft,
+  IconRobot,
+  IconSearch,
+  IconDeviceTv,
+  IconChartBar,
+  IconDatabase,
+  IconShield,
+  IconChevronDown,
+  IconChevronRight,
+  IconGlobe,
+} from '@tabler/icons-react'
 import { PageHeader } from '@/components/common/PageHeader'
 import { PageLayout, SectionCard } from '@/components/common/PageLayout'
 import { getContent, detectLanguage } from './content'
 
 const sectionIcons: Record<string, React.ReactNode> = {
-  aiAssistant: <Bot className="h-5 w-5" />,
-  seo: <Search className="h-5 w-5" />,
-  adtech: <MonitorPlay className="h-5 w-5" />,
-  tracking: <BarChart3 className="h-5 w-5" />,
-  dataStorage: <Database className="h-5 w-5" />,
-  permissions: <Shield className="h-5 w-5" />
+  aiAssistant: <IconRobot size={20} />,
+  seo: <IconSearch size={20} />,
+  adtech: <IconDeviceTv size={20} />,
+  tracking: <IconChartBar size={20} />,
+  dataStorage: <IconDatabase size={20} />,
+  permissions: <IconShield size={20} />
 }
 
 interface CollapsibleSectionProps {
@@ -61,9 +61,9 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
           <p className="text-sm text-muted-foreground truncate">{description}</p>
         </div>
         {isOpen ? (
-          <ChevronDown className="h-5 w-5 text-muted-foreground shrink-0" />
+          <IconChevronDown size={20} className="text-muted-foreground shrink-0" />
         ) : (
-          <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
+          <IconChevronRight size={20} className="text-muted-foreground shrink-0" />
         )}
       </button>
 
@@ -98,7 +98,7 @@ export const Help: React.FC = () => {
         actions={
           <Select value={lang} onValueChange={setLang}>
             <SelectTrigger className="w-auto gap-2">
-              <Globe className="h-4 w-4" />
+              <IconGlobe size={16} />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -117,7 +117,7 @@ export const Help: React.FC = () => {
             onClick={handleBackToSettings}
             className="text-muted-foreground hover:text-foreground -ml-2"
           >
-            <ArrowLeft className="h-4 w-4 mr-1" />
+            <IconArrowLeft size={16} className="mr-1" />
             {content.backToSettings}
           </Button>
         </div>
@@ -138,7 +138,7 @@ export const Help: React.FC = () => {
               key={key}
               title={section.title}
               description={section.description}
-              icon={sectionIcons[key] || <Database className="h-5 w-5" />}
+              icon={sectionIcons[key] || <IconDatabase size={20} />}
               items={section.items}
               defaultOpen={key === 'aiAssistant'}
             />

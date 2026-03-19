@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
-import { ArrowDown } from 'lucide-react'
+import { IconArrowDown } from '@tabler/icons-react'
 import { cn } from '@/shared/lib/utils'
 import type { ChatMessage, ChatStatus } from './types'
 import { Message } from './Message'
@@ -91,7 +91,7 @@ export const Messages: React.FC<MessagesProps> = ({ messages, status, emptyState
         onClick={() => scrollToBottom('smooth')}
         type="button"
       >
-        <ArrowDown className="size-4" />
+        <IconArrowDown size={16} />
       </button>
     </div>
   )

@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { Send, Plug, ChevronDown } from 'lucide-react'
+import { IconSend, IconPlug, IconChevronDown } from '@tabler/icons-react'
 import type { ContextOption } from '@/pages'
 
 interface ChatInputProps {
@@ -74,9 +74,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 variant="ghost"
                 className="text-muted-foreground hover:text-foreground"
               >
-                <Plug className="h-3 w-3" />
+                <IconPlug size={12} />
                 Tools: {activeContextCount}
-                <ChevronDown className="h-3 w-3" />
+                <IconChevronDown size={12} />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-56" align="start">
@@ -99,7 +99,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                       )}
                     </div>
                     <Switch
-                      checked={context[option.key] && option.hasData}
+                      checked={!!(context[option.key] && option.hasData)}
                       onCheckedChange={(checked) =>
                         setContext((prev) => ({ ...prev, [option.key]: checked }))
                       }
@@ -116,7 +116,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             size="icon"
             disabled={isLoading || !inputValue.trim()}
           >
-            <Send className="size-7" />
+            <IconSend size={28} />
           </Button>
         </div>
       </div>

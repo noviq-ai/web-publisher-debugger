@@ -1,10 +1,10 @@
-import { Bot, AlertCircle } from 'lucide-react'
+import { IconRobot, IconAlertCircle } from '@tabler/icons-react'
 
 export const LoadingIndicator: React.FC = () => {
   return (
     <div className="flex items-start gap-3">
       <div className="p-2 rounded-full bg-primary/10">
-        <Bot className="h-4 w-4 text-primary" />
+        <IconRobot size={16} className="text-primary" />
       </div>
       <div className="bg-muted rounded-lg p-3 max-w-[85%]">
         <div className="flex items-center gap-2">
@@ -27,7 +27,7 @@ interface ErrorMessageProps {
 export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message }) => {
   return (
     <div className="flex items-center gap-2 text-destructive bg-destructive/10 rounded-lg p-3">
-      <AlertCircle className="h-4 w-4 shrink-0" />
+      <IconAlertCircle size={16} className="shrink-0" />
       <span className="text-sm">{message}</span>
     </div>
   )

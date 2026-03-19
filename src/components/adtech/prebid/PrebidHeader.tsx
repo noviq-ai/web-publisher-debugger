@@ -1,6 +1,6 @@
 import React from 'react'
 import type { PrebidData } from '@/shared/types/prebid'
-import { Zap } from 'lucide-react'
+import { IconBolt } from '@tabler/icons-react'
 import { StatBox } from '@/components/common'
 
 interface PrebidHeaderProps {
@@ -13,7 +13,7 @@ export const PrebidHeader: React.FC<PrebidHeaderProps> = ({ data }) => {
   return (
     <div className="p-3 bg-gradient-to-b from-blue-500/10 to-transparent border-t-2 border-blue-500/30">
       <div className="flex items-center gap-2 mb-3">
-        <Zap className="h-4 w-4 text-blue-500" />
+        <IconBolt size={16} className="text-blue-500" />
         <span className="text-sm font-medium">Prebid.js</span>
         <span className="text-xs text-muted-foreground">{data.version || '?'}</span>
         {data.config.debug && (

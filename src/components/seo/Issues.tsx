@@ -1,5 +1,5 @@
 import React from 'react'
-import { AlertCircle, AlertTriangle, Info, CheckCircle2 } from 'lucide-react'
+import { IconAlertCircle, IconAlertTriangle, IconInfoCircle, IconCircleCheck } from '@tabler/icons-react'
 import { cn } from '@/shared/lib/utils'
 import type { SeoIssue } from '@/shared/types/seo'
 import { Section } from '@/components/common'
@@ -9,7 +9,7 @@ interface IssuesProps {
 }
 
 const IssueItem: React.FC<{ issue: SeoIssue }> = ({ issue }) => {
-  const Icon = issue.type === 'error' ? AlertCircle : issue.type === 'warning' ? AlertTriangle : Info
+  const Icon = issue.type === 'error' ? IconAlertCircle : issue.type === 'warning' ? IconAlertTriangle : IconInfoCircle
 
   return (
     <div
@@ -21,8 +21,9 @@ const IssueItem: React.FC<{ issue: SeoIssue }> = ({ issue }) => {
       )}
     >
       <Icon
+        size={14}
         className={cn(
-          'h-3.5 w-3.5 shrink-0 mt-0.5',
+          'shrink-0 mt-0.5',
           issue.type === 'error' && 'text-destructive',
           issue.type === 'warning' && 'text-yellow-600',
           issue.type === 'info' && 'text-muted-foreground'
@@ -60,13 +61,13 @@ export const Issues: React.FC<IssuesProps> = ({ issues }) => {
   return (
     <Section
       title="Issues"
-      icon={<AlertCircle className="h-3.5 w-3.5" />}
+      icon={<IconAlertCircle size={14} />}
       badge={badge}
       defaultOpen={issues.length > 0}
     >
       {issues.length === 0 ? (
         <div className="flex items-center gap-2 py-2 text-xs text-green-600">
-          <CheckCircle2 className="h-3.5 w-3.5" />
+          <IconCircleCheck size={14} />
           No issues found
         </div>
       ) : (

@@ -1,7 +1,7 @@
 import React from 'react'
 import type { GptSlot } from '@/shared/types/gpt'
 import { Badge } from '@/components/ui/badge'
-import { MonitorPlay } from 'lucide-react'
+import { IconDeviceTv } from '@tabler/icons-react'
 import { Section } from '@/components/common'
 
 interface GptSlotsProps {
@@ -10,7 +10,7 @@ interface GptSlotsProps {
 
 export const GptSlots: React.FC<GptSlotsProps> = ({ slots }) => {
   return (
-    <Section title="Ad Slots" icon={<MonitorPlay className="h-3.5 w-3.5" />} count={slots.length} defaultOpen>
+    <Section title="Ad Slots" icon={<IconDeviceTv size={14} />} count={slots.length} defaultOpen>
       {slots.length === 0 ? (
         <p className="text-xs text-muted-foreground py-2">No slots defined.</p>
       ) : (

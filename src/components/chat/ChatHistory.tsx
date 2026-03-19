@@ -2,15 +2,15 @@ import { useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { ja } from 'date-fns/locale'
 import {
-  MessageSquare,
-  Plus,
-  Trash2,
-  History,
-  MoreHorizontal,
-  Pencil,
-  Check,
-  X,
-} from 'lucide-react'
+  IconMessage,
+  IconPlus,
+  IconTrash,
+  IconHistory,
+  IconDots,
+  IconPencil,
+  IconCheck,
+  IconX,
+} from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -76,7 +76,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
 
   const defaultTrigger = (
     <Button variant="ghost" size="icon">
-      <History className="h-4 w-4" />
+      <IconHistory size={16} />
     </Button>
   )
 
@@ -100,7 +100,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
             className="w-full justify-start gap-2"
             onClick={onNewChat}
           >
-            <Plus className="h-4 w-4" />
+            <IconPlus size={16} />
             新しいチャット
           </Button>
         </div>
@@ -108,7 +108,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
         <div className="flex-1 overflow-y-auto px-2 pb-4">
             {chats.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-                <MessageSquare className="h-8 w-8 mb-2 opacity-50" />
+                <IconMessage size={32} className="mb-2 opacity-50" />
                 <p className="text-sm">履歴がありません</p>
               </div>
             ) : (
@@ -139,7 +139,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
                           className="h-7 w-7 shrink-0"
                           onClick={() => handleSaveEdit(chat.id)}
                         >
-                          <Check className="h-3 w-3" />
+                          <IconCheck size={12} />
                         </Button>
                         <Button
                           variant="ghost"
@@ -147,7 +147,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
                           className="h-7 w-7 shrink-0"
                           onClick={handleCancelEdit}
                         >
-                          <X className="h-3 w-3" />
+                          <IconX size={12} />
                         </Button>
                       </div>
                     ) : (
@@ -172,19 +172,19 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
                               size="icon"
                               className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100"
                             >
-                              <MoreHorizontal className="h-4 w-4" />
+                              <IconDots size={16} />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => handleStartEdit(chat)}>
-                              <Pencil className="h-4 w-4 mr-2" />
+                              <IconPencil size={16} className="mr-2" />
                               名前を変更
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-destructive"
                               onClick={() => onDeleteChat(chat.id)}
                             >
-                              <Trash2 className="h-4 w-4 mr-2" />
+                              <IconTrash size={16} className="mr-2" />
                               削除
                             </DropdownMenuItem>
                           </DropdownMenuContent>

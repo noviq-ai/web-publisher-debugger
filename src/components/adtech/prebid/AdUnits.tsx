@@ -1,6 +1,6 @@
 import React from 'react'
 import type { AdUnitInfo } from '@/shared/types/prebid'
-import { Box } from 'lucide-react'
+import { IconBox } from '@tabler/icons-react'
 import { Section } from '@/components/common'
 
 interface AdUnitsProps {
@@ -10,14 +10,14 @@ interface AdUnitsProps {
 export const AdUnits: React.FC<AdUnitsProps> = ({ adUnits }) => {
   if (adUnits.length === 0) {
     return (
-      <Section title="Ad Units" icon={<Box className="h-3.5 w-3.5" />} count={0}>
+      <Section title="Ad Units" icon={<IconBox size={14} />} count={0}>
         <p className="text-xs text-muted-foreground py-2">No ad units found.</p>
       </Section>
     )
   }
 
   return (
-    <Section title="Ad Units" icon={<Box className="h-3.5 w-3.5" />} count={adUnits.length}>
+    <Section title="Ad Units" icon={<IconBox size={14} />} count={adUnits.length}>
       <div className="space-y-2">
         {adUnits.map((unit, idx) => (
           <div key={idx} className="bg-muted/30 rounded-md p-2">

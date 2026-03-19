@@ -1,7 +1,7 @@
 import React from 'react'
 import type { SeoData } from '@/shared/types/seo'
 import { Button } from '@/components/ui/button'
-import { Search, RefreshCw } from 'lucide-react'
+import { IconSearch, IconRefresh } from '@tabler/icons-react'
 import {
   SeoHeader,
   MetaTags,
@@ -26,7 +26,7 @@ export const SeoPage: React.FC<SeoPageProps> = ({ data, isLoading, onReload }) =
       <div className="flex flex-col items-center justify-center py-12 gap-4">
         <div className="text-sm text-muted-foreground">Loading SEO data...</div>
         <Button variant="outline" size="sm" onClick={onReload} className="gap-2">
-          <RefreshCw className="h-3.5 w-3.5" />
+          <IconRefresh size={14} />
           Reload Page
         </Button>
       </div>
@@ -36,11 +36,11 @@ export const SeoPage: React.FC<SeoPageProps> = ({ data, isLoading, onReload }) =
   if (!data) {
     return (
       <div className="text-center py-12 px-4">
-        <Search className="h-8 w-8 mx-auto mb-3 text-muted-foreground/50" />
+        <IconSearch size={32} className="mx-auto mb-3 text-muted-foreground/50" />
         <p className="text-sm text-muted-foreground">No SEO data collected yet.</p>
         <p className="text-xs text-muted-foreground/70 mt-1 mb-4">Navigate to a page to see SEO analysis.</p>
         <Button variant="outline" size="sm" onClick={onReload} className="gap-2">
-          <RefreshCw className="h-3.5 w-3.5" />
+          <IconRefresh size={14} />
           Reload Page
         </Button>
       </div>

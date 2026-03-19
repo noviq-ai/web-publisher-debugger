@@ -1,6 +1,6 @@
 import React from 'react'
 import type { SeoData } from '@/shared/types/seo'
-import { Search } from 'lucide-react'
+import { IconSearch } from '@tabler/icons-react'
 import { StatBox } from '@/components/common'
 
 interface SeoHeaderProps {
@@ -14,7 +14,7 @@ export const SeoHeader: React.FC<SeoHeaderProps> = ({ data }) => {
   return (
     <div className="p-3 bg-gradient-to-b from-green-500/10 to-transparent border-t-2 border-green-500/30">
       <div className="flex items-center gap-2 mb-3">
-        <Search className="h-4 w-4 text-green-500" />
+        <IconSearch size={16} className="text-green-500" />
         <span className="text-sm font-medium">SEO Analysis</span>
       </div>
       <div className="grid grid-cols-4 gap-2">

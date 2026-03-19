@@ -1,6 +1,6 @@
 import React from 'react'
 import type { ConsentMetadata } from '@/shared/types/prebid'
-import { Shield } from 'lucide-react'
+import { IconShield } from '@tabler/icons-react'
 import { Section, ConfigRow, StatusIndicator } from '@/components/common'
 
 interface ConsentStatusProps {
@@ -11,7 +11,7 @@ export const ConsentStatus: React.FC<ConsentStatusProps> = ({ consent }) => {
   if (!consent) return null
 
   return (
-    <Section title="Consent Status" icon={<Shield className="h-3.5 w-3.5" />}>
+    <Section title="Consent Status" icon={<IconShield size={14} />}>
       <div className="space-y-0">
         <ConfigRow label="GDPR Applies" value={<StatusIndicator enabled={consent.gdprApplies} label={consent.gdprApplies ? 'Yes' : 'No'} />} />
         {consent.consentString && (

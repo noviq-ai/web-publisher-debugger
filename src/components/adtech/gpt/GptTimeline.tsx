@@ -1,6 +1,6 @@
 import React from 'react'
 import type { GptEvent } from '@/shared/types/gpt'
-import { Eye } from 'lucide-react'
+import { IconListTree } from '@tabler/icons-react'
 import { Section } from '@/components/common'
 
 interface GptTimelineProps {
@@ -30,7 +30,7 @@ export const GptTimeline: React.FC<GptTimelineProps> = ({ events }) => {
   if (events.length === 0) return null
 
   return (
-    <Section title="Event Timeline" icon={<Eye className="h-3.5 w-3.5" />} count={events.length} defaultOpen>
+    <Section title="Event Timeline" icon={<IconListTree size={14} />} count={events.length} defaultOpen>
       <div className="max-h-64 overflow-auto">
         <div className="relative">
           <div className="absolute left-[5px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-orange-500/50 to-orange-500/10" />
