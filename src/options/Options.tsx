@@ -25,7 +25,7 @@ export const Options: React.FC = () => {
     if (typeof chrome !== 'undefined' && chrome.storage?.local) {
       chrome.storage.local.get(['settings'], (result) => {
         if (result.settings) {
-          setSettings(result.settings)
+          setSettings({ ...defaultSettings, ...result.settings })
         }
       })
     } else {
