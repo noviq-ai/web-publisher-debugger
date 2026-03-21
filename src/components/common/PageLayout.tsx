@@ -1,5 +1,7 @@
 import React from 'react'
 
+declare const __APP_VERSION__: string
+
 interface PageLayoutProps {
   children: React.ReactNode
 }
@@ -7,14 +9,14 @@ interface PageLayoutProps {
 export const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-muted/30 flex flex-col pt-[72px]">
-      <div className="flex-1 w-full max-w-[640px] mx-auto py-8 px-4">
+      <div className="flex-1 w-full max-w-4xl mx-auto py-8 px-4">
         <main className="space-y-4">
           {children}
         </main>
 
         <footer className="px-6 py-6 text-center">
           <p className="text-sm text-muted-foreground">
-            Web Publisher Debugger v0.1.0
+            Web Publisher Debugger v{__APP_VERSION__}
           </p>
         </footer>
       </div>
@@ -29,7 +31,7 @@ interface SectionCardProps {
 
 export const SectionCard: React.FC<SectionCardProps> = ({ children, className = '' }) => {
   return (
-    <section className={`bg-background border border-border/50 rounded-lg px-6 py-6 ${className}`}>
+    <section className={`bg-card border border-border/50 rounded-lg px-6 py-6 ${className}`}>
       {children}
     </section>
   )

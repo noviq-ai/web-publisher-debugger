@@ -28,7 +28,12 @@ function chromeExtensionPlugin() {
   }
 }
 
+const packageJson = JSON.parse(fs.readFileSync(path.resolve(fileURLToPath(new URL('.', import.meta.url)), 'package.json'), 'utf-8'))
+
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(packageJson.version),
+  },
   plugins: [tailwindcss(), react(), chromeExtensionPlugin()],
   resolve: {
     alias: {
@@ -41,6 +46,8 @@ export default defineConfig({
         sidepanel: path.resolve(fileURLToPath(new URL('.', import.meta.url)), 'index.html'),
         options: path.resolve(fileURLToPath(new URL('.', import.meta.url)), 'options.html'),
         help: path.resolve(fileURLToPath(new URL('.', import.meta.url)), 'help.html'),
+        tools: path.resolve(fileURLToPath(new URL('.', import.meta.url)), 'tools.html'),
+        feedback: path.resolve(fileURLToPath(new URL('.', import.meta.url)), 'feedback.html'),
         background: path.resolve(fileURLToPath(new URL('.', import.meta.url)), 'src/background/service-worker.ts'),
         content: path.resolve(fileURLToPath(new URL('.', import.meta.url)), 'src/content/index.ts'),
         injected: path.resolve(fileURLToPath(new URL('.', import.meta.url)), 'src/content/injected.ts'),
