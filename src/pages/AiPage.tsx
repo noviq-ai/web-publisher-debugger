@@ -4,6 +4,7 @@ import type { Icon } from '@tabler/icons-react'
 import { useChat } from '@/ai/use-chat'
 import { createAnthropicProvider } from '@/ai/providers/anthropic'
 import { createOpenAIProvider } from '@/ai/providers/openai'
+import { createBrowserAIModel, doesBrowserSupportBrowserAI } from '@/ai/providers/browser-ai'
 import { createDataTools, getToolDescriptions } from '@/ai/tools'
 import type { ToolContext, ToolPermissions } from '@/ai/tools'
 import { IconSearch, IconChartBar, IconTag, IconChartLine, IconPlus } from '@tabler/icons-react'
@@ -16,6 +17,7 @@ import { ErrorMessage } from '@/components/common/LoadingIndicator'
 import { ChatHistory } from '@/components/chat/ChatHistory'
 import { Button } from '@/components/ui/button'
 import { useChatPersistence } from '@/hooks/useChatPersistence'
+import { getMessagesByChatId } from '@/db/queries'
 
 const BASE_SYSTEM_PROMPT = `You are a Web Publisher Technical Expert specializing in:
 - Header Bidding (Prebid.js, Amazon TAM)
@@ -25,10 +27,9 @@ const BASE_SYSTEM_PROMPT = `You are a Web Publisher Technical Expert specializin
 - Web Analytics (GA4, Facebook Pixel, marketing pixels)
 
 ## How to Work
-1. When asked about page data, use the available tools to fetch the information you need
-2. Start with getTrackingOverview to understand what's available on the page
-3. Then dive deeper with specific tools as needed
-4. Only fetch data the user has permitted (check the permissions below)
+1. When asked about page data, use the appropriate tools directly based on the user's question
+2. Call multiple tools in parallel when the question spans different areas (e.g. SEO + AdTech)
+3. Only fetch data the user has permitted (check the permissions below)
 
 ## Response Guidelines
 - Always respond in the same language as the user's message
@@ -68,7 +69,9 @@ export const AiPage: React.FC<AiPageProps> = ({
 }) => {
   const [inputValue, setInputValue] = useState('')
   const [apiKey, setApiKey] = useState<string | null>(null)
-  const [aiProvider, setAiProvider] = useState<AiProvider>('anthropic')
+  const [byokProvider, setByokProvider] = useState<'anthropic' | 'openai'>('anthropic')
+  const browserAIAvailable = doesBrowserSupportBrowserAI()
+  const [aiProvider, setAiProvider] = useState<AiProvider>(browserAIAvailable ? 'browser' : 'anthropic')
   const [context, setContext] = useState<AiContext>({
     includeSeo: true,
     includeAdTech: true,
@@ -97,12 +100,13 @@ export const AiPage: React.FC<AiPageProps> = ({
   const [chatId, setChatId] = useState<string>(() => generateUUID())
 
   useEffect(() => {
-    // Check if running in Chrome extension context
+    // Load BYOK settings (provider + API key) from Options
+    // ChatInput defaults to 'browser', user can switch to BYOK if key is available
     if (typeof chrome !== 'undefined' && chrome.storage?.local) {
       chrome.storage.local.get(['settings'], (result) => {
         if (result.settings) {
           const provider = result.settings.aiProvider || 'anthropic'
-          setAiProvider(provider)
+          setByokProvider(provider as 'anthropic' | 'openai')
           if (provider === 'anthropic' && result.settings.claudeApiKey) {
             setApiKey(result.settings.claudeApiKey)
           } else if (provider === 'openai' && result.settings.openaiApiKey) {
@@ -111,9 +115,9 @@ export const AiPage: React.FC<AiPageProps> = ({
         }
       })
     } else {
-      // Dev mode: allow setting API key via localStorage
-      const devProvider = (localStorage.getItem('aiProvider') as AiProvider) || 'anthropic'
-      setAiProvider(devProvider)
+      // Dev mode
+      const devProvider = (localStorage.getItem('aiProvider') as 'anthropic' | 'openai') || 'anthropic'
+      setByokProvider(devProvider)
       const devKey = localStorage.getItem(devProvider === 'openai' ? 'openaiApiKey' : 'claudeApiKey')
       if (devKey) setApiKey(devKey)
     }
@@ -169,24 +173,30 @@ export const AiPage: React.FC<AiPageProps> = ({
   }, [toolPermissions])
 
   const model = useMemo(() => {
+    if (aiProvider === 'browser') {
+      return createBrowserAIModel()
+    }
+    // BYOK mode: use the provider configured in Options
     if (!apiKey) return null
-    if (aiProvider === 'openai') {
+    if (byokProvider === 'openai') {
       const openai = createOpenAIProvider(apiKey)
       return openai('gpt-4o')
     }
     const anthropic = createAnthropicProvider(apiKey)
     return anthropic('claude-sonnet-4-20250514')
-  }, [apiKey, aiProvider])
+  }, [apiKey, aiProvider, byokProvider])
 
   // Handle message finish - save to IndexedDB
+  // Only save messages that don't already exist in the DB to preserve createdAt ordering
   const handleFinish = useCallback(async ({ messages: finishedMessages }: { messages: ChatMessage[] }) => {
     if (finishedMessages.length === 0) return
 
-    // Save all messages that aren't already saved
-    // The assistant message is the last one
-    const assistantMessages = finishedMessages.filter(m => m.role === 'assistant')
-    if (assistantMessages.length > 0) {
-      await saveFinishedMessages(chatId, assistantMessages)
+    const existingMessages = await getMessagesByChatId(chatId)
+    const existingIds = new Set(existingMessages.map(m => m.id))
+    const newMessages = finishedMessages.filter(m => m.role !== 'user' && !existingIds.has(m.id))
+
+    if (newMessages.length > 0) {
+      await saveFinishedMessages(chatId, newMessages)
     }
   }, [chatId, saveFinishedMessages])
 
@@ -284,7 +294,7 @@ export const AiPage: React.FC<AiPageProps> = ({
     (opt) => opt.hasData && context[opt.key]
   ).length
 
-  if (!apiKey) {
+  if (aiProvider !== 'browser' && !apiKey) {
     return <ApiKeyMissing />
   }
 
@@ -327,7 +337,7 @@ export const AiPage: React.FC<AiPageProps> = ({
       />
 
       {error && (
-        <div className="px-4">
+        <div className="px-6">
           <div className="max-w-3xl mx-auto">
             <ErrorMessage message={error.message} />
           </div>
@@ -347,6 +357,11 @@ export const AiPage: React.FC<AiPageProps> = ({
             setContext={setContext}
             contextOptions={contextOptions}
             activeContextCount={activeContextCount}
+            aiProvider={aiProvider}
+            onProviderChange={setAiProvider}
+            apiKey={apiKey}
+            byokProvider={byokProvider}
+            browserAIAvailable={browserAIAvailable}
           />
         </div>
       </div>

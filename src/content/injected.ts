@@ -399,8 +399,10 @@ interface GptSlotInterface {
     }
 
     // pbjs.adUnitsとeventAdUnitsをマージ（重複除去）
-    const pbjsAdUnits = safeClone(pbjs.adUnits) || []
-    const eventAdUnitsCloned = safeClone(eventAdUnits) || []
+    const rawPbjsAdUnits = safeClone(pbjs.adUnits)
+    const pbjsAdUnits = Array.isArray(rawPbjsAdUnits) ? rawPbjsAdUnits : []
+    const rawEventAdUnits = safeClone(eventAdUnits)
+    const eventAdUnitsCloned = Array.isArray(rawEventAdUnits) ? rawEventAdUnits : []
     const mergedAdUnits = mergeAdUnits(pbjsAdUnits, eventAdUnitsCloned)
 
     const data = {
@@ -496,7 +498,8 @@ interface GptSlotInterface {
     let prebidWinningBids: unknown[] = []
     try {
       if (typeof pbjs.getAllPrebidWinningBids === 'function') {
-        prebidWinningBids = pbjs.getAllPrebidWinningBids() || []
+        const rawPWB = pbjs.getAllPrebidWinningBids()
+        prebidWinningBids = Array.isArray(rawPWB) ? rawPWB : []
       }
     } catch (e) {
       log('[WPD-Injected] Error getting prebid winning bids:', e)
@@ -506,7 +509,8 @@ interface GptSlotInterface {
     let noBids: unknown[] = []
     try {
       if (typeof pbjs.getNoBids === 'function') {
-        noBids = pbjs.getNoBids() || []
+        const raw = pbjs.getNoBids()
+        noBids = Array.isArray(raw) ? raw : []
       }
     } catch (e) {
       log('[WPD-Injected] Error getting no bids:', e)
@@ -516,7 +520,8 @@ interface GptSlotInterface {
     let highestCpmBids: unknown[] = []
     try {
       if (typeof pbjs.getHighestCpmBids === 'function') {
-        highestCpmBids = pbjs.getHighestCpmBids() || []
+        const rawHCB = pbjs.getHighestCpmBids()
+        highestCpmBids = Array.isArray(rawHCB) ? rawHCB : []
       }
     } catch (e) {
       log('[WPD-Injected] Error getting highest CPM bids:', e)
@@ -536,7 +541,8 @@ interface GptSlotInterface {
     let winningBids: unknown[] = []
     try {
       if (typeof pbjs.getAllWinningBids === 'function') {
-        winningBids = pbjs.getAllWinningBids() || []
+        const rawWB = pbjs.getAllWinningBids()
+        winningBids = Array.isArray(rawWB) ? rawWB : []
       }
     } catch (e) {
       log('[WPD-Injected] Error getting winning bids:', e)
@@ -546,7 +552,8 @@ interface GptSlotInterface {
     let prebidEvents: unknown[] = []
     try {
       if (typeof pbjs.getEvents === 'function') {
-        prebidEvents = pbjs.getEvents() || []
+        const rawPE = pbjs.getEvents()
+        prebidEvents = Array.isArray(rawPE) ? rawPE : []
       }
     } catch (e) {
       log('[WPD-Injected] Error getting events:', e)
@@ -554,8 +561,10 @@ interface GptSlotInterface {
 
     // adUnitsを再取得（動的に追加される場合があるため）
     // pbjs.adUnitsとeventAdUnitsをマージ
-    const pbjsAdUnits = safeClone(pbjs.adUnits) || []
-    const eventAdUnitsCloned = safeClone(eventAdUnits) || []
+    const rawPbjsAdUnits2 = safeClone(pbjs.adUnits)
+    const pbjsAdUnits = Array.isArray(rawPbjsAdUnits2) ? rawPbjsAdUnits2 : []
+    const rawEventAdUnits2 = safeClone(eventAdUnits)
+    const eventAdUnitsCloned = Array.isArray(rawEventAdUnits2) ? rawEventAdUnits2 : []
     const mergedAdUnits = mergeAdUnits(pbjsAdUnits, eventAdUnitsCloned)
 
     const data = {
@@ -598,7 +607,8 @@ interface GptSlotInterface {
     let winningBids: unknown[] = []
     try {
       if (typeof pbjs.getAllWinningBids === 'function') {
-        winningBids = pbjs.getAllWinningBids() || []
+        const rawWB = pbjs.getAllWinningBids()
+        winningBids = Array.isArray(rawWB) ? rawWB : []
       }
     } catch (e) {
       log('[WPD-Injected] Error getting winning bids:', e)
@@ -1450,9 +1460,11 @@ interface GptSlotInterface {
           let noBids: unknown[] = []
 
           if (typeof pbjs.getNoBidsForAdUnitCode === 'function' && adUnitCode) {
-            noBids = pbjs.getNoBidsForAdUnitCode(adUnitCode) || []
+            const raw = pbjs.getNoBidsForAdUnitCode(adUnitCode)
+            noBids = Array.isArray(raw) ? raw : []
           } else if (typeof pbjs.getNoBids === 'function') {
-            noBids = pbjs.getNoBids() || []
+            const raw = pbjs.getNoBids()
+            noBids = Array.isArray(raw) ? raw : []
             if (adUnitCode) {
               noBids = noBids.filter((nb: unknown) => {
                 const bid = nb as { adUnitCode?: string }
@@ -1496,7 +1508,8 @@ interface GptSlotInterface {
           const eventType = request.params.eventType as string | undefined
           const limit = (request.params.limit as number) || 100
           if (typeof pbjs.getEvents === 'function') {
-            let events = pbjs.getEvents() || []
+            const rawEvt = pbjs.getEvents()
+            let events = Array.isArray(rawEvt) ? rawEvt : []
             if (eventType) {
               events = events.filter((e: unknown) => {
                 const evt = e as { eventType?: string }
@@ -1549,7 +1562,8 @@ interface GptSlotInterface {
           }
 
           // AdUnitsでの設定確認
-          const adUnits = pbjs.adUnits || []
+          const rawAdUnits = pbjs.adUnits
+          const adUnits = Array.isArray(rawAdUnits) ? rawAdUnits : []
           adUnits.forEach((unit: unknown) => {
             const u = unit as { bids?: Array<{ bidder?: string }> }
             if (Array.isArray(u.bids)) {
@@ -1590,7 +1604,8 @@ interface GptSlotInterface {
 
           // No Bids
           if (typeof pbjs.getNoBids === 'function') {
-            const noBids = pbjs.getNoBids() || []
+            const raw = pbjs.getNoBids()
+            const noBids = Array.isArray(raw) ? raw : []
             noBids.forEach((nb: unknown) => {
               const b = nb as { bidder?: string }
               if (b.bidder === bidderCode) {
@@ -1602,7 +1617,8 @@ interface GptSlotInterface {
 
           // Winning Bids
           if (typeof pbjs.getAllWinningBids === 'function') {
-            const winningBids = pbjs.getAllWinningBids() || []
+            const rawWinning = pbjs.getAllWinningBids()
+            const winningBids = Array.isArray(rawWinning) ? rawWinning : []
             winningBids.forEach((wb: unknown) => {
               const b = wb as { bidder?: string }
               if (b.bidder === bidderCode) {
@@ -1613,7 +1629,8 @@ interface GptSlotInterface {
 
           // Timeouts from events
           if (typeof pbjs.getEvents === 'function') {
-            const events = pbjs.getEvents() || []
+            const rawEvents = pbjs.getEvents()
+            const events = Array.isArray(rawEvents) ? rawEvents : []
             events.forEach((e: unknown) => {
               const evt = e as { eventType?: string; args?: unknown }
               if (evt.eventType === 'bidTimeout' && Array.isArray(evt.args)) {
@@ -1664,7 +1681,8 @@ interface GptSlotInterface {
           }
 
           // AdUnit設定を検索
-          const adUnits = pbjs.adUnits || []
+          const rawAdUnits2 = pbjs.adUnits
+          const adUnits = Array.isArray(rawAdUnits2) ? rawAdUnits2 : []
           const adUnit = adUnits.find((u: unknown) => {
             const unit = u as { code?: string }
             return unit.code === adUnitCode
@@ -1686,7 +1704,8 @@ interface GptSlotInterface {
 
           // No Bids
           if (typeof pbjs.getNoBids === 'function') {
-            const noBids = pbjs.getNoBids() || []
+            const rawNoBids = pbjs.getNoBids()
+            const noBids = Array.isArray(rawNoBids) ? rawNoBids : []
             analysis.noBids = safeClone(noBids.filter((nb: unknown) => {
               const b = nb as { adUnitCode?: string }
               return b.adUnitCode === adUnitCode
@@ -1695,7 +1714,8 @@ interface GptSlotInterface {
 
           // Highest CPM Bid
           if (typeof pbjs.getHighestCpmBids === 'function') {
-            const highestBids = pbjs.getHighestCpmBids(adUnitCode) || []
+            const rawHighest = pbjs.getHighestCpmBids(adUnitCode)
+            const highestBids = Array.isArray(rawHighest) ? rawHighest : []
             analysis.highestBid = safeClone(highestBids[0]) || null
           }
 
@@ -1707,7 +1727,8 @@ interface GptSlotInterface {
 
           // Winner
           if (typeof pbjs.getAllWinningBids === 'function') {
-            const winners = pbjs.getAllWinningBids() || []
+            const rawWinners = pbjs.getAllWinningBids()
+            const winners = Array.isArray(rawWinners) ? rawWinners : []
             const winner = winners.find((w: unknown) => {
               const b = w as { adUnitCode?: string }
               return b.adUnitCode === adUnitCode

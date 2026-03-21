@@ -8,7 +8,7 @@ export function createTrackingOverviewTool(
 ) {
   return tool({
     description:
-      'Get a quick overview of all tracking implementations on the page. Call this first to understand what data is available before diving into details.',
+      'Get a quick overview of tracking implementations (GTM, GA4, pixels) on the page. Use when the user asks broadly about what tracking exists.',
     inputSchema: z.object({}),
     execute: async (): Promise<TrackingOverview | { error: string }> => {
       console.log('[Tool:get_tracking_overview] Called')

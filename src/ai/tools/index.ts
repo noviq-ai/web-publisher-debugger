@@ -68,8 +68,9 @@ export function getToolDescriptions(): string {
 You have access to the following tools to retrieve page data. Use them as needed to answer user questions.
 
 ### getTrackingOverview
-Quick summary of all tracking implementations. **Call this first** to understand what's available.
+Quick summary of tracking implementations (GTM, GA4, pixels).
 - Returns: GTM status, GA4 status, detected pixels summary
+- Use this when: The user asks a broad question about what tracking is on the page
 
 ### getGtmData
 Get GTM (Google Tag Manager) details.

@@ -1,4 +1,5 @@
-import { IconRobot, IconSettings, IconSparkles } from '@tabler/icons-react'
+import { IconSettings } from '@tabler/icons-react'
+import SparkleIcon from '@/components/assets/sparkle-icon'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 
@@ -15,27 +16,24 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 }) => {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4">
-      {/* Bot Icon */}
+      {/* Organic gradient orb */}
       <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="relative mb-6"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className="relative mb-8"
       >
-        <div className="relative p-4 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg">
-          <IconRobot size={32} className="text-white" />
+        {/* Ambient glow */}
+        <div className="absolute inset-0 rounded-full blur-2xl opacity-40 bg-[conic-gradient(from_180deg,#e0c3fc,#8ec5fc,#fbc2eb,#a6c1ee,#e0c3fc)] animate-spin [animation-duration:8s]" />
+        {/* Gradient orb */}
+        <div className="relative size-16 rounded-full bg-[conic-gradient(from_45deg,#f9a8d4,#c084fc,#818cf8,#60a5fa,#34d399,#fbbf24,#f9a8d4)] p-[2px]">
+          <div className="flex items-center justify-center size-full rounded-full bg-background">
+            <SparkleIcon className="size-7 text-foreground" />
+          </div>
         </div>
-        <motion.div
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="absolute -top-1 -right-1 p-1 rounded-full bg-yellow-400"
-        >
-          <IconSparkles size={12} className="text-yellow-900" />
-        </motion.div>
       </motion.div>
 
-      {/* Animated Title */}
+      {/* Title */}
       <motion.h2
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -45,7 +43,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         Web Publisher AI
       </motion.h2>
 
-      {/* Animated Description */}
+      {/* Description */}
       <motion.p
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -55,12 +53,12 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         Ask me anything about your page's SEO, advertising, or tracking setup.
       </motion.p>
 
-      {/* Animated Quick Prompts */}
+      {/* Quick Prompts */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
-        className="flex flex-wrap gap-2 justify-center"
+        className="flex flex-wrap gap-2 justify-center max-w-sm mx-auto"
       >
         {quickPrompts.map((prompt, idx) => (
           <motion.div
@@ -94,9 +92,13 @@ export const ApiKeyMissing: React.FC = () => {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-        className="p-4 rounded-full bg-muted mb-6"
+        className="relative mb-6"
       >
-        <IconRobot size={32} className="text-muted-foreground" />
+        <div className="size-16 rounded-full bg-[conic-gradient(from_45deg,#f9a8d4,#c084fc,#818cf8,#60a5fa,#34d399,#fbbf24,#f9a8d4)] p-[2px] opacity-40">
+          <div className="flex items-center justify-center size-full rounded-full bg-background">
+            <SparkleIcon className="size-7 text-muted-foreground" />
+          </div>
+        </div>
       </motion.div>
 
       <motion.p

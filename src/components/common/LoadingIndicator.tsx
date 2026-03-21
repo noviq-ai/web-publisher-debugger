@@ -1,10 +1,11 @@
-import { IconRobot, IconAlertCircle } from '@tabler/icons-react'
+import { IconAlertCircle } from '@tabler/icons-react'
+import SparkleIcon from '@/components/assets/sparkle-icon'
 
 export const LoadingIndicator: React.FC = () => {
   return (
     <div className="flex items-start gap-3">
       <div className="p-2 rounded-full bg-primary/10">
-        <IconRobot size={16} className="text-primary" />
+        <SparkleIcon className="size-4 [&_path]:fill-current text-primary" />
       </div>
       <div className="bg-muted rounded-lg p-3 max-w-[85%]">
         <div className="flex items-center gap-2">

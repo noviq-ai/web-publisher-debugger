@@ -15,13 +15,13 @@ import {
   IconSearch,
   IconChartBar,
   IconChartLine,
-  IconRobot,
   IconSettings,
   IconRefresh,
   IconSun,
   IconMoon,
   IconDeviceDesktop,
 } from '@tabler/icons-react'
+import SparkleIcon from '@/components/assets/sparkle-icon'
 import type { TabId } from '@/shared/types'
 import { useTheme } from '@/hooks/useTheme'
 
@@ -35,7 +35,7 @@ interface LayoutProps {
 }
 
 const TAB_OPTIONS: { id: TabId; label: string; icon: React.ElementType }[] = [
-  { id: 'ai', label: 'AI Chat', icon: IconRobot },
+  { id: 'ai', label: 'AI Chat', icon: SparkleIcon },
   { id: 'seo', label: 'SEO', icon: IconSearch },
   { id: 'adtech', label: 'AdTech', icon: IconChartBar },
   { id: 'tracking', label: 'Tracking', icon: IconChartLine },
@@ -61,7 +61,7 @@ export const Layout: React.FC<LayoutProps> = ({
   }
 
   const currentTab = TAB_OPTIONS.find((t) => t.id === activeTab)
-  const CurrentIcon = currentTab?.icon || IconRobot
+  const CurrentIcon = currentTab?.icon || SparkleIcon
 
   return (
     <div className="flex flex-col h-screen bg-background">
