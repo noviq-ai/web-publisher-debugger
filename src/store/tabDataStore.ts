@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { SeoData, PrebidData, GptData, GtmData, AnalyticsData } from '@/shared/types'
+import type { SeoData, PrebidData, GptData, GtmData, AnalyticsData, TechStackData } from '@/shared/types'
 
 export type DataCollectionStatus = 'connecting' | 'loading' | 'ready' | 'error'
 
@@ -9,6 +9,7 @@ interface TabDataState {
   gptData: GptData | null
   gtmData: GtmData | null
   analyticsData: AnalyticsData | null
+  techStackData: TechStackData | null
   status: DataCollectionStatus
   currentTabId: number | null
 }
@@ -19,6 +20,7 @@ interface TabDataActions {
   setGptData: (data: GptData | null) => void
   setGtmData: (data: GtmData | null) => void
   setAnalyticsData: (data: AnalyticsData | null) => void
+  setTechStackData: (data: TechStackData | null) => void
   setStatus: (status: DataCollectionStatus) => void
   setCurrentTabId: (tabId: number | null) => void
   resetData: () => void
@@ -31,6 +33,7 @@ const initialDataState: TabDataState = {
   gptData: null,
   gtmData: null,
   analyticsData: null,
+  techStackData: null,
   status: 'connecting',
   currentTabId: null,
 }
@@ -43,6 +46,7 @@ export const useTabDataStore = create<TabDataState & TabDataActions>((set) => ({
   setGptData: (data) => set({ gptData: data }),
   setGtmData: (data) => set({ gtmData: data }),
   setAnalyticsData: (data) => set({ analyticsData: data }),
+  setTechStackData: (data) => set({ techStackData: data }),
   setStatus: (status) => set({ status }),
   setCurrentTabId: (tabId) => set({ currentTabId: tabId }),
 
@@ -54,6 +58,7 @@ export const useTabDataStore = create<TabDataState & TabDataActions>((set) => ({
       gptData: null,
       gtmData: null,
       analyticsData: null,
+      techStackData: null,
     }),
 
   // GET_TAB_DATA のキャッシュを一括適用
@@ -64,5 +69,6 @@ export const useTabDataStore = create<TabDataState & TabDataActions>((set) => ({
       gptData: cache.gptData ?? null,
       gtmData: cache.gtmData ?? null,
       analyticsData: cache.analyticsData ?? null,
+      techStackData: cache.techStackData ?? null,
     }),
 }))

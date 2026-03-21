@@ -3,7 +3,9 @@ import { initPrebidCollector, getPrebidData, requestPrebidDataCollection } from 
 import { initGptCollector, getGptData, requestGptDataCollection } from './collectors/gpt'
 import { initGtmCollector, getGtmData } from './collectors/gtm'
 import { initAnalyticsCollector, getAnalyticsData } from './collectors/analytics'
+import { collectTechStackFromDOM } from './collectors/techstack'
 import { isContextValid, safeSendMessage } from './utils/safe-messaging'
+import type { TechStackItem } from '@/shared/types/techstack'
 
 // Debug flag - set to true for development logging
 const DEBUG = false
@@ -23,6 +25,7 @@ const MessageType = {
   GPT_DATA: 'GPT_DATA',
   GTM_DATA: 'GTM_DATA',
   ANALYTICS_DATA: 'ANALYTICS_DATA',
+  TECH_STACK_DATA: 'TECH_STACK_DATA',
   COLLECT_DATA: 'COLLECT_DATA',
   PREBID_QUERY: 'PREBID_QUERY',
   PREBID_QUERY_RESULT: 'PREBID_QUERY_RESULT',
@@ -30,6 +33,41 @@ const MessageType = {
 
 // Pending query callbacks for Prebid queries
 const pendingQueries = new Map<string, (response: unknown) => void>()
+
+// injected.ts からの TechStack グローバル検出結果を受信
+window.addEventListener('message', (event) => {
+  if (event.source !== window) return
+  if (event.data?.type === 'WPD_TECHSTACK_DATA') {
+    const { payload } = event.data as { payload: { items: Array<{ name: string; version?: string; category: string }>; detectedAt: number } }
+    const globalItems: TechStackItem[] = payload.items.map((item) => ({
+      name: item.name,
+      version: item.version,
+      category: item.category as TechStackItem['category'],
+      detectedBy: 'global' as const,
+    }))
+
+    // injected が検出した技術名のセットを evaluator に渡す
+    // → 複数シグナル持つシグネチャ（WordPress等）が global check でもヒットする
+    const detectedGlobals = new Set(globalItems.map((i) => i.name))
+    const allItems = collectTechStackFromDOM(detectedGlobals)
+
+    // global 検出済みのものはバージョン情報をマージして優先、それ以外は DOM/URL 検出分を追加
+    const globalMap = new Map(globalItems.map((i) => [i.name, i]))
+    const merged: TechStackItem[] = allItems.map((item) => {
+      const g = globalMap.get(item.name)
+      return g ? { ...item, version: g.version, detectedBy: g.detectedBy } : item
+    })
+
+    safeSendMessage({
+      type: MessageType.TECH_STACK_DATA,
+      payload: {
+        items: merged,
+        detectedAt: payload.detectedAt,
+      },
+    })
+    log('[WPD] TechStack sent:', merged.length, 'items')
+  }
+})
 
 // 設定を取得
 async function getSettings() {
@@ -184,8 +222,12 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       // SPA遷移直後は Prebid/GPT が未準備の場合があるため余裕を持たせる
       requestPrebidDataCollection()
       requestGptDataCollection()
+      // TechStack も再評価（SPA遷移で新技術が追加される可能性）
+      window.postMessage({ type: 'WPD_REQUEST_TECHSTACK' }, '*')
       setTimeout(() => {
         collectAllData()
+        // 遅延ロードを考慮して 2 秒後にも再評価
+        window.postMessage({ type: 'WPD_REQUEST_TECHSTACK' }, '*')
       }, 1000)
     }
     return

@@ -44,7 +44,7 @@
 
   "web_accessible_resources": [
     {
-      "resources": ["injected.js"],
+      "resources": ["injected.js", "registry.js"],
       "matches": ["<all_urls>"]
     }
   ]

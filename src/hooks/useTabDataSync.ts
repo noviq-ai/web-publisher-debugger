@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useRef } from 'react'
 import { MessageType } from '@/shared/types/messages'
-import type { SeoData, PrebidData, GptData, GtmData, AnalyticsData } from '@/shared/types'
+import type { SeoData, PrebidData, GptData, GtmData, AnalyticsData, TechStackData } from '@/shared/types'
 import { useTabDataStore } from '@/store/tabDataStore'
 
 // Check if running in Chrome extension context
@@ -19,6 +19,7 @@ export function useTabDataSync() {
     setGptData,
     setGtmData,
     setAnalyticsData,
+    setTechStackData,
     setStatus,
     setCurrentTabId,
     resetData,
@@ -79,6 +80,9 @@ export function useTabDataSync() {
         case MessageType.ANALYTICS_DATA:
           setAnalyticsData(message.payload as AnalyticsData)
           break
+        case MessageType.TECH_STACK_DATA:
+          setTechStackData(message.payload as TechStackData)
+          break
       }
     })
 
@@ -87,7 +91,7 @@ export function useTabDataSync() {
       portRef.current = null
       clearCollectionTimeout()
     }
-  }, [clearCollectionTimeout, setSeoData, setPrebidData, setGptData, setGtmData, setAnalyticsData, setStatus])
+  }, [clearCollectionTimeout, setSeoData, setPrebidData, setGptData, setGtmData, setAnalyticsData, setTechStackData, setStatus])
 
   // 初期データリクエスト
   const requestInitialData = useCallback(async (tabId: number) => {
@@ -108,11 +112,12 @@ export function useTabDataSync() {
           gptData: response.gpt ?? null,
           gtmData: response.gtm ?? null,
           analyticsData: response.analytics ?? null,
+          techStackData: response.techStack ?? null,
         })
       }
 
       // いずれかキャッシュがあれば loading へ（ポートデータ到着で ready になる）
-      const hasCachedData = !!(response?.seo || response?.prebid || response?.gpt || response?.gtm || response?.analytics)
+      const hasCachedData = !!(response?.seo || response?.prebid || response?.gpt || response?.gtm || response?.analytics || response?.techStack)
       if (hasCachedData) {
         setStatus('loading')
       }

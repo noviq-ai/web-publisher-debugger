@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Layout } from '@/components/layout/Layout'
 import { useTabDataSync } from '@/hooks/useTabDataSync'
 import { useTabDataStore } from '@/store/tabDataStore'
-import { SeoPage, AdTechPage, TrackingPage, AiPage } from '@/panel'
+import { SeoPage, AdTechPage, TrackingPage, AiPage, TechStackPage } from '@/panel'
 import type { TabId } from '@/shared/types'
 import { defaultSettings } from '@/shared/types'
 
@@ -56,6 +56,12 @@ export const App: React.FC = () => {
         return (
           <div className="flex-1 overflow-y-auto">
             <TrackingPage onReload={reloadPage} />
+          </div>
+        )
+      case 'techstack':
+        return (
+          <div className="flex-1 overflow-y-auto">
+            <TechStackPage onReload={reloadPage} />
           </div>
         )
     }

@@ -3,6 +3,7 @@ import type { PrebidData } from './prebid'
 import type { GptData } from './gpt'
 import type { GtmData } from './gtm'
 import type { AnalyticsData } from './analytics'
+import type { TechStackData } from './techstack'
 
 export enum MessageType {
   // Data collection
@@ -11,6 +12,7 @@ export enum MessageType {
   GPT_DATA = 'GPT_DATA',
   GTM_DATA = 'GTM_DATA',
   ANALYTICS_DATA = 'ANALYTICS_DATA',
+  TECH_STACK_DATA = 'TECH_STACK_DATA',
 
   // Commands
   COLLECT_DATA = 'COLLECT_DATA',
@@ -78,6 +80,11 @@ export interface AnalyticsDataMessage extends BaseMessage {
   payload: AnalyticsData
 }
 
+export interface TechStackDataMessage extends BaseMessage {
+  type: MessageType.TECH_STACK_DATA
+  payload: TechStackData
+}
+
 export interface CollectDataMessage extends BaseMessage {
   type: MessageType.COLLECT_DATA
 }
@@ -109,6 +116,7 @@ export type Message =
   | GptDataMessage
   | GtmDataMessage
   | AnalyticsDataMessage
+  | TechStackDataMessage
   | CollectDataMessage
   | RequestRefreshMessage
   | GetTabDataMessage
@@ -121,4 +129,5 @@ export interface TabData {
   gpt?: GptData
   gtm?: GtmData
   analytics?: AnalyticsData
+  techStack?: TechStackData
 }

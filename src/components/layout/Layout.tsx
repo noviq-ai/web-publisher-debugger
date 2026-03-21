@@ -20,6 +20,7 @@ import {
   IconSun,
   IconMoon,
   IconDeviceDesktop,
+  IconLayersSubtract,
 } from '@tabler/icons-react'
 import SparkleIcon from '@/components/assets/sparkle-icon'
 import type { TabId } from '@/shared/types'
@@ -40,6 +41,7 @@ const TAB_OPTIONS: { id: TabId; label: string; icon: React.ElementType }[] = [
   { id: 'seo', label: 'SEO', icon: IconSearch },
   { id: 'adtech', label: 'AdTech', icon: IconChartBar },
   { id: 'tracking', label: 'Tracking', icon: IconChartLine },
+  { id: 'techstack', label: 'Tech Stack', icon: IconLayersSubtract },
 ]
 
 export const Layout: React.FC<LayoutProps> = ({

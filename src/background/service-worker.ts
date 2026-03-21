@@ -105,6 +105,15 @@ chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) =>
       }
       break
 
+    case MessageType.TECH_STACK_DATA:
+      if (tabId) {
+        const existing = tabDataStore.get(tabId) || {}
+        tabDataStore.set(tabId, { ...existing, techStack: message.payload })
+        log('[WPD-SW] TechStack data stored for tab:', tabId)
+        broadcastToSidePanel(tabId, message)
+      }
+      break
+
     case MessageType.GET_TAB_DATA:
       {
         const requestedTabId = message.tabId

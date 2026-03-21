@@ -909,6 +909,18 @@ interface GptSlotInterface {
     // Preserve original properties
     if (originalFbq.getState) window.fbq.getState = originalFbq.getState
     if (originalFbq.queue) window.fbq.queue = originalFbq.queue
+
+    // 既に初期化済みのピクセルを遡及取得（GTM 経由で init が先に呼ばれていた場合）
+    try {
+      const state = originalFbq.getState?.()
+      if (state?.pixels) {
+        state.pixels.forEach((p: { id: string }) => {
+          queuePixelEvent('facebook', p.id, 'init', {})
+        })
+      }
+    } catch (e) {
+      log('[WPD-Injected] Error reading fbq state:', e)
+    }
   }
 
   // ==========================================
@@ -952,6 +964,19 @@ interface GptSlotInterface {
     if (originalTwq.exe) window.twq.exe = originalTwq.exe
     if (originalTwq.queue) window.twq.queue = originalTwq.queue
     if (originalTwq.version) window.twq.version = originalTwq.version
+
+    // 既に実行済みの init コマンドを遡及取得
+    try {
+      const exeQ = (originalTwq.exe as unknown as { q?: unknown[][] } | undefined)?.q
+      const pastCalls = (exeQ || originalTwq.queue || []) as unknown[][]
+      pastCalls.forEach((call) => {
+        if (Array.isArray(call) && call[0] === 'init' && call[1]) {
+          queuePixelEvent('twitter', String(call[1]), 'init', {})
+        }
+      })
+    } catch (e) {
+      log('[WPD-Injected] Error reading twq queue:', e)
+    }
   }
 
   // ==========================================
@@ -990,6 +1015,16 @@ interface GptSlotInterface {
         }
       }
     })
+
+    // 既に load 済みのピクセル ID を遡及取得
+    try {
+      const instances = ttqAny._i || {}
+      Object.keys(instances).forEach((id) => {
+        queuePixelEvent('tiktok', id, 'init', {})
+      })
+    } catch (e) {
+      log('[WPD-Injected] Error reading ttq instances:', e)
+    }
   }
 
   // ==========================================
@@ -1068,6 +1103,18 @@ interface GptSlotInterface {
 
     if (originalPintrk.queue) window.pintrk.queue = originalPintrk.queue
     if (originalPintrk.version) window.pintrk.version = originalPintrk.version
+
+    // 既に load 済みのピクセル ID を遡及取得
+    try {
+      const pastCalls = (originalPintrk.queue || []) as unknown[][]
+      pastCalls.forEach((call) => {
+        if (Array.isArray(call) && call[0] === 'load' && call[1]) {
+          queuePixelEvent('pinterest', String(call[1]), 'load', {})
+        }
+      })
+    } catch (e) {
+      log('[WPD-Injected] Error reading pintrk queue:', e)
+    }
   }
 
   // ==========================================
@@ -1144,6 +1191,18 @@ interface GptSlotInterface {
 
     if (originalSnaptr._) window.snaptr._ = originalSnaptr._
     if (originalSnaptr.version) window.snaptr.version = originalSnaptr.version
+
+    // 既に init 済みのピクセル ID を遡及取得
+    try {
+      const pastCalls = (originalSnaptr._ || []) as unknown[][]
+      pastCalls.forEach((call) => {
+        if (Array.isArray(call) && call[0] === 'init' && call[1]) {
+          queuePixelEvent('snapchat', String(call[1]), 'init', {})
+        }
+      })
+    } catch (e) {
+      log('[WPD-Injected] Error reading snaptr queue:', e)
+    }
   }
 
   // ==========================================
@@ -1775,7 +1834,288 @@ interface GptSlotInterface {
       log('[WPD-Injected] Received Prebid query:', event.data.payload?.queryType)
       handlePrebidQuery(event.data.payload as PrebidQueryRequest)
     }
+    if (event.data.type === 'WPD_REQUEST_TECHSTACK') {
+      log('[WPD-Injected] TechStack re-detection requested')
+      sendTechStackData()
+    }
   })
+
+  // ==========================================
+  // Tech Stack Detection
+  // ==========================================
+
+  type TechStackItemRaw = { name: string; version?: string; category: string }
+
+  function detectTechStack(): TechStackItemRaw[] {
+    const items: TechStackItemRaw[] = []
+    const w = window as unknown as Record<string, unknown>
+
+    function add(name: string, category: string, version?: string) {
+      items.push({ name, category, ...(version ? { version } : {}) })
+    }
+
+    function strVal(v: unknown): string | undefined {
+      return typeof v === 'string' ? v : undefined
+    }
+
+    // ---- Analytics ----
+    if (w['gtag'] && typeof w['gtag'] === 'function') {
+      add('Google Analytics', 'analytics')
+    }
+    if (w['ga'] && typeof w['ga'] === 'function') {
+      add('Google Analytics (UA)', 'analytics')
+    }
+    if (w['_gaq']) {
+      add('Google Analytics (Classic)', 'analytics')
+    }
+    if (w['fbq'] && typeof w['fbq'] === 'function') {
+      add('Facebook Pixel', 'analytics')
+    }
+    if (w['ttq']) {
+      add('TikTok Pixel', 'analytics')
+    }
+    if (w['twq'] && typeof w['twq'] === 'function') {
+      const twqObj = w['twq'] as { version?: string }
+      add('X (Twitter) Ads', 'analytics', strVal(twqObj.version))
+    }
+    if (w['_hsq']) {
+      add('HubSpot Analytics', 'analytics')
+    }
+    if (w['Matomo'] || w['_paq']) {
+      add('Matomo Analytics', 'analytics')
+    }
+    if (w['pSUPERFLY'] || w['_sf_async_config']) {
+      add('Chartbeat', 'analytics')
+    }
+    if (w['s'] && (w['s'] as Record<string, unknown>)['trackingServer']) {
+      add('Adobe Analytics', 'analytics')
+    }
+    if (w['_satellite']) {
+      add('Adobe Experience Platform Launch', 'tag_manager')
+    }
+    if (w['lintrk'] || w['_linkedin_partner_id']) {
+      add('LinkedIn Insight Tag', 'analytics')
+    }
+    if (w['pintrk']) {
+      add('Pinterest Tag', 'analytics')
+    }
+    if (w['snaptr']) {
+      add('Snap Pixel', 'analytics')
+    }
+    if (w['uetq']) {
+      add('Microsoft Advertising (UET)', 'analytics')
+    }
+
+    // ---- Ad Networks ----
+    if (w['pbjs']) {
+      const pbjs = w['pbjs'] as { version?: string }
+      add('Prebid.js', 'ad_network', strVal(pbjs.version))
+    }
+    if (w['googletag']) {
+      const gt = w['googletag'] as { version?: string; getVersion?: () => string }
+      const v = typeof gt.getVersion === 'function' ? gt.getVersion() : undefined
+      add('Google Publisher Tag', 'ad_network', v)
+    }
+    if (w['criteo_q'] || w['Criteo']) {
+      add('Criteo', 'ad_network')
+    }
+    if (w['apstag'] || w['aps']) {
+      add('Amazon Publisher Services', 'ad_network')
+    }
+    if (w['_taboola']) {
+      add('Taboola', 'ad_network')
+    }
+    if (w['OBR'] || w['obApi']) {
+      add('Outbrain', 'ad_network')
+    }
+    if (w['rubicontag']) {
+      add('Magnite (Rubicon)', 'ad_network')
+    }
+    if (w['ID5']) {
+      const id5 = w['ID5'] as { version?: string }
+      add('ID5', 'ad_network', strVal(id5.version))
+    }
+    if (w['one_tag']) {
+      add('OneTag', 'ad_network')
+    }
+    if (w['YahooAdvertising'] || w['YahooDMP']) {
+      add('Yahoo Advertising', 'ad_network')
+    }
+    if (w['__DBL_CM']) {
+      add('DoubleVerify', 'ad_network')
+    }
+
+    // ---- Tag Manager ----
+    if (w['google_tag_manager']) {
+      add('Google Tag Manager', 'tag_manager')
+    }
+
+    // ---- JavaScript Libraries ----
+    if (w['jQuery']) {
+      const jq = w['jQuery'] as { fn?: { jquery?: string } }
+      add('jQuery', 'js_library', strVal(jq.fn?.jquery))
+    }
+    if (w['React']) {
+      const r = w['React'] as { version?: string }
+      add('React', 'js_library', strVal(r.version))
+    }
+    if (w['Vue']) {
+      const vue = w['Vue'] as { version?: string }
+      add('Vue.js', 'js_library', strVal(vue.version))
+    }
+    if (w['angular']) {
+      add('AngularJS', 'js_library')
+    }
+    if (w['ng'] && (w['ng'] as Record<string, unknown>)['probe']) {
+      add('Angular', 'js_library')
+    }
+    if (w['preact']) {
+      const preact = w['preact'] as { version?: string }
+      add('Preact', 'js_library', strVal(preact.version))
+    }
+    if (w['goober']) {
+      add('Goober', 'js_library')
+    }
+    if (w['Backbone']) {
+      const bb = w['Backbone'] as { VERSION?: string }
+      add('Backbone.js', 'js_library', strVal(bb.VERSION))
+    }
+    if (w['svelte']) {
+      add('Svelte', 'js_library')
+    }
+
+    // ---- Frontend Frameworks ----
+    if (w['__NEXT_DATA__']) {
+      add('Next.js', 'frontend_framework')
+    }
+    if (w['__NUXT__']) {
+      add('Nuxt.js', 'frontend_framework')
+    }
+    if (w['___gatsby']) {
+      add('Gatsby', 'frontend_framework')
+    }
+    if (w['Ember']) {
+      add('Ember.js', 'frontend_framework')
+    }
+
+    // ---- CMS ----
+    if (w['wp']) {
+      const wp = w['wp'] as { version?: string }
+      add('WordPress', 'cms', strVal(wp.version))
+    }
+    if (w['Drupal']) {
+      add('Drupal', 'cms')
+    }
+    if (w['Joomla']) {
+      add('Joomla', 'cms')
+    }
+    if (w['Shopify']) {
+      add('Shopify', 'cms')
+    }
+
+    // ---- CDP ----
+    if (w['analytics'] && (w['analytics'] as Record<string, unknown>)['_writeKey']) {
+      add('Segment', 'cdp')
+    }
+    if (w['mParticle']) {
+      add('mParticle', 'cdp')
+    }
+    if (w['alloy']) {
+      add('Adobe Experience Platform', 'cdp')
+    }
+    if (w['utag']) {
+      add('Tealium', 'cdp')
+    }
+    if (w['permutive']) {
+      add('Permutive', 'cdp')
+    }
+    if (w['cX'] || w['cxenseapi']) {
+      add('Cxense', 'cdp')
+    }
+
+    // ---- Marketing Automation ----
+    if (w['hbspt']) {
+      add('HubSpot', 'marketing_automation')
+    }
+    if (w['MktoForms2']) {
+      add('Marketo', 'marketing_automation')
+    }
+    if (w['piTracker']) {
+      add('Pardot', 'marketing_automation')
+    }
+
+    // ---- Personalization ----
+    if (w['tp']) {
+      add('Piano', 'personalization')
+    }
+
+    // ---- Cookie Consent ----
+    if (w['OneTrust']) {
+      add('OneTrust', 'cookie_consent')
+    }
+    if (w['Cookiebot']) {
+      add('Cookiebot', 'cookie_consent')
+    }
+    if (w['googlefc']) {
+      add('Google Funding Choices', 'cookie_consent')
+    }
+    if (w['truste']) {
+      add('TrustArc', 'cookie_consent')
+    }
+    if (w['__tcfapi'] && !w['OneTrust'] && !w['Cookiebot'] && !w['googlefc']) {
+      add('CMP (TCF)', 'cookie_consent')
+    }
+
+    // ---- Security ----
+    if (w['grecaptcha']) {
+      add('Google reCAPTCHA', 'security')
+    }
+    if (w['hcaptcha']) {
+      add('hCaptcha', 'security')
+    }
+    if (w['turnstile']) {
+      add('Cloudflare Turnstile', 'security')
+    }
+
+    // ---- CDN ----
+    if (w['__cfBeacon']) {
+      add('Cloudflare', 'cdn')
+    }
+
+    // ---- Widget / Live Chat ----
+    if (w['Intercom']) {
+      add('Intercom', 'widget')
+    }
+    if (w['drift']) {
+      add('Drift', 'widget')
+    }
+    if (w['zE']) {
+      add('Zendesk', 'widget')
+    }
+    if (w['Tawk_API']) {
+      add('Tawk.to', 'widget')
+    }
+    if (w['ons']) {
+      add('Onsen UI', 'widget')
+    }
+    if (w['HubSpotConversations']) {
+      add('HubSpot Chat', 'widget')
+    }
+
+    return items
+  }
+
+  function sendTechStackData() {
+    const items = detectTechStack()
+    window.postMessage({
+      type: 'WPD_TECHSTACK_DATA',
+      payload: {
+        items,
+        detectedAt: Date.now(),
+      },
+    }, '*')
+    log('[WPD-Injected] TechStack detected:', items.length, 'items')
+  }
 
   // ==========================================
   // 初期化
@@ -1784,6 +2124,13 @@ interface GptSlotInterface {
   waitForGpt()
   initDataLayerHooks()
   initAnalyticsHooks()
+  // TechStack は DOMContentLoaded 後と 3 秒後の2回送信
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', sendTechStackData)
+  } else {
+    sendTechStackData()
+  }
+  setTimeout(sendTechStackData, 3000)
 })()
 
 export {}

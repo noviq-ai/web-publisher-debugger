@@ -4,8 +4,9 @@ export * from './prebid'
 export * from './gpt'
 export * from './gtm'
 export * from './analytics'
+export * from './techstack'
 
-export type TabId = 'adtech' | 'seo' | 'tracking' | 'ai'
+export type TabId = 'adtech' | 'seo' | 'tracking' | 'ai' | 'techstack'
 
 export type AiProvider = 'browser' | 'anthropic' | 'openai'
 
