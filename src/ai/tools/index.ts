@@ -6,8 +6,13 @@ import { createGtmTool } from './gtm'
 import { createGa4Tool } from './ga4'
 import { createPixelsTool } from './pixels'
 import { createSeoTool } from './seo'
+import { createSeoOverviewTool } from './seo-overview'
 import { createAdtechTool } from './adtech'
+import { createAdtechOverviewTool } from './adtech-overview'
 import { createPrebidQueryTools } from './prebid-query'
+import { createSeoReadmeTool } from './readme-seo'
+import { createAdtechReadmeTool } from './readme-adtech'
+import { createTrackingReadmeTool } from './readme-tracking'
 
 // Re-export for legacy compatibility
 export { getWeather } from './get-weather'
@@ -20,11 +25,16 @@ export type { ToolContext, ToolPermissions, TrackingOverview } from './types'
 
 // Tool names for type safety
 export const TOOL_NAMES = {
+  TRACKING_README: 'getTrackingReadme',
   TRACKING_OVERVIEW: 'getTrackingOverview',
   GTM: 'getGtmData',
   GA4: 'getGa4Data',
   PIXELS: 'getPixelData',
+  SEO_README: 'getSeoReadme',
+  SEO_OVERVIEW: 'getSeoOverview',
   SEO: 'getSeoData',
+  ADTECH_README: 'getAdtechReadme',
+  ADTECH_OVERVIEW: 'getAdtechOverview',
   ADTECH: 'getAdtechData',
   // Dynamic Prebid query tools
   DIAGNOSE_BIDDER: 'diagnoseBidder',
@@ -41,11 +51,16 @@ export function createDataTools(
   getActiveTabId?: () => number | null
 ): Record<string, Tool> {
   const tools: Record<string, Tool> = {
+    [TOOL_NAMES.TRACKING_README]: createTrackingReadmeTool(),
     [TOOL_NAMES.TRACKING_OVERVIEW]: createTrackingOverviewTool(context, permissions),
     [TOOL_NAMES.GTM]: createGtmTool(context, permissions),
     [TOOL_NAMES.GA4]: createGa4Tool(context, permissions),
     [TOOL_NAMES.PIXELS]: createPixelsTool(context, permissions),
+    [TOOL_NAMES.SEO_README]: createSeoReadmeTool(),
+    [TOOL_NAMES.SEO_OVERVIEW]: createSeoOverviewTool(context, permissions),
     [TOOL_NAMES.SEO]: createSeoTool(context, permissions),
+    [TOOL_NAMES.ADTECH_README]: createAdtechReadmeTool(),
+    [TOOL_NAMES.ADTECH_OVERVIEW]: createAdtechOverviewTool(context, permissions),
     [TOOL_NAMES.ADTECH]: createAdtechTool(context, permissions),
   }
 
@@ -67,6 +82,10 @@ export function getToolDescriptions(): string {
 
 You have access to the following tools to retrieve page data. Use them as needed to answer user questions.
 
+### getTrackingReadme
+Returns descriptions of all Tracking tools (getTrackingOverview, getGtmData, getGa4Data, getPixelData) — parameters and when to use each.
+- Use this when unsure which tracking tool to call
+
 ### getTrackingOverview
 Quick summary of tracking implementations (GTM, GA4, pixels).
 - Returns: GTM status, GA4 status, detected pixels summary
@@ -87,10 +106,28 @@ Get marketing pixel data (Meta, Twitter/X, TikTok, LinkedIn, Pinterest, Criteo, 
 - Parameters: platform (string: facebook|twitter|tiktok|linkedin|pinterest|criteo|snapchat|all), limit (number)
 - Returns: Pixel IDs, events per platform
 
+### getSeoReadme
+Returns descriptions of all SEO tools (getSeoOverview, getSeoData) — parameters and when to use each.
+- Use this when unsure which SEO tool to call
+
+### getSeoOverview
+Get a lightweight overview of SEO data (no parameters needed).
+- Returns: Whether title/description/canonical/OGP/Twitter Card exist, JSON-LD types, issue counts
+- Use this first to understand what SEO data is available before calling getSeoData
+
 ### getSeoData
-Get SEO metadata and issues.
+Get full SEO metadata and issues.
 - Parameters: includeJsonLd (boolean), includeHeadings (boolean), issuesOnly (boolean)
 - Returns: Meta tags, OGP, Twitter Card, structured data, headings, detected issues
+
+### getAdtechReadme
+Returns descriptions of all AdTech tools (getAdtechOverview, getAdtechData, diagnoseBidder, analyzeAdUnit, queryPrebidEvents) — parameters and when to use each.
+- Use this when unsure which AdTech tool to call
+
+### getAdtechOverview
+Get a lightweight overview of AdTech (Prebid.js) data (no parameters needed).
+- Returns: Detected bidders list, ad unit codes, auction count, module count
+- Use this first to understand what AdTech data is available before calling getAdtechData
 
 ### getAdtechData
 Get Prebid.js header bidding data.
