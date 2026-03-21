@@ -105,6 +105,7 @@ export function useMessageListener() {
       console.log('[WPD-Panel] Disconnecting port')
       port.disconnect()
       portRef.current = null
+      clearCollectionTimeout()
     }
   }, [clearCollectionTimeout]) // ポートはマウント時に一度だけ接続
 
@@ -173,8 +174,10 @@ export function useMessageListener() {
         setAnalyticsData(response.analytics || null)
       }
 
-      // キャッシュデータがあれば loading に遷移（ポート経由で最新データが来たら ready になる）
-      if (response?.seo) {
+      // いずれかのキャッシュデータがあれば loading に遷移（ポート経由で最新データが来たら ready になる）
+      // SEO無効・未取得でも prebid/gpt 等があれば connecting のままにしない
+      const hasCachedData = !!(response?.seo || response?.prebid || response?.gpt || response?.gtm || response?.analytics)
+      if (hasCachedData) {
         console.log('[WPD-Panel] Cached data found, transitioning to loading')
         setStatus('loading')
       }
