@@ -48,7 +48,8 @@ chrome.runtime.onConnect.addListener((port) => {
     port.onDisconnect.addListener(() => {
       log('[WPD-SW] Side panel disconnected')
       sidePanelPort = null
-      activePanelTabId = null
+      // activePanelTabId はリセットしない
+      // 再接続後もページ遷移時の自動 COLLECT_DATA が機能するように維持する
     })
   }
 })

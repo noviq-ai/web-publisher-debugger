@@ -181,11 +181,12 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       // SEO データは init() 内で即座に収集・送信される
     } else {
       // 既に初期化済み → 再収集のみ
+      // SPA遷移直後は Prebid/GPT が未準備の場合があるため余裕を持たせる
       requestPrebidDataCollection()
       requestGptDataCollection()
       setTimeout(() => {
         collectAllData()
-      }, 200)
+      }, 1000)
     }
     return
   }

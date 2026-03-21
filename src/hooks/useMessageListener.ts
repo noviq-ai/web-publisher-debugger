@@ -16,23 +16,29 @@ export function useMessageListener() {
   const [isLoading, setIsLoading] = useState(!isExtension ? false : true)
   const [currentTabId, setCurrentTabId] = useState<number | null>(null)
   const portRef = useRef<chrome.runtime.Port | null>(null)
+  // currentTabId を ref で持つことでポートのクロージャから参照できるようにする
+  const currentTabIdRef = useRef<number | null>(null)
   // サイドパネルが開かれたウィンドウのIDを保持（変更しない）
   const initialWindowIdRef = useRef<number | null>(null)
 
-  // ポート接続を確立してリアルタイム更新を受信
+  // currentTabId が変わったら ref も更新
+  useEffect(() => {
+    currentTabIdRef.current = currentTabId
+  }, [currentTabId])
+
+  // ポート接続は一度だけ確立する（タブ切替のたびに再接続しない）
   useEffect(() => {
     if (!isExtension) return
 
-    // Service Workerとポート接続
     console.log('[WPD-Panel] Connecting to service worker...')
     const port = chrome.runtime.connect({ name: 'sidepanel' })
     portRef.current = port
     console.log('[WPD-Panel] Port connected')
 
-    // リアルタイムメッセージ受信
+    // リアルタイムメッセージ受信（currentTabIdRef で現在のタブをフィルタ）
     port.onMessage.addListener((message: { type: MessageType; tabId?: number; payload?: unknown }) => {
-      console.log('[WPD-Panel] Received from port:', message.type, 'tabId:', message.tabId, 'currentTabId:', currentTabId)
-      if (message.tabId !== currentTabId) {
+      console.log('[WPD-Panel] Received from port:', message.type, 'tabId:', message.tabId, 'currentTabId:', currentTabIdRef.current)
+      if (message.tabId !== currentTabIdRef.current) {
         console.log('[WPD-Panel] Ignoring message for different tab')
         return
       }
@@ -71,7 +77,7 @@ export function useMessageListener() {
       port.disconnect()
       portRef.current = null
     }
-  }, [currentTabId])
+  }, []) // ポートはマウント時に一度だけ接続
 
   // 現在のタブIDとウィンドウIDを取得して初期データリクエスト
   useEffect(() => {
@@ -137,17 +143,18 @@ export function useMessageListener() {
         setAnalyticsData(response.analytics || null)
       }
 
-      // データがない場合はContent Scriptに収集要求
-      if (!response?.seo) {
-        console.log('[WPD-Panel] No SEO data, sending REQUEST_REFRESH')
-        chrome.runtime.sendMessage({
-          type: MessageType.REQUEST_REFRESH,
-          tabId,
-        })
-      } else {
-        console.log('[WPD-Panel] Data found, setting isLoading false')
+      // キャッシュデータがあればローディング解除（ポート経由で最新データが来たら再更新）
+      if (response?.seo) {
+        console.log('[WPD-Panel] Cached data found, setting isLoading false')
         setIsLoading(false)
       }
+
+      // 常に最新データをリクエスト（部分データ取得やSEO以外の欠落を防ぐ）
+      console.log('[WPD-Panel] Sending REQUEST_REFRESH to ensure fresh data')
+      chrome.runtime.sendMessage({
+        type: MessageType.REQUEST_REFRESH,
+        tabId,
+      })
     } catch (e) {
       console.error('[WPD-Panel] Failed to get initial data:', e)
       setIsLoading(false)

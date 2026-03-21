@@ -326,6 +326,19 @@ function processAuctionData(payload: AuctionPayload) {
   // ターゲティング
   collectedData.adserverTargeting = payload.adserverTargeting || {}
 
+  // pbjs.getEvents() の履歴でイベントタイムラインを補完
+  // リアルタイムで onEvent が取れなかった場合（拡張をオークション後に開いた等）に対応
+  if (Array.isArray(payload.prebidEvents) && payload.prebidEvents.length > 0 && collectedData.events.length === 0) {
+    collectedData.events = payload.prebidEvents.map((e: unknown) => {
+      const evt = e as { eventType?: string; timestamp?: number; args?: unknown }
+      return {
+        eventType: evt.eventType || 'UNKNOWN',
+        timestamp: evt.timestamp || Date.now(),
+        data: evt.args ?? evt,
+      }
+    })
+  }
+
   // Bidder一覧を更新
   collectedData.bidders = Array.from(bidderStatsMap.values())
   collectedData.collectedAt = Date.now()
