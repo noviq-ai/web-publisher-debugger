@@ -7,7 +7,7 @@ export * from './analytics'
 
 export type TabId = 'adtech' | 'seo' | 'tracking' | 'ai'
 
-export type AiProvider = 'anthropic' | 'openai'
+export type AiProvider = 'browser' | 'anthropic' | 'openai'
 
 export interface Settings {
   aiProvider: AiProvider
@@ -21,7 +21,7 @@ export interface Settings {
 }
 
 export const defaultSettings: Settings = {
-  aiProvider: 'anthropic',
+  aiProvider: 'browser',
   claudeApiKey: '',
   openaiApiKey: '',
   enableAdTech: true,
