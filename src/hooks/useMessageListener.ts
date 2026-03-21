@@ -7,24 +7,50 @@ const isExtension = typeof chrome !== 'undefined' && chrome.tabs?.query
 
 console.log('[WPD-Panel] useMessageListener module loaded, isExtension:', isExtension)
 
+// データ収集の状態
+// connecting  : Content Script へ要求送信済み・まだ無応答
+// loading     : キャッシュデータ表示中・最新データ更新中
+// ready       : ポート経由で最新データ到着・表示完了
+// error       : タイムアウト or 接続不可（chrome:// 等）
+export type DataCollectionStatus = 'connecting' | 'loading' | 'ready' | 'error'
+
+const COLLECTION_TIMEOUT_MS = 10000
+
 export function useMessageListener() {
   const [seoData, setSeoData] = useState<SeoData | null>(null)
   const [prebidData, setPrebidData] = useState<PrebidData | null>(null)
   const [gptData, setGptData] = useState<GptData | null>(null)
   const [gtmData, setGtmData] = useState<GtmData | null>(null)
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
-  const [isLoading, setIsLoading] = useState(!isExtension ? false : true)
+  const [status, setStatus] = useState<DataCollectionStatus>(isExtension ? 'connecting' : 'ready')
   const [currentTabId, setCurrentTabId] = useState<number | null>(null)
   const portRef = useRef<chrome.runtime.Port | null>(null)
   // currentTabId を ref で持つことでポートのクロージャから参照できるようにする
   const currentTabIdRef = useRef<number | null>(null)
   // サイドパネルが開かれたウィンドウのIDを保持（変更しない）
   const initialWindowIdRef = useRef<number | null>(null)
+  // タイムアウト管理
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // currentTabId が変わったら ref も更新
   useEffect(() => {
     currentTabIdRef.current = currentTabId
   }, [currentTabId])
+
+  // タイムアウトを開始（connecting/loading のまま一定時間経過したら error に遷移）
+  const startTimeout = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    timeoutRef.current = setTimeout(() => {
+      setStatus((prev) => (prev === 'connecting' || prev === 'loading' ? 'error' : prev))
+    }, COLLECTION_TIMEOUT_MS)
+  }, [])
+
+  const clearCollectionTimeout = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+  }, [])
 
   // ポート接続は一度だけ確立する（タブ切替のたびに再接続しない）
   useEffect(() => {
@@ -43,31 +69,34 @@ export function useMessageListener() {
         return
       }
 
+      // ポート経由でデータが届いたら ready に遷移してタイムアウトを解除
+      clearCollectionTimeout()
+
       switch (message.type) {
         case MessageType.SEO_DATA:
           console.log('[WPD-Panel] Setting SEO data')
           setSeoData(message.payload as SeoData)
-          setIsLoading(false)
+          setStatus('ready')
           break
         case MessageType.PREBID_DATA:
           console.log('[WPD-Panel] Setting Prebid data')
           setPrebidData(message.payload as PrebidData)
-          setIsLoading(false)
+          setStatus('ready')
           break
         case MessageType.GPT_DATA:
           console.log('[WPD-Panel] Setting GPT data')
           setGptData(message.payload as GptData)
-          setIsLoading(false)
+          setStatus('ready')
           break
         case MessageType.GTM_DATA:
           console.log('[WPD-Panel] Setting GTM data')
           setGtmData(message.payload as GtmData)
-          setIsLoading(false)
+          setStatus('ready')
           break
         case MessageType.ANALYTICS_DATA:
           console.log('[WPD-Panel] Setting Analytics data')
           setAnalyticsData(message.payload as AnalyticsData)
-          setIsLoading(false)
+          setStatus('ready')
           break
       }
     })
@@ -77,7 +106,7 @@ export function useMessageListener() {
       port.disconnect()
       portRef.current = null
     }
-  }, []) // ポートはマウント時に一度だけ接続
+  }, [clearCollectionTimeout]) // ポートはマウント時に一度だけ接続
 
   // 現在のタブIDとウィンドウIDを取得して初期データリクエスト
   useEffect(() => {
@@ -109,7 +138,7 @@ export function useMessageListener() {
 
       console.log('[WPD-Panel] Tab changed in same window:', activeInfo.tabId)
       setCurrentTabId(activeInfo.tabId)
-      setIsLoading(true)
+      setStatus('connecting')
       setSeoData(null)
       setPrebidData(null)
       setGptData(null)
@@ -126,7 +155,8 @@ export function useMessageListener() {
   const requestInitialData = useCallback(async (tabId: number) => {
     if (!isExtension) return
     console.log('[WPD-Panel] requestInitialData for tab:', tabId)
-    setIsLoading(true)
+    setStatus('connecting')
+    startTimeout()
     try {
       // まずService Workerのストアからデータ取得
       console.log('[WPD-Panel] Sending GET_TAB_DATA')
@@ -143,10 +173,10 @@ export function useMessageListener() {
         setAnalyticsData(response.analytics || null)
       }
 
-      // キャッシュデータがあればローディング解除（ポート経由で最新データが来たら再更新）
+      // キャッシュデータがあれば loading に遷移（ポート経由で最新データが来たら ready になる）
       if (response?.seo) {
-        console.log('[WPD-Panel] Cached data found, setting isLoading false')
-        setIsLoading(false)
+        console.log('[WPD-Panel] Cached data found, transitioning to loading')
+        setStatus('loading')
       }
 
       // 常に最新データをリクエスト（部分データ取得やSEO以外の欠落を防ぐ）
@@ -157,15 +187,17 @@ export function useMessageListener() {
       })
     } catch (e) {
       console.error('[WPD-Panel] Failed to get initial data:', e)
-      setIsLoading(false)
+      setStatus('error')
+      clearCollectionTimeout()
     }
-  }, [])
+  }, [startTimeout, clearCollectionTimeout])
 
   // ページリロード（リフレッシュボタン用）
   const reloadPage = useCallback(async () => {
     if (!isExtension) return
     if (currentTabId) {
-      setIsLoading(true)
+      setStatus('connecting')
+      startTimeout()
       // データをクリア
       setSeoData(null)
       setPrebidData(null)
@@ -175,7 +207,7 @@ export function useMessageListener() {
       // ページをリロード
       chrome.tabs.reload(currentTabId)
     }
-  }, [currentTabId])
+  }, [currentTabId, startTimeout])
 
   return {
     seoData,
@@ -183,7 +215,7 @@ export function useMessageListener() {
     gptData,
     gtmData,
     analyticsData,
-    isLoading,
+    status,
     reloadPage,
     tabId: currentTabId,
   }

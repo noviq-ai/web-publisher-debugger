@@ -1,7 +1,8 @@
 import React from 'react'
 import type { SeoData } from '@/shared/types/seo'
+import type { DataCollectionStatus } from '@/hooks/useMessageListener'
 import { Button } from '@/components/ui/button'
-import { IconSearch, IconRefresh } from '@tabler/icons-react'
+import { IconSearch, IconRefresh, IconWifiOff } from '@tabler/icons-react'
 import {
   SeoHeader,
   MetaTags,
@@ -16,15 +17,28 @@ import {
 
 interface SeoPageProps {
   data: SeoData | null
-  isLoading: boolean
+  status: DataCollectionStatus
   onReload: () => void
 }
 
-export const SeoPage: React.FC<SeoPageProps> = ({ data, isLoading, onReload }) => {
-  if (isLoading) {
+export const SeoPage: React.FC<SeoPageProps> = ({ data, status, onReload }) => {
+  if (status === 'connecting') {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-4">
-        <div className="text-sm text-muted-foreground">Loading SEO data...</div>
+        <div className="h-4 w-4 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
+        <div className="text-sm text-muted-foreground">Connecting...</div>
+      </div>
+    )
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 gap-4">
+        <IconWifiOff size={32} className="text-muted-foreground/50" />
+        <p className="text-sm text-muted-foreground">Could not collect data.</p>
+        <p className="text-xs text-muted-foreground/70 text-center max-w-48">
+          This may be a restricted page (chrome://, file://) or the page has not finished loading.
+        </p>
         <Button variant="outline" size="sm" onClick={onReload} className="gap-2">
           <IconRefresh size={14} />
           Reload Page
@@ -49,35 +63,18 @@ export const SeoPage: React.FC<SeoPageProps> = ({ data, isLoading, onReload }) =
 
   return (
     <div className="divide-y divide-border/50">
-      {/* Header Stats */}
       <SeoHeader data={data} />
-
-      {/* Issues */}
       <Issues issues={data.issues} />
-
-      {/* Meta Tags */}
       <MetaTags data={data} />
-
-      {/* Open Graph */}
       <OpenGraph ogp={data.ogp} />
-
-      {/* Twitter Card */}
       <TwitterCard twitter={data.twitter} />
-
-      {/* Structured Data */}
       <StructuredData items={data.jsonLd} />
-
-      {/* Heading Structure */}
       <Headings headings={data.headings} />
-
-      {/* Links */}
       <Links
         internal={data.links.internal}
         external={data.links.external}
         nofollow={data.links.nofollow}
       />
-
-      {/* Hreflang */}
       <Hreflang items={data.hreflang} />
     </div>
   )

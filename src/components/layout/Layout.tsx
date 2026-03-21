@@ -23,13 +23,14 @@ import {
 } from '@tabler/icons-react'
 import SparkleIcon from '@/components/assets/sparkle-icon'
 import type { TabId } from '@/shared/types'
+import type { DataCollectionStatus } from '@/hooks/useMessageListener'
 import { useTheme } from '@/hooks/useTheme'
 
 interface LayoutProps {
   children: React.ReactNode
   activeTab: TabId
   onTabChange: (tab: TabId) => void
-  isLoading?: boolean
+  status?: DataCollectionStatus
   onRefresh?: () => void
   headerActions?: React.ReactNode
 }
@@ -45,7 +46,7 @@ export const Layout: React.FC<LayoutProps> = ({
   children,
   activeTab,
   onTabChange,
-  isLoading,
+  status,
   onRefresh,
   headerActions,
 }) => {
@@ -125,8 +126,15 @@ export const Layout: React.FC<LayoutProps> = ({
         <div className="flex items-center gap-1">
           {headerActions}
           {onRefresh && (
-            <Button variant="ghost" size="icon" onClick={onRefresh} disabled={isLoading}>
-              <IconRefresh className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onRefresh}
+              disabled={status === 'connecting' || status === 'loading'}
+            >
+              <IconRefresh
+                className={`h-4 w-4 ${status === 'connecting' || status === 'loading' ? 'animate-spin' : ''}`}
+              />
             </Button>
           )}
         </div>

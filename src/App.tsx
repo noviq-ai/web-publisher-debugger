@@ -24,7 +24,7 @@ export const App: React.FC = () => {
       }
     }
   }, [])
-  const { seoData, prebidData, gptData, gtmData, analyticsData, isLoading, reloadPage, tabId } = useMessageListener()
+  const { seoData, prebidData, gptData, gtmData, analyticsData, status, reloadPage, tabId } = useMessageListener()
 
   const renderContent = () => {
     switch (activeTab) {
@@ -43,19 +43,19 @@ export const App: React.FC = () => {
       case 'seo':
         return (
           <div className="flex-1 overflow-y-auto">
-              <SeoPage data={seoData} isLoading={isLoading} onReload={reloadPage} />
+              <SeoPage data={seoData} status={status} onReload={reloadPage} />
           </div>
         )
       case 'adtech':
         return (
           <div className="flex-1 overflow-y-auto">
-              <AdTechPage data={prebidData} gptData={gptData} isLoading={isLoading} onReload={reloadPage} />
+              <AdTechPage data={prebidData} gptData={gptData} status={status} onReload={reloadPage} />
           </div>
         )
       case 'tracking':
         return (
           <div className="flex-1 overflow-y-auto">
-            <TrackingPage gtmData={gtmData} analyticsData={analyticsData} isLoading={isLoading} onReload={reloadPage} />
+            <TrackingPage gtmData={gtmData} analyticsData={analyticsData} status={status} onReload={reloadPage} />
           </div>
         )
     }
@@ -77,7 +77,7 @@ export const App: React.FC = () => {
     <Layout
       activeTab={activeTab}
       onTabChange={setActiveTab}
-      isLoading={isLoading}
+      status={status}
       onRefresh={reloadPage}
     >
       {renderContent()}
