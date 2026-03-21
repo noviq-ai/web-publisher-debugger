@@ -53,7 +53,7 @@ export const Messages: React.FC<MessagesProps> = ({ messages, status, emptyState
   }, [messages.length, scrollToBottom])
 
   const isLoading = status === 'streaming' || status === 'submitted'
-  const showThinking = status === 'submitted' && messages[messages.length - 1]?.role === 'user'
+  const showThinking = status === 'submitted'
 
   if (messages.length === 0 && emptyState) {
     return <div className="flex-1 flex flex-col">{emptyState}</div>
@@ -65,7 +65,7 @@ export const Messages: React.FC<MessagesProps> = ({ messages, status, emptyState
         className="absolute inset-0 touch-pan-y overflow-y-auto"
         ref={containerRef}
       >
-        <div className="mx-auto flex min-w-0 max-w-3xl flex-col gap-4 px-4 py-4">
+        <div className="mx-auto flex min-w-0 max-w-3xl flex-col gap-4 px-6 py-4">
           {messages.map((message, index) => (
             <Message
               key={message.id}

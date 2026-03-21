@@ -1,4 +1,5 @@
-import { IconLoader2, IconDatabase, IconCircleCheck } from '@tabler/icons-react'
+import { useState } from 'react'
+import { IconLoader2, IconDatabase, IconCircleCheckFilled, IconChevronDown } from '@tabler/icons-react'
 import { AnimatedMarkdown } from '@nvq/flowtoken'
 import { cn } from '@/shared/lib/utils'
 import type { ChatMessage, WeatherData } from './types'
@@ -8,6 +9,57 @@ import { Weather } from './Weather'
 interface MessageProps {
   message: ChatMessage
   isLoading: boolean
+}
+
+/** Collapsible panel using CSS grid for smooth height animation without DOM removal */
+const ToolDetail: React.FC<{
+  label: string
+  input?: unknown
+  output?: unknown
+}> = ({ label, input, output }) => {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className="rounded-lg border border-green-500/30 bg-card text-xs">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-2 w-full px-3 py-1.5 text-green-600 dark:text-green-400 cursor-pointer"
+      >
+        <IconCircleCheckFilled size={14} />
+        <span className="flex-1 text-left">Fetched {label}</span>
+        <IconChevronDown
+          size={12}
+          className={cn('transition-transform duration-200', open && 'rotate-180')}
+        />
+      </button>
+      <div
+        className="grid transition-[grid-template-rows] duration-200 ease-out"
+        style={{ gridTemplateRows: open ? '1fr' : '0fr' }}
+      >
+        <div className="overflow-hidden">
+          <div className="border-t border-green-500/20 px-3 py-2 space-y-2 text-foreground">
+            {input !== undefined && (
+              <div>
+                <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">Input</div>
+                <pre className="text-[11px] leading-relaxed bg-background/60 rounded p-2 overflow-x-auto max-h-40 overflow-y-auto">
+                  {JSON.stringify(input, null, 2)}
+                </pre>
+              </div>
+            )}
+            {output !== undefined && (
+              <div>
+                <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">Output</div>
+                <pre className="text-[11px] leading-relaxed bg-background/60 rounded p-2 overflow-x-auto max-h-60 overflow-y-auto">
+                  {JSON.stringify(output, null, 2)}
+                </pre>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export const Message: React.FC<MessageProps> = ({ message, isLoading }) => {
@@ -52,7 +104,7 @@ export const Message: React.FC<MessageProps> = ({ message, isLoading }) => {
               return (
                 <div
                   key={key}
-                  className="text-sm prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-1 prose-pre:p-2 prose-pre:bg-background/50 prose-code:text-xs prose-h1:text-base prose-h2:text-sm prose-h3:text-sm md:prose-h1:text-lg md:prose-h2:text-base md:prose-h3:text-sm"
+                  className="text-sm prose prose-sm max-w-none dark:prose-invert prose-p:my-2 prose-p:leading-loose prose-headings:my-3 prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5 prose-pre:my-2 prose-pre:p-2 prose-pre:bg-background/50 prose-code:text-xs prose-h1:text-base prose-h2:text-sm prose-h3:text-sm md:prose-h1:text-lg md:prose-h2:text-base md:prose-h3:text-sm"
                 >
                   <AnimatedMarkdown
                     content={text}
@@ -116,21 +168,22 @@ export const Message: React.FC<MessageProps> = ({ message, isLoading }) => {
             if (isDataToolPart(part.type)) {
               const toolName = getToolNameFromPartType(part.type)
               const label = toolName ? TOOL_LABELS[toolName] : 'Data'
-              const { toolCallId, state } = part as {
+              const { toolCallId, state, input, output } = part as {
                 toolCallId: string
                 state: string
+                input?: unknown
+                output?: unknown
               }
 
-              // Output available - show completion indicator
+              // Output available - show expandable detail
               if (state === 'output-available') {
                 return (
-                  <div
+                  <ToolDetail
                     key={toolCallId}
-                    className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-1.5 text-xs text-green-600 dark:text-green-400"
-                  >
-                    <IconCircleCheck size={14} />
-                    <span>Fetched {label}</span>
-                  </div>
+                    label={label}
+                    input={input}
+                    output={output}
+                  />
                 )
               }
 

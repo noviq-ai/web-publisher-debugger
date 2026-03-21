@@ -1,14 +1,28 @@
-import { useRef } from 'react'
-import type { AiContext } from '@/shared/types'
+import { useRef, useState } from 'react'
+import type { AiContext, AiProvider } from '@/shared/types'
 import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import { IconSend, IconPlug, IconChevronDown } from '@tabler/icons-react'
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { IconArrowUp, IconChevronDown } from '@tabler/icons-react'
+import ToolIcon from '@/components/assets/tool-icon'
+import ChromeIcon from '@/components/assets/chrome'
+import ClaudeIcon from '@/components/assets/claude'
+import OpenaiIcon from '@/components/assets/openai'
+import { cn } from '@/shared/lib/utils'
 import type { ContextOption } from '@/pages'
+
+const BYOK_LABELS: Record<'anthropic' | 'openai', string> = {
+  anthropic: 'Claude',
+  openai: 'GPT-4o',
+}
 
 interface ChatInputProps {
   inputValue: string
@@ -21,6 +35,11 @@ interface ChatInputProps {
   setContext: React.Dispatch<React.SetStateAction<AiContext>>
   contextOptions: ContextOption[]
   activeContextCount: number
+  aiProvider: AiProvider
+  onProviderChange: (provider: AiProvider) => void
+  apiKey: string | null
+  byokProvider: 'anthropic' | 'openai'
+  browserAIAvailable: boolean
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({
@@ -34,8 +53,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   setContext,
   contextOptions,
   activeContextCount,
+  aiProvider,
+  onProviderChange,
+  apiKey,
+  byokProvider,
+  browserAIAvailable,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [modelOpen, setModelOpen] = useState(false)
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     // IME入力中（日本語変換中など）はEnterで送信しない
@@ -51,9 +76,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px'
   }
 
+  const isBrowser = aiProvider === 'browser'
+  const currentLabel = isBrowser ? 'Browser AI' : BYOK_LABELS[byokProvider]
+  const byokDisabled = !apiKey
+  const ByokIcon = byokProvider === 'anthropic' ? ClaudeIcon : OpenaiIcon
+
   return (
     <form onSubmit={onSubmit}>
-      <div className="border rounded-lg bg-background flex flex-col">
+      <div className="border rounded-lg bg-card shadow-[0_2px_12px_rgba(0,0,0,0.06)] flex flex-col">
         <textarea
           ref={textareaRef}
           value={inputValue}
@@ -67,56 +97,103 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         />
 
         <div className="flex items-center justify-between px-2 pb-2">
-          <Popover open={contextOpen} onOpenChange={setContextOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <IconPlug size={12} />
-                Tools: {activeContextCount}
-                <IconChevronDown size={12} />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-56" align="start">
-              <div className="text-xs font-medium text-muted-foreground mb-3">
-                Data Access Permissions
-              </div>
-              <div className="space-y-3">
+          <div className="flex items-center gap-1">
+            <DropdownMenu open={contextOpen} onOpenChange={setContextOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <ToolIcon />
+                  <span className="text-xs">Tools: {activeContextCount}</span>
+                  <IconChevronDown className={cn('transition-transform duration-200', contextOpen && 'rotate-180')} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="start">
+                <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
+                  Data Access Permissions
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
                 {contextOptions.map((option) => (
-                  <div
+                  <DropdownMenuCheckboxItem
                     key={option.key}
-                    className={`flex items-center justify-between ${
-                      !option.hasData ? 'opacity-50' : ''
-                    }`}
+                    checked={!!(context[option.key] && option.hasData)}
+                    onCheckedChange={(checked) =>
+                      setContext((prev) => ({ ...prev, [option.key]: checked }))
+                    }
+                    disabled={!option.hasData}
+                    onSelect={(e) => e.preventDefault()}
                   >
-                    <div className="flex items-center gap-2">
-                      <option.icon className="h-4 w-4" />
-                      <span className="text-sm">{option.label}</span>
-                      {!option.hasData && (
-                        <span className="text-[10px] text-muted-foreground">(N/A)</span>
-                      )}
-                    </div>
-                    <Switch
-                      checked={!!(context[option.key] && option.hasData)}
-                      onCheckedChange={(checked) =>
-                        setContext((prev) => ({ ...prev, [option.key]: checked }))
-                      }
-                      disabled={!option.hasData}
-                    />
-                  </div>
+                    <option.icon className="h-4 w-4" />
+                    <span>{option.label}</span>
+                    {!option.hasData && (
+                      <span className="text-[10px] text-muted-foreground ml-auto">(N/A)</span>
+                    )}
+                  </DropdownMenuCheckboxItem>
                 ))}
-              </div>
-            </PopoverContent>
-          </Popover>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Model selector */}
+            <DropdownMenu open={modelOpen} onOpenChange={setModelOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  {isBrowser ? <ChromeIcon /> : <ByokIcon />}
+                  <span className="text-xs">{currentLabel}</span>
+                  <IconChevronDown className={cn('transition-transform duration-200', modelOpen && 'rotate-180')} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-48" align="start">
+                <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
+                  AI Model
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup
+                  value={aiProvider}
+                  onValueChange={(value) => {
+                    if (value === 'browser') {
+                      onProviderChange('browser')
+                    } else {
+                      onProviderChange(byokProvider)
+                    }
+                  }}
+                >
+                  <DropdownMenuRadioItem
+                    value="browser"
+                    disabled={!browserAIAvailable}
+                  >
+                    <ChromeIcon className="size-3.5" />
+                    <span>Browser AI</span>
+                    {!browserAIAvailable && (
+                      <span className="text-[10px] text-muted-foreground ml-auto">N/A</span>
+                    )}
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem
+                    value={byokProvider}
+                    disabled={byokDisabled}
+                  >
+                    <ByokIcon className="size-3.5" />
+                    <span>{BYOK_LABELS[byokProvider]}</span>
+                    {byokDisabled && (
+                      <span className="text-[10px] text-muted-foreground ml-auto">No key</span>
+                    )}
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
           <Button
             type="submit"
             size="icon"
             disabled={isLoading || !inputValue.trim()}
           >
-            <IconSend size={28} />
+            <IconArrowUp />
           </Button>
         </div>
       </div>
