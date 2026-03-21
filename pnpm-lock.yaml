@@ -17,6 +17,9 @@ importers:
       '@ai-sdk/react':
         specifier: ^3.0.45
         version: 3.0.45(react@18.3.1)(zod@3.25.76)
+      '@browser-ai/core':
+        specifier: ^2.1.8
+        version: 2.1.8(ai@6.0.43(zod@3.25.76))
       '@nvq/flowtoken':
         specifier: ^2.0.0
         version: 2.0.6(@types/react@18.3.27)(react@18.3.1)
@@ -253,6 +256,11 @@ packages:
     resolution: {integrity: sha512-0ZrskXVEHSWIqZM/sQZ4EV3jZJXRkio/WCxaqKZP1g//CEWEPSfeZFcms4XeKBCHU0ZKnIkdJeU/kF+eRp5lBg==}
     engines: {node: '>=6.9.0'}
 
+  '@browser-ai/core@2.1.8':
+    resolution: {integrity: sha512-azGpFJR0veU8rSBP9XqJt1RZRdtwaet07+e2ZrtCPrK3fKI7J04AkgcCJxan/scVf8GBD7t1E1Hapd3IAztjFw==}
+    peerDependencies:
+      ai: ^6.0.0
+
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
     engines: {node: '>=12'}
@@ -421,6 +429,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@mediapipe/tasks-text@0.10.33':
+    resolution: {integrity: sha512-K6VY7Q/Iike6GGGFPclpCzt8nYTzR4CQ88HdRwMavbEnEdwqQTaKV7WuG4FkQJlGaH6jo3vi8bogArH3dPOmTg==}
 
   '@nvq/flowtoken@2.0.6':
     resolution: {integrity: sha512-bgq+nmT5a6I04Z7YMz71Z9L1De6aAQlhrwMib5oo0VqiRFB9cjQ+bCQTH17oAj7JTt/qnukflUSfdtQdUWI1Iw==}
@@ -2141,6 +2152,11 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
+  '@browser-ai/core@2.1.8(ai@6.0.43(zod@3.25.76))':
+    dependencies:
+      '@mediapipe/tasks-text': 0.10.33
+      ai: 6.0.43(zod@3.25.76)
+
   '@esbuild/aix-ppc64@0.21.5':
     optional: true
 
@@ -2245,6 +2261,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@mediapipe/tasks-text@0.10.33': {}
 
   '@nvq/flowtoken@2.0.6(@types/react@18.3.27)(react@18.3.1)':
     dependencies:

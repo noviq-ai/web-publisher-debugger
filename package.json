@@ -14,6 +14,7 @@
     "@ai-sdk/anthropic": "^3.0.17",
     "@ai-sdk/openai": "^3.0.13",
     "@ai-sdk/react": "^3.0.45",
+    "@browser-ai/core": "^2.1.8",
     "@nvq/flowtoken": "^2.0.0",
     "@radix-ui/react-checkbox": "^1.3.3",
     "@radix-ui/react-collapsible": "^1.1.12",
