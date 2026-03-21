@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Field, FieldLabel, FieldDescription } from '@/components/ui/field'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,15 +11,19 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { type Settings, type AiProvider, type TabId, defaultSettings } from '@/shared/types'
-import { IconCheck, IconExternalLink, IconHelpCircle, IconShield, IconSparkles } from '@tabler/icons-react'
+import { IconCheck, IconExternalLink, IconShield } from '@tabler/icons-react'
+import SparkleIcon from '@/components/assets/sparkle-icon'
 import ClaudeIcon from '@/components/assets/claude'
 import OpenaiIcon from '@/components/assets/openai'
 import { PageHeader } from '@/components/common/PageHeader'
 import { PageLayout, SectionCard } from '@/components/common/PageLayout'
+import { getContent, detectLanguage } from './content'
 
 export const Options: React.FC = () => {
   const [settings, setSettings] = useState<Settings>(defaultSettings)
   const [saved, setSaved] = useState(false)
+  const [lang, setLang] = useState(detectLanguage)
+  const t = getContent(lang)
 
   useEffect(() => {
     if (typeof chrome !== 'undefined' && chrome.storage?.local) {
@@ -52,58 +56,42 @@ export const Options: React.FC = () => {
     setTimeout(() => setSaved(false), 2000)
   }
 
-  const features = [
-    { key: 'enableAdTech' as const, label: 'AdTech', description: 'Prebid.js and Google Publisher Tag monitoring' },
-    { key: 'enableGtm' as const, label: 'GTM', description: 'Google Tag Manager and dataLayer monitoring' },
-    { key: 'enableSeo' as const, label: 'SEO', description: 'Meta tags, OGP, and structured data analysis' },
-    { key: 'enableAnalytics' as const, label: 'Analytics', description: 'GA4 and tracking pixel monitoring' },
-  ]
+  const featureKeys = ['enableAdTech', 'enableGtm', 'enableSeo', 'enableAnalytics'] as const
 
   return (
     <>
       <PageHeader
-        title="Web Publisher Debugger"
-        subtitle="Settings"
-        actions={
-          <a
-            href="help.html"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <IconHelpCircle size={16} />
-            Help
-          </a>
-        }
+        activePage="settings"
+        lang={lang}
+        onLangChange={setLang}
       />
       <PageLayout>
         {/* AI Assistant Section */}
         <SectionCard>
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <IconSparkles size={20} className="text-primary" />
-              <h2 className="text-lg font-semibold">AI Assistant</h2>
+              <SparkleIcon className="size-5 [&_path]:fill-current text-primary" />
+              <h2 className="text-lg font-semibold">{t.ai.heading}</h2>
               <span className="text-[10px] font-medium uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/10 text-primary">
                 Beta
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Configure AI provider for analysis
+              {t.ai.description}
             </p>
 
             {/* Privacy Notice */}
             <div className="flex items-start gap-3 p-4 rounded-lg bg-primary/5 border border-primary/10">
               <IconShield size={20} className="text-primary mt-0.5 shrink-0" />
               <div className="text-sm text-muted-foreground space-y-1">
-                <p className="font-medium text-foreground">Privacy-first design</p>
-                <p>
-                  All AI processing happens directly between your browser and the AI provider.
-                  Your API key and page data are never sent to our servers.
-                </p>
+                <p className="font-medium text-foreground">{t.ai.privacy.title}</p>
+                <p>{t.ai.privacy.body}</p>
               </div>
             </div>
 
             <div className="space-y-4 pt-2">
-              <div className="space-y-2">
-                <Label htmlFor="ai-provider">AI Provider</Label>
+              <Field>
+                <FieldLabel htmlFor="ai-provider">{t.ai.provider.label}</FieldLabel>
                 <Select
                   value={settings.aiProvider}
                   onValueChange={(value: AiProvider) =>
@@ -111,28 +99,39 @@ export const Options: React.FC = () => {
                   }
                 >
                   <SelectTrigger id="ai-provider" className="bg-background">
-                    <SelectValue placeholder="Select provider" />
+                    <SelectValue placeholder={t.ai.provider.placeholder} />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="browser">
+                      <span className="flex items-center gap-2">
+                        <SparkleIcon className="size-4 [&_path]:fill-current" />
+                        {t.ai.provider.browser}
+                      </span>
+                    </SelectItem>
                     <SelectItem value="anthropic">
                       <span className="flex items-center gap-2">
                         <ClaudeIcon className="h-4 w-4" />
-                        Anthropic (Claude)
+                        {t.ai.provider.anthropic}
                       </span>
                     </SelectItem>
                     <SelectItem value="openai">
                       <span className="flex items-center gap-2">
                         <OpenaiIcon className="h-4 w-4" />
-                        OpenAI (GPT)
+                        {t.ai.provider.openai}
                       </span>
                     </SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+                {settings.aiProvider === 'browser' && (
+                  <FieldDescription>
+                    {t.ai.provider.browserDescription}
+                  </FieldDescription>
+                )}
+              </Field>
 
               {settings.aiProvider === 'anthropic' && (
-                <div className="space-y-2">
-                  <Label htmlFor="claude-api-key">Claude API Key</Label>
+                <Field>
+                  <FieldLabel htmlFor="claude-api-key">{t.ai.claudeApiKey.label}</FieldLabel>
                   <Input
                     id="claude-api-key"
                     type="password"
@@ -141,24 +140,24 @@ export const Options: React.FC = () => {
                     placeholder="sk-ant-..."
                     className="bg-background font-mono"
                   />
-                  <p className="text-sm text-muted-foreground flex items-center gap-1">
-                    Get your API key from{' '}
+                  <FieldDescription className="flex items-center gap-1">
+                    {t.ai.claudeApiKey.description}{' '}
                     <a
                       href="https://console.anthropic.com/"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:underline inline-flex items-center gap-1"
                     >
-                      Anthropic Console
+                      {t.ai.claudeApiKey.linkText}
                       <IconExternalLink size={12} />
                     </a>
-                  </p>
-                </div>
+                  </FieldDescription>
+                </Field>
               )}
 
               {settings.aiProvider === 'openai' && (
-                <div className="space-y-2">
-                  <Label htmlFor="openai-api-key">OpenAI API Key</Label>
+                <Field>
+                  <FieldLabel htmlFor="openai-api-key">{t.ai.openaiApiKey.label}</FieldLabel>
                   <Input
                     id="openai-api-key"
                     type="password"
@@ -167,19 +166,19 @@ export const Options: React.FC = () => {
                     placeholder="sk-..."
                     className="bg-background font-mono"
                   />
-                  <p className="text-sm text-muted-foreground flex items-center gap-1">
-                    Get your API key from{' '}
+                  <FieldDescription className="flex items-center gap-1">
+                    {t.ai.openaiApiKey.description}{' '}
                     <a
                       href="https://platform.openai.com/api-keys"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:underline inline-flex items-center gap-1"
                     >
-                      OpenAI Platform
+                      {t.ai.openaiApiKey.linkText}
                       <IconExternalLink size={12} />
                     </a>
-                  </p>
-                </div>
+                  </FieldDescription>
+                </Field>
               )}
             </div>
           </div>
@@ -189,14 +188,14 @@ export const Options: React.FC = () => {
         <SectionCard>
           <div className="space-y-4">
             <div>
-              <h2 className="text-lg font-semibold">General</h2>
+              <h2 className="text-lg font-semibold">{t.general.heading}</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                General settings
+                {t.general.description}
               </p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="default-tab">Default Tab</Label>
+            <Field>
+              <FieldLabel htmlFor="default-tab">{t.general.defaultTab.label}</FieldLabel>
               <Select
                 value={settings.defaultTab}
                 onValueChange={(value: TabId) =>
@@ -204,19 +203,19 @@ export const Options: React.FC = () => {
                 }
               >
                 <SelectTrigger id="default-tab" className="bg-background">
-                  <SelectValue placeholder="Select default tab" />
+                  <SelectValue placeholder={t.general.defaultTab.placeholder} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ai">AI Assistant</SelectItem>
-                  <SelectItem value="seo">SEO</SelectItem>
-                  <SelectItem value="adtech">AdTech</SelectItem>
-                  <SelectItem value="tracking">Tracking</SelectItem>
+                  <SelectItem value="ai">{t.general.defaultTab.options.ai}</SelectItem>
+                  <SelectItem value="seo">{t.general.defaultTab.options.seo}</SelectItem>
+                  <SelectItem value="adtech">{t.general.defaultTab.options.adtech}</SelectItem>
+                  <SelectItem value="tracking">{t.general.defaultTab.options.tracking}</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-sm text-muted-foreground">
-                The tab to show when opening the extension
-              </p>
-            </div>
+              <FieldDescription>
+                {t.general.defaultTab.description}
+              </FieldDescription>
+            </Field>
           </div>
         </SectionCard>
 
@@ -224,31 +223,34 @@ export const Options: React.FC = () => {
         <SectionCard>
           <div className="space-y-4">
             <div>
-              <h2 className="text-lg font-semibold">Enabled Features</h2>
+              <h2 className="text-lg font-semibold">{t.features.heading}</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Choose which data collectors to enable
+                {t.features.description}
               </p>
             </div>
 
             <div className="space-y-1">
-              {features.map((feature) => (
-                <div
-                  key={feature.key}
-                  className="flex items-center justify-between py-3 px-4 -mx-4 rounded-lg hover:bg-muted/50 transition-colors"
-                >
-                  <div className="space-y-0.5">
-                    <Label htmlFor={feature.key} className="font-medium cursor-pointer">
-                      {feature.label}
-                    </Label>
-                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+              {featureKeys.map((key) => {
+                const feature = t.features.items[key]
+                return (
+                  <div
+                    key={key}
+                    className="flex items-center justify-between py-3 px-4 -mx-4 rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="space-y-0.5">
+                      <FieldLabel htmlFor={key} className="font-medium cursor-pointer">
+                        {feature.label}
+                      </FieldLabel>
+                      <FieldDescription>{feature.description}</FieldDescription>
+                    </div>
+                    <Switch
+                      id={key}
+                      checked={settings[key]}
+                      onCheckedChange={(checked) => setSettings({ ...settings, [key]: checked })}
+                    />
                   </div>
-                  <Switch
-                    id={feature.key}
-                    checked={settings[feature.key]}
-                    onCheckedChange={(checked) => setSettings({ ...settings, [feature.key]: checked })}
-                  />
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </SectionCard>
@@ -258,10 +260,10 @@ export const Options: React.FC = () => {
           {saved ? (
             <>
               <IconCheck size={16} />
-              Saved!
+              {t.saved}
             </>
           ) : (
-            'Save Settings'
+            t.saveButton
           )}
         </Button>
       </PageLayout>
