@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Layout } from '@/components/layout/Layout'
-import { useMessageListener } from '@/hooks/useMessageListener'
+import { useTabDataSync } from '@/hooks/useTabDataSync'
+import { useTabDataStore } from '@/store/tabDataStore'
 import { SeoPage, AdTechPage, TrackingPage, AiPage } from '@/pages'
 import type { TabId } from '@/shared/types'
 import { defaultSettings } from '@/shared/types'
@@ -24,38 +25,37 @@ export const App: React.FC = () => {
       }
     }
   }, [])
-  const { seoData, prebidData, gptData, gtmData, analyticsData, status, reloadPage, tabId } = useMessageListener()
+
+  // 副作用（ポート接続・タブ監視）をここで一度だけ起動
+  const { reloadPage } = useTabDataSync()
+
+  // ストアから status だけ取得（Layout のリフレッシュボタン用）
+  const status = useTabDataStore((s) => s.status)
 
   const renderContent = () => {
     switch (activeTab) {
       case 'ai':
         return (
           <div className="flex-1 min-h-0 overflow-hidden">
-            <AiPage
-              seoData={seoData}
-              prebidData={prebidData}
-              gtmData={gtmData}
-              analyticsData={analyticsData}
-              tabId={tabId}
-            />
+            <AiPage />
           </div>
         )
       case 'seo':
         return (
           <div className="flex-1 overflow-y-auto">
-              <SeoPage data={seoData} status={status} onReload={reloadPage} />
+            <SeoPage onReload={reloadPage} />
           </div>
         )
       case 'adtech':
         return (
           <div className="flex-1 overflow-y-auto">
-              <AdTechPage data={prebidData} gptData={gptData} status={status} onReload={reloadPage} />
+            <AdTechPage onReload={reloadPage} />
           </div>
         )
       case 'tracking':
         return (
           <div className="flex-1 overflow-y-auto">
-            <TrackingPage gtmData={gtmData} analyticsData={analyticsData} status={status} onReload={reloadPage} />
+            <TrackingPage onReload={reloadPage} />
           </div>
         )
     }

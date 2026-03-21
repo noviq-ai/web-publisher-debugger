@@ -1,6 +1,5 @@
 import React from 'react'
-import type { SeoData } from '@/shared/types/seo'
-import type { DataCollectionStatus } from '@/hooks/useMessageListener'
+import { useTabDataStore } from '@/store/tabDataStore'
 import { Button } from '@/components/ui/button'
 import { IconSearch, IconRefresh, IconWifiOff } from '@tabler/icons-react'
 import {
@@ -16,12 +15,13 @@ import {
 } from '@/components/seo'
 
 interface SeoPageProps {
-  data: SeoData | null
-  status: DataCollectionStatus
   onReload: () => void
 }
 
-export const SeoPage: React.FC<SeoPageProps> = ({ data, status, onReload }) => {
+export const SeoPage: React.FC<SeoPageProps> = ({ onReload }) => {
+  const data = useTabDataStore((s) => s.seoData)
+  const status = useTabDataStore((s) => s.status)
+
   if (status === 'connecting') {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-4">

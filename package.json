@@ -40,7 +40,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.6.0",
-    "zod": "^3.25"
+    "zod": "^3.25",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",

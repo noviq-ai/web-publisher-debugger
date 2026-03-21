@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import type { SeoData, PrebidData, GtmData, AnalyticsData, AiContext, AiProvider } from '@/shared/types'
+import type { AiContext, AiProvider } from '@/shared/types'
+import { useTabDataStore } from '@/store/tabDataStore'
 import type { Icon } from '@tabler/icons-react'
 import { useChat } from '@/ai/use-chat'
 import { createAnthropicProvider } from '@/ai/providers/anthropic'
@@ -52,21 +53,12 @@ export interface ContextOption {
   hasData: boolean
 }
 
-interface AiPageProps {
-  seoData: SeoData | null
-  prebidData: PrebidData | null
-  gtmData: GtmData | null
-  analyticsData: AnalyticsData | null
-  tabId: number | null
-}
-
-export const AiPage: React.FC<AiPageProps> = ({
-  seoData,
-  prebidData,
-  gtmData,
-  analyticsData,
-  tabId,
-}) => {
+export const AiPage: React.FC = () => {
+  const seoData = useTabDataStore((s) => s.seoData)
+  const prebidData = useTabDataStore((s) => s.prebidData)
+  const gtmData = useTabDataStore((s) => s.gtmData)
+  const analyticsData = useTabDataStore((s) => s.analyticsData)
+  const tabId = useTabDataStore((s) => s.currentTabId)
   const [inputValue, setInputValue] = useState('')
   const [apiKey, setApiKey] = useState<string | null>(null)
   const [byokProvider, setByokProvider] = useState<'anthropic' | 'openai'>('anthropic')

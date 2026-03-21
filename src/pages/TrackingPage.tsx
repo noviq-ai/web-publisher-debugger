@@ -1,7 +1,5 @@
 import React from 'react'
-import type { GtmData } from '@/shared/types/gtm'
-import type { AnalyticsData } from '@/shared/types/analytics'
-import type { DataCollectionStatus } from '@/hooks/useMessageListener'
+import { useTabDataStore } from '@/store/tabDataStore'
 import { IconActivity, IconRefresh, IconWifiOff } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { Ga4Section } from '@/components/tracking/Ga4Section'
@@ -9,13 +7,14 @@ import { GtmSection } from '@/components/tracking/GtmSection'
 import { PixelsSection } from '@/components/tracking/PixelsSection'
 
 interface TrackingPageProps {
-  gtmData: GtmData | null
-  analyticsData: AnalyticsData | null
-  status: DataCollectionStatus
   onReload: () => void
 }
 
-export const TrackingPage: React.FC<TrackingPageProps> = ({ gtmData, analyticsData, status, onReload }) => {
+export const TrackingPage: React.FC<TrackingPageProps> = ({ onReload }) => {
+  const gtmData = useTabDataStore((s) => s.gtmData)
+  const analyticsData = useTabDataStore((s) => s.analyticsData)
+  const status = useTabDataStore((s) => s.status)
+
   if (status === 'connecting') {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-4">
@@ -37,7 +36,7 @@ export const TrackingPage: React.FC<TrackingPageProps> = ({ gtmData, analyticsDa
           This may be a restricted page (chrome://, file://) or the page has not finished loading.
         </p>
         <Button variant="outline" size="sm" onClick={onReload} className="gap-2">
-          <IconRefresh size={14} />
+          <IconRefresh className="h-3.5 w-3.5" />
           Reload Page
         </Button>
       </div>
@@ -49,7 +48,6 @@ export const TrackingPage: React.FC<TrackingPageProps> = ({ gtmData, analyticsDa
   const hasGa4 = ga4Data?.detected
   const hasPixels = analyticsData?.pixels && analyticsData.pixels.length > 0
 
-  const showPixelsSection = true
   const showEmptyHeader = !hasGtm && !hasGa4 && !hasPixels
 
   return (
@@ -70,7 +68,7 @@ export const TrackingPage: React.FC<TrackingPageProps> = ({ gtmData, analyticsDa
 
       <Ga4Section data={ga4Data} />
       {hasGtm && <GtmSection data={gtmData} />}
-      {showPixelsSection && <PixelsSection pixels={analyticsData?.pixels || []} />}
+      <PixelsSection pixels={analyticsData?.pixels || []} />
     </div>
   )
 }

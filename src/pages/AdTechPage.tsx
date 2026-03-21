@@ -1,20 +1,19 @@
 import React from 'react'
-import type { PrebidData } from '@/shared/types/prebid'
-import type { GptData } from '@/shared/types/gpt'
-import type { DataCollectionStatus } from '@/hooks/useMessageListener'
+import { useTabDataStore } from '@/store/tabDataStore'
 import { IconBolt, IconRefresh, IconWifiOff } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { PrebidSection } from '@/components/adtech/PrebidSection'
 import { GptSection } from '@/components/adtech/GptSection'
 
 interface AdTechPageProps {
-  data: PrebidData | null
-  gptData: GptData | null
-  status: DataCollectionStatus
   onReload: () => void
 }
 
-export const AdTechPage: React.FC<AdTechPageProps> = ({ data, gptData, status, onReload }) => {
+export const AdTechPage: React.FC<AdTechPageProps> = ({ onReload }) => {
+  const data = useTabDataStore((s) => s.prebidData)
+  const gptData = useTabDataStore((s) => s.gptData)
+  const status = useTabDataStore((s) => s.status)
+
   if (status === 'connecting') {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-4">
