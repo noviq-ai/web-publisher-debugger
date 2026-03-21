@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Layout } from '@/components/layout/Layout'
 import { useTabDataSync } from '@/hooks/useTabDataSync'
 import { useTabDataStore } from '@/store/tabDataStore'
-import { SeoPage, AdTechPage, TrackingPage, AiPage } from '@/pages'
+import { SeoPage, AdTechPage, TrackingPage, AiPage } from '@/panel'
 import type { TabId } from '@/shared/types'
 import { defaultSettings } from '@/shared/types'
 

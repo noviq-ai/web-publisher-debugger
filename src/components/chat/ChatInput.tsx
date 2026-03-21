@@ -17,7 +17,7 @@ import ChromeIcon from '@/components/assets/chrome'
 import ClaudeIcon from '@/components/assets/claude'
 import OpenaiIcon from '@/components/assets/openai'
 import { cn } from '@/shared/lib/utils'
-import type { ContextOption } from '@/pages'
+import type { ContextOption } from '@/panel'
 
 const BYOK_LABELS: Record<'anthropic' | 'openai', string> = {
   anthropic: 'Claude',
