@@ -6,8 +6,6 @@ import { useTabDataStore } from '@/store/tabDataStore'
 // Check if running in Chrome extension context
 const isExtension = typeof chrome !== 'undefined' && chrome.tabs?.query
 
-console.log('[WPD-Panel] useTabDataSync loaded, isExtension:', isExtension)
-
 const COLLECTION_TIMEOUT_MS = 10000
 
 /**
@@ -56,13 +54,10 @@ export function useTabDataSync() {
       return
     }
 
-    console.log('[WPD-Panel] Connecting to service worker...')
     const port = chrome.runtime.connect({ name: 'sidepanel' })
     portRef.current = port
-    console.log('[WPD-Panel] Port connected')
 
     port.onMessage.addListener((message: { type: MessageType; tabId?: number; payload?: unknown }) => {
-      console.log('[WPD-Panel] Port message:', message.type, 'tabId:', message.tabId)
       if (message.tabId !== currentTabIdRef.current) return
 
       clearCollectionTimeout()
@@ -97,7 +92,6 @@ export function useTabDataSync() {
   // 初期データリクエスト
   const requestInitialData = useCallback(async (tabId: number) => {
     if (!isExtension) return
-    console.log('[WPD-Panel] requestInitialData for tab:', tabId)
     setStatus('connecting')
     startTimeout()
 
@@ -105,11 +99,6 @@ export function useTabDataSync() {
       const response = await chrome.runtime.sendMessage({
         type: MessageType.GET_TAB_DATA,
         tabId,
-      })
-      console.log('[WPD-Panel] GET_TAB_DATA response:', {
-        hasSeo: !!response?.seo,
-        hasPrebid: !!response?.prebid,
-        hasGpt: !!response?.gpt,
       })
 
       if (response) {
@@ -131,7 +120,7 @@ export function useTabDataSync() {
       // 常に最新データをリクエスト
       chrome.runtime.sendMessage({ type: MessageType.REQUEST_REFRESH, tabId })
     } catch (e) {
-      console.error('[WPD-Panel] Failed to get initial data:', e)
+      console.error('[WPD] Failed to get initial data:', e)
       setStatus('error')
       clearCollectionTimeout()
     }
@@ -159,7 +148,6 @@ export function useTabDataSync() {
     const listener = (activeInfo: chrome.tabs.TabActiveInfo) => {
       if (initialWindowIdRef.current !== null && activeInfo.windowId !== initialWindowIdRef.current) return
 
-      console.log('[WPD-Panel] Tab changed:', activeInfo.tabId)
       currentTabIdRef.current = activeInfo.tabId
       setCurrentTabId(activeInfo.tabId)
       resetData()

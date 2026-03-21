@@ -1,3 +1,6 @@
+const DEBUG = false
+function log(...args: unknown[]) { if (DEBUG) log(...args) }
+
 import { tool } from 'ai'
 import { z } from 'zod'
 
@@ -41,41 +44,41 @@ export const getWeather = tool({
       .optional(),
   }),
   execute: async (input) => {
-    console.log('[Tool:getWeather] Called with input:', input)
+    log('[Tool:getWeather] Called with input:', input)
 
     let latitude: number
     let longitude: number
 
     if (input.city) {
-      console.log('[Tool:getWeather] Geocoding city:', input.city)
+      log('[Tool:getWeather] Geocoding city:', input.city)
       const coords = await geocodeCity(input.city)
       if (!coords) {
-        console.log('[Tool:getWeather] Geocoding failed for:', input.city)
+        log('[Tool:getWeather] Geocoding failed for:', input.city)
         return {
           error: `Could not find coordinates for "${input.city}". Please check the city name.`,
         }
       }
-      console.log('[Tool:getWeather] Geocoded to:', coords)
+      log('[Tool:getWeather] Geocoded to:', coords)
       latitude = coords.latitude
       longitude = coords.longitude
     } else if (input.latitude !== undefined && input.longitude !== undefined) {
       latitude = input.latitude
       longitude = input.longitude
     } else {
-      console.log('[Tool:getWeather] Missing required parameters')
+      log('[Tool:getWeather] Missing required parameters')
       return {
         error:
           'Please provide either a city name or both latitude and longitude coordinates.',
       }
     }
 
-    console.log('[Tool:getWeather] Fetching weather for:', { latitude, longitude })
+    log('[Tool:getWeather] Fetching weather for:', { latitude, longitude })
     const response = await fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=temperature_2m&daily=sunrise,sunset&timezone=auto`
     )
 
     const weatherData = await response.json()
-    console.log('[Tool:getWeather] Weather data received:', {
+    log('[Tool:getWeather] Weather data received:', {
       current: weatherData.current,
       cityName: input.city,
     })

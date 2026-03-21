@@ -1,3 +1,6 @@
+const DEBUG = false
+function log(...args: unknown[]) { if (DEBUG) log(...args) }
+
 import { tool } from 'ai'
 import { z } from 'zod'
 import type { ToolContext, ToolPermissions } from './types'
@@ -17,7 +20,7 @@ export function createGtmTool(context: ToolContext, permissions: ToolPermissions
         .describe('Filter events by name (partial match)'),
     }),
     execute: async ({ limit, eventFilter }) => {
-      console.log('[Tool:get_gtm_data] Called with:', { limit, eventFilter })
+      log('[Tool:get_gtm_data] Called with:', { limit, eventFilter })
 
       if (!permissions.allowGtm) {
         return { error: 'Access to GTM data not permitted by user' }
@@ -53,7 +56,7 @@ export function createGtmTool(context: ToolContext, permissions: ToolPermissions
         variables: gtmData.variables,
       }
 
-      console.log('[Tool:get_gtm_data] Result:', {
+      log('[Tool:get_gtm_data] Result:', {
         ...result,
         dataLayerEvents: `[${result.dataLayerEvents.length} events]`,
       })

@@ -1,3 +1,6 @@
+const DEBUG = false
+function log(...args: unknown[]) { if (DEBUG) log(...args) }
+
 import { tool } from 'ai'
 import { z } from 'zod'
 import type { ToolContext, ToolPermissions } from './types'
@@ -16,7 +19,7 @@ export function createPixelsTool(context: ToolContext, permissions: ToolPermissi
         .describe('Maximum number of events per pixel to return (default: 20)'),
     }),
     execute: async ({ platform, limit }) => {
-      console.log('[Tool:get_pixel_data] Called with:', { platform, limit })
+      log('[Tool:get_pixel_data] Called with:', { platform, limit })
 
       if (!permissions.allowAnalytics) {
         return { error: 'Access to Analytics data not permitted by user' }
@@ -58,7 +61,7 @@ export function createPixelsTool(context: ToolContext, permissions: ToolPermissi
         availablePlatforms: [...new Set(pixels.map((p) => p.type))],
       }
 
-      console.log('[Tool:get_pixel_data] Result:', {
+      log('[Tool:get_pixel_data] Result:', {
         ...result,
         pixels: result.pixels.map((p) => ({
           ...p,

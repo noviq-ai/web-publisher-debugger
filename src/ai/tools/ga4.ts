@@ -1,3 +1,6 @@
+const DEBUG = false
+function log(...args: unknown[]) { if (DEBUG) log(...args) }
+
 import { tool } from 'ai'
 import { z } from 'zod'
 import type { ToolContext, ToolPermissions } from './types'
@@ -25,7 +28,7 @@ export function createGa4Tool(context: ToolContext, permissions: ToolPermissions
         .describe('Include gtag config calls (default: true)'),
     }),
     execute: async ({ limit, eventFilter, includeConsent, includeConfigs }) => {
-      console.log('[Tool:get_ga4_data] Called with:', {
+      log('[Tool:get_ga4_data] Called with:', {
         limit,
         eventFilter,
         includeConsent,
@@ -71,7 +74,7 @@ export function createGa4Tool(context: ToolContext, permissions: ToolPermissions
         result.configs = ga4Data.configs
       }
 
-      console.log('[Tool:get_ga4_data] Result:', {
+      log('[Tool:get_ga4_data] Result:', {
         ...result,
         events: `[${limitedEvents.length} events]`,
       })

@@ -1,3 +1,6 @@
+const DEBUG = false
+function log(...args: unknown[]) { if (DEBUG) log(...args) }
+
 import { tool } from 'ai'
 import { z } from 'zod'
 import type { ToolPermissions } from './types'
@@ -24,7 +27,7 @@ async function sendPrebidQuery(
     timeoutId = setTimeout(() => {
       if (!resolved) {
         resolved = true
-        console.log('[Prebid Query] Timeout for:', requestId)
+        log('[Prebid Query] Timeout for:', requestId)
         resolve({
           requestId,
           success: false,
@@ -50,14 +53,14 @@ async function sendPrebidQuery(
         if (timeoutId) clearTimeout(timeoutId)
 
         if (chrome.runtime.lastError) {
-          console.log('[Prebid Query] Chrome error:', chrome.runtime.lastError.message)
+          console.error('[WPD] Prebid query chrome error:', chrome.runtime.lastError.message)
           resolve({
             requestId,
             success: false,
             error: chrome.runtime.lastError.message || 'Unknown error',
           })
         } else {
-          console.log('[Prebid Query] Response received:', requestId, response?.success)
+          log('[Prebid Query] Response received:', requestId, response?.success)
           resolve(response)
         }
       }
@@ -93,7 +96,7 @@ function createDiagnoseBidderTool(permissions: ToolPermissions, getActiveTabId: 
         return { error: 'No active tab found. Please ensure you have a page open.' }
       }
 
-      console.log('[Tool:diagnoseBidder] Diagnosing bidder:', bidderCode, 'tabId:', tabId)
+      log('[Tool:diagnoseBidder] Diagnosing bidder:', bidderCode, 'tabId:', tabId)
 
       const response = await sendPrebidQuery('DIAGNOSE_BIDDER', { bidderCode }, tabId)
 
@@ -202,7 +205,7 @@ function createAnalyzeAdUnitTool(permissions: ToolPermissions, getActiveTabId: (
         return { error: 'No active tab found. Please ensure you have a page open.' }
       }
 
-      console.log('[Tool:analyzeAdUnit] Analyzing ad unit:', adUnitCode, 'tabId:', tabId)
+      log('[Tool:analyzeAdUnit] Analyzing ad unit:', adUnitCode, 'tabId:', tabId)
 
       const response = await sendPrebidQuery('ANALYZE_AD_UNIT', { adUnitCode }, tabId)
 
@@ -297,7 +300,7 @@ function createQueryPrebidEventsTool(permissions: ToolPermissions, getActiveTabI
         return { error: 'No active tab found. Please ensure you have a page open.' }
       }
 
-      console.log('[Tool:queryPrebidEvents] Querying events, type:', eventType, 'limit:', limit, 'tabId:', tabId)
+      log('[Tool:queryPrebidEvents] Querying events, type:', eventType, 'limit:', limit, 'tabId:', tabId)
 
       const response = await sendPrebidQuery('GET_EVENTS', { eventType, limit }, tabId)
 

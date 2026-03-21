@@ -1,3 +1,6 @@
+const DEBUG = false
+function log(...args: unknown[]) { if (DEBUG) log(...args) }
+
 import { tool } from 'ai'
 import { z } from 'zod'
 import type { ToolContext, ToolPermissions } from './types'
@@ -21,7 +24,7 @@ export function createSeoTool(context: ToolContext, permissions: ToolPermissions
         .describe('Return only detected issues without full data (default: false)'),
     }),
     execute: async ({ includeJsonLd, includeHeadings, issuesOnly }) => {
-      console.log('[Tool:get_seo_data] Called with:', {
+      log('[Tool:get_seo_data] Called with:', {
         includeJsonLd,
         includeHeadings,
         issuesOnly,
@@ -85,7 +88,7 @@ export function createSeoTool(context: ToolContext, permissions: ToolPermissions
         result.headings = seoData.headings
       }
 
-      console.log('[Tool:get_seo_data] Result:', {
+      log('[Tool:get_seo_data] Result:', {
         ...result,
         jsonLd: includeJsonLd ? `[${seoData.jsonLd.length} items]` : undefined,
       })

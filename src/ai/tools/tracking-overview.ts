@@ -1,3 +1,6 @@
+const DEBUG = false
+function log(...args: unknown[]) { if (DEBUG) log(...args) }
+
 import { tool } from 'ai'
 import { z } from 'zod'
 import type { ToolContext, ToolPermissions, TrackingOverview } from './types'
@@ -11,7 +14,7 @@ export function createTrackingOverviewTool(
       'Get a quick overview of tracking implementations (GTM, GA4, pixels) on the page. Use when the user asks broadly about what tracking exists.',
     inputSchema: z.object({}),
     execute: async (): Promise<TrackingOverview | { error: string }> => {
-      console.log('[Tool:get_tracking_overview] Called')
+      log('[Tool:get_tracking_overview] Called')
 
       if (!permissions.allowGtm && !permissions.allowAnalytics) {
         return { error: 'Access to tracking data not permitted by user' }
@@ -64,7 +67,7 @@ export function createTrackingOverviewTool(
         }))
       }
 
-      console.log('[Tool:get_tracking_overview] Result:', overview)
+      log('[Tool:get_tracking_overview] Result:', overview)
       return overview
     },
   })

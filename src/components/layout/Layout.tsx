@@ -23,7 +23,7 @@ import {
 } from '@tabler/icons-react'
 import SparkleIcon from '@/components/assets/sparkle-icon'
 import type { TabId } from '@/shared/types'
-import type { DataCollectionStatus } from '@/hooks/useMessageListener'
+import type { DataCollectionStatus } from '@/store/tabDataStore'
 import { useTheme } from '@/hooks/useTheme'
 
 interface LayoutProps {

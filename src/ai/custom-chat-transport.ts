@@ -45,12 +45,6 @@ export class CustomChatTransport implements ChatTransport<UIMessage> {
       messageId: string | undefined
     } & ChatRequestOptions
   ): Promise<ReadableStream<UIMessageChunk>> {
-    console.log('[Chat] Sending messages:', {
-      chatId: options.chatId,
-      messageCount: options.messages.length,
-      tools: this.tools ? Object.keys(this.tools) : [],
-    })
-
     const result = streamText({
       model: this.model,
       system: this.systemPrompt,

@@ -1,3 +1,6 @@
+const DEBUG = false
+function log(...args: unknown[]) { if (DEBUG) log(...args) }
+
 import { tool } from 'ai'
 import { z } from 'zod'
 import type { ToolContext, ToolPermissions } from './types'
@@ -25,7 +28,7 @@ export function createAdtechTool(context: ToolContext, permissions: ToolPermissi
         .describe('Maximum number of auctions to return (default: 10)'),
     }),
     execute: async ({ includeAuctions, includeBidderDetails, includeConfig, auctionLimit }) => {
-      console.log('[Tool:get_adtech_data] Called with:', {
+      log('[Tool:get_adtech_data] Called with:', {
         includeAuctions,
         includeBidderDetails,
         includeConfig,
@@ -72,7 +75,7 @@ export function createAdtechTool(context: ToolContext, permissions: ToolPermissi
         result.returnedAuctionCount = Math.min(prebidData.auctions.length, auctionLimit)
       }
 
-      console.log('[Tool:get_adtech_data] Result:', {
+      log('[Tool:get_adtech_data] Result:', {
         ...result,
         auctions: includeAuctions ? `[${result.returnedAuctionCount} auctions]` : undefined,
         installedModules: `[${prebidData.installedModules.length} modules]`,
