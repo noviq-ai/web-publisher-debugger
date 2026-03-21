@@ -22,7 +22,11 @@ export const en = {
         },
         {
           title: 'Supported providers',
-          content: 'Currently supports Anthropic Claude and OpenAI GPT models. You need to provide your own API key in the settings.'
+          content: 'Currently supports Chrome built-in AI (Gemini Nano), Anthropic Claude, and OpenAI GPT models. Browser AI requires no API key; other providers require your own API key configured in settings.'
+        },
+        {
+          title: 'Available tools',
+          content: 'The AI assistant has access to predefined tools for collecting and analyzing page data. See the full tool reference at tools.html for details on each tool and its parameters.'
         }
       ]
     },

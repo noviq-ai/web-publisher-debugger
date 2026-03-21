@@ -22,7 +22,11 @@ export const ja = {
         },
         {
           title: '対応プロバイダー',
-          content: '現在、Anthropic ClaudeとOpenAI GPTモデルに対応しています。設定でご自身のAPIキーを設定する必要があります。'
+          content: '現在、Chrome組み込みAI（Gemini Nano）、Anthropic Claude、OpenAI GPTモデルに対応しています。ブラウザAIはAPIキー不要で利用できます。その他のプロバイダーは設定でAPIキーの設定が必要です。'
+        },
+        {
+          title: '利用可能なツール',
+          content: 'AIアシスタントはページデータの収集・分析のための定義済みツールにアクセスできます。各ツールの詳細とパラメータについては tools.html をご覧ください。'
         }
       ]
     },

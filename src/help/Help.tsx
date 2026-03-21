@@ -1,15 +1,5 @@
 import React, { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
-  IconArrowLeft,
-  IconRobot,
   IconSearch,
   IconDeviceTv,
   IconChartBar,
@@ -17,14 +7,14 @@ import {
   IconShield,
   IconChevronDown,
   IconChevronRight,
-  IconGlobe,
 } from '@tabler/icons-react'
+import SparkleIcon from '@/components/assets/sparkle-icon'
 import { PageHeader } from '@/components/common/PageHeader'
 import { PageLayout, SectionCard } from '@/components/common/PageLayout'
 import { getContent, detectLanguage } from './content'
 
 const sectionIcons: Record<string, React.ReactNode> = {
-  aiAssistant: <IconRobot size={20} />,
+  aiAssistant: <SparkleIcon className="size-5 [&_path]:fill-current" />,
   seo: <IconSearch size={20} />,
   adtech: <IconDeviceTv size={20} />,
   tracking: <IconChartBar size={20} />,
@@ -87,41 +77,14 @@ export const Help: React.FC = () => {
   const [lang, setLang] = useState(detectLanguage)
   const content = getContent(lang)
 
-  const handleBackToSettings = () => {
-    window.location.href = 'options.html'
-  }
-
   return (
     <>
       <PageHeader
-        title={content.title}
-        actions={
-          <Select value={lang} onValueChange={setLang}>
-            <SelectTrigger className="w-auto gap-2">
-              <IconGlobe size={16} />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="ja">日本語</SelectItem>
-            </SelectContent>
-          </Select>
-        }
+        activePage="help"
+        lang={lang}
+        onLangChange={setLang}
       />
       <PageLayout>
-        {/* Back button */}
-        <div className="mb-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleBackToSettings}
-            className="text-muted-foreground hover:text-foreground -ml-2"
-          >
-            <IconArrowLeft size={16} className="mr-1" />
-            {content.backToSettings}
-          </Button>
-        </div>
-
         {/* Overview */}
         <SectionCard>
           <h2 className="font-semibold mb-2">{content.sections.overview.title}</h2>
