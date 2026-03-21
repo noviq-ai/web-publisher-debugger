@@ -700,7 +700,10 @@ interface GptSlotInterface {
     }
 
     // 既存のdataLayerをキャプチャ（最大100件に制限）
-    const existingItems = window.dataLayer.slice(0, 100)
+    // Array でない実装（カスタムオブジェクト等）に備えて Array.from でガード
+    const existingItems = Array.isArray(window.dataLayer)
+      ? window.dataLayer.slice(0, 100)
+      : Array.from(window.dataLayer as unknown[]).slice(0, 100)
     existingItems.forEach((item) => {
       try {
         const itemObj = item as Record<string, unknown>
@@ -1081,7 +1084,7 @@ interface GptSlotInterface {
     let criteoAccountId = 'unknown'
 
     // 既存のイベントをキャプチャ（最大50件に制限）
-    const existingItems = originalCriteoQ.slice(0, 50)
+    const existingItems = Array.isArray(originalCriteoQ) ? originalCriteoQ.slice(0, 50) : []
     existingItems.forEach((item) => {
       if (item.event === 'setAccount' && item.account) {
         criteoAccountId = String(item.account)
