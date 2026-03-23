@@ -5,7 +5,7 @@ export const en = {
   sections: {
     overview: {
       title: 'Overview',
-      content: `Web Publisher Debugger is a Chrome extension designed to help web publishers debug and analyze their pages. It provides real-time insights into AdTech, SEO, and tracking implementations.`
+      content: `Pubsight is a Chrome extension designed to help web publishers debug and analyze their pages. It provides real-time insights into AdTech, SEO, and tracking implementations.`
     },
 
     aiAssistant: {

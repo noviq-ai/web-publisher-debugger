@@ -16,7 +16,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
 
         <footer className="px-6 py-6 text-center">
           <p className="text-sm text-muted-foreground">
-            Web Publisher Debugger v{__APP_VERSION__}
+            Pubsight v{__APP_VERSION__}
           </p>
         </footer>
       </div>

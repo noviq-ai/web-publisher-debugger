@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Web Publisher Debugger",
+  "name": "Pubsight",
   "version": "0.4.0",
   "description": "AdTech, GTM, SEO, Analytics debugging tool with AI assistance",
 
@@ -34,12 +34,18 @@
   "options_page": "options.html",
 
   "action": {
-    "default_icon": "icons/app-icon.png",
-    "default_title": "Web Publisher Debugger"
+    "default_icon": {
+      "16": "icons/app-icon-16.png",
+      "48": "icons/app-icon-48.png",
+      "128": "icons/app-icon-128.png"
+    },
+    "default_title": "Pubsight"
   },
 
   "icons": {
-    "128": "icons/app-icon.png"
+    "16": "icons/app-icon-16.png",
+    "48": "icons/app-icon-48.png",
+    "128": "icons/app-icon-128.png"
   },
 
   "web_accessible_resources": [

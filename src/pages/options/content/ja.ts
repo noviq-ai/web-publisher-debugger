@@ -1,5 +1,5 @@
 export const ja = {
-  title: 'Web Publisher Debugger',
+  title: 'Pubsight',
   subtitle: '設定',
 
   ai: {

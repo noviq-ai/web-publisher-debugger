@@ -1,10 +1,10 @@
-# Privacy Policy for Web Publisher Debugger
+# Privacy Policy for Pubsight
 
 **Last updated: January 2025**
 
 ## Overview
 
-Web Publisher Debugger is a Chrome extension designed to help web publishers debug and analyze their pages. We are committed to protecting your privacy and being transparent about our data practices.
+Pubsight is a Chrome extension designed to help web publishers debug and analyze their pages. We are committed to protecting your privacy and being transparent about our data practices.
 
 ## Data Collection
 

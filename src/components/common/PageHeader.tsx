@@ -59,7 +59,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <AppIcon className="h-6 w-6 shrink-0" />
-          <h1 className="text-base font-semibold leading-tight">Web Publisher Debugger</h1>
+          <h1 className="text-base font-semibold leading-tight">Pubsight</h1>
         </div>
 
         {/* Desktop nav */}

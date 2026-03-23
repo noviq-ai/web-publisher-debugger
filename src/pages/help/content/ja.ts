@@ -5,7 +5,7 @@ export const ja = {
   sections: {
     overview: {
       title: '概要',
-      content: `Web Publisher Debuggerは、ウェブパブリッシャーがページのデバッグと分析を行うためのChrome拡張機能です。AdTech、SEO、トラッキング実装のリアルタイム分析を提供します。`
+      content: `Pubsightは、ウェブパブリッシャーがページのデバッグと分析を行うためのChrome拡張機能です。AdTech、SEO、トラッキング実装のリアルタイム分析を提供します。`
     },
 
     aiAssistant: {

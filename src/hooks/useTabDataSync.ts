@@ -7,6 +7,7 @@ import { useTabDataStore } from '@/store/tabDataStore'
 const isExtension = typeof chrome !== 'undefined' && chrome.tabs?.query
 
 const COLLECTION_TIMEOUT_MS = 10000
+const RECONNECT_DELAY_MS = 500
 
 /**
  * Chrome拡張のポート接続・タブ監視を行い、データをストアに書き込む副作用フック。
@@ -30,6 +31,7 @@ export function useTabDataSync() {
   const currentTabIdRef = useRef<number | null>(null)
   const initialWindowIdRef = useRef<number | null>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const unmountedRef = useRef(false)
 
   const startTimeout = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
@@ -48,6 +50,69 @@ export function useTabDataSync() {
     }
   }, [])
 
+  // ポートメッセージハンドラ（connectPort から参照するため先に定義）
+  const handlePortMessage = useCallback((message: { type: MessageType; tabId?: number; payload?: unknown }) => {
+    if (message.tabId !== currentTabIdRef.current) return
+
+    clearCollectionTimeout()
+    setStatus('ready')
+
+    switch (message.type) {
+      case MessageType.SEO_DATA:
+        setSeoData(message.payload as SeoData)
+        break
+      case MessageType.PREBID_DATA:
+        setPrebidData(message.payload as PrebidData)
+        break
+      case MessageType.GPT_DATA:
+        setGptData(message.payload as GptData)
+        break
+      case MessageType.GTM_DATA:
+        setGtmData(message.payload as GtmData)
+        break
+      case MessageType.ANALYTICS_DATA:
+        setAnalyticsData(message.payload as AnalyticsData)
+        break
+      case MessageType.TECH_STACK_DATA:
+        setTechStackData(message.payload as TechStackData)
+        break
+    }
+  }, [clearCollectionTimeout, setSeoData, setPrebidData, setGptData, setGtmData, setAnalyticsData, setTechStackData, setStatus])
+
+  // ポート接続・切断検知・自動再接続
+  const connectPort = useCallback(() => {
+    if (unmountedRef.current) return
+
+    try {
+      const port = chrome.runtime.connect({ name: 'sidepanel' })
+      portRef.current = port
+
+      port.onMessage.addListener(handlePortMessage)
+
+      port.onDisconnect.addListener(() => {
+        portRef.current = null
+        if (unmountedRef.current) return
+
+        // Service Worker 再起動後に自動再接続
+        setTimeout(() => {
+          if (!unmountedRef.current) {
+            connectPort()
+            // 再接続後、現在のタブのデータを再リクエスト
+            const tabId = currentTabIdRef.current
+            if (tabId) {
+              chrome.runtime.sendMessage({ type: MessageType.REQUEST_REFRESH, tabId }).catch(() => {})
+            }
+          }
+        }, RECONNECT_DELAY_MS)
+      })
+    } catch {
+      // Extension context invalidated — retry after delay
+      setTimeout(() => {
+        if (!unmountedRef.current) connectPort()
+      }, RECONNECT_DELAY_MS)
+    }
+  }, [handlePortMessage])
+
   // ポート接続（マウント時に一度だけ）
   useEffect(() => {
     if (!isExtension) {
@@ -55,43 +120,18 @@ export function useTabDataSync() {
       return
     }
 
-    const port = chrome.runtime.connect({ name: 'sidepanel' })
-    portRef.current = port
-
-    port.onMessage.addListener((message: { type: MessageType; tabId?: number; payload?: unknown }) => {
-      if (message.tabId !== currentTabIdRef.current) return
-
-      clearCollectionTimeout()
-      setStatus('ready')
-
-      switch (message.type) {
-        case MessageType.SEO_DATA:
-          setSeoData(message.payload as SeoData)
-          break
-        case MessageType.PREBID_DATA:
-          setPrebidData(message.payload as PrebidData)
-          break
-        case MessageType.GPT_DATA:
-          setGptData(message.payload as GptData)
-          break
-        case MessageType.GTM_DATA:
-          setGtmData(message.payload as GtmData)
-          break
-        case MessageType.ANALYTICS_DATA:
-          setAnalyticsData(message.payload as AnalyticsData)
-          break
-        case MessageType.TECH_STACK_DATA:
-          setTechStackData(message.payload as TechStackData)
-          break
-      }
-    })
+    unmountedRef.current = false
+    connectPort()
 
     return () => {
-      port.disconnect()
-      portRef.current = null
+      unmountedRef.current = true
+      if (portRef.current) {
+        portRef.current.disconnect()
+        portRef.current = null
+      }
       clearCollectionTimeout()
     }
-  }, [clearCollectionTimeout, setSeoData, setPrebidData, setGptData, setGtmData, setAnalyticsData, setTechStackData, setStatus])
+  }, [connectPort, clearCollectionTimeout, setStatus])
 
   // 初期データリクエスト
   const requestInitialData = useCallback(async (tabId: number) => {
@@ -172,8 +212,17 @@ export function useTabDataSync() {
     setStatus('connecting')
     startTimeout()
     resetData()
+
+    // タブリロード完了後に requestInitialData を実行
+    const listener = (tabId: number, changeInfo: chrome.tabs.TabChangeInfo) => {
+      if (tabId !== currentTabId || changeInfo.status !== 'complete') return
+      chrome.tabs.onUpdated.removeListener(listener)
+      requestInitialData(currentTabId)
+    }
+    chrome.tabs.onUpdated.addListener(listener)
+
     chrome.tabs.reload(currentTabId)
-  }, [setStatus, startTimeout, resetData])
+  }, [setStatus, startTimeout, resetData, requestInitialData])
 
   return { reloadPage }
 }

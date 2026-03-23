@@ -1,5 +1,5 @@
 export const en = {
-  title: 'Web Publisher Debugger',
+  title: 'Pubsight',
   subtitle: 'Settings',
 
   ai: {

@@ -1,4 +1,4 @@
-# Web Publisher Debugger
+# Pubsight
 
 A Chrome extension for debugging SEO, AdTech (Prebid.js, GPT), and tracking (GA4, GTM) with AI-powered analysis.
 
@@ -6,9 +6,12 @@ A Chrome extension for debugging SEO, AdTech (Prebid.js, GPT), and tracking (GA4
 
 ## Screenshots
 
-![AI Assistant](docs/images/screenshot-ai.png)
-![AdTech Debugging](docs/images/screenshot-adtech.png)
-![SEO Analysis](docs/images/screenshot-seo.png)
+![Top](docs/images/pubsight-slide-1.png)
+![Browser AI](docs/images/pubsight-slide-2.png)
+![Tech Stack](docs/images/pubsight-slide-3.png)
+![AdTech Debugging](docs/images/pubsight-slide-4.png)
+![Tracking Analysis](docs/images/pubsight-slide-5.png)
+![SEO Analysis](docs/images/pubsight-slide-6.png)
 
 ## Features
 
