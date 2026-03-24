@@ -84,7 +84,7 @@ export const Layout: React.FC<LayoutProps> = ({
                 onClick={() => onTabChange(tab.id)}
                 className={activeTab === tab.id ? 'bg-accent' : ''}
               >
-                <tab.icon className="h-4 w-4 mr-2" />
+                <tab.icon className="h-4 w-4" />
                 {tab.label}
               </DropdownMenuItem>
             ))}
@@ -92,34 +92,34 @@ export const Layout: React.FC<LayoutProps> = ({
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
                 {theme === 'dark' ? (
-                  <IconMoon className="h-4 w-4 mr-2" />
+                  <IconMoon className="h-4 w-4" />
                 ) : theme === 'light' ? (
-                  <IconSun className="h-4 w-4 mr-2" />
+                  <IconSun className="h-4 w-4" />
                 ) : (
-                  <IconDeviceDesktop className="h-4 w-4 mr-2" />
+                  <IconDeviceDesktop className="h-4 w-4" />
                 )}
                 Theme
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
                 <DropdownMenuItem onClick={() => setTheme('light')}>
-                  <IconSun className="h-4 w-4 mr-2" />
+                  <IconSun className="h-4 w-4" />
                   Light
                   {theme === 'light' && <span className="ml-auto">✓</span>}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme('dark')}>
-                  <IconMoon className="h-4 w-4 mr-2" />
+                  <IconMoon className="h-4 w-4" />
                   Dark
                   {theme === 'dark' && <span className="ml-auto">✓</span>}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme('system')}>
-                  <IconDeviceDesktop className="h-4 w-4 mr-2" />
+                  <IconDeviceDesktop className="h-4 w-4" />
                   System
                   {theme === 'system' && <span className="ml-auto">✓</span>}
                 </DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuSub>
             <DropdownMenuItem onClick={openOptions}>
-              <IconSettings className="h-4 w-4 mr-2" />
+              <IconSettings className="h-4 w-4" />
               Settings
             </DropdownMenuItem>
           </DropdownMenuContent>
