@@ -525,11 +525,59 @@ function processLegacyData(raw: unknown) {
   processAuctionData(payload)
 }
 
+const MAX_EVENTS_TO_SEND = 50
+
+/**
+ * UI表示に必要なフィールドだけ残してイベントデータを軽量化する。
+ * PrebidTimeline.tsx の extractBidderInfo が参照するフィールドのみ保持。
+ */
+function slimEventData(eventType: string, data: unknown): unknown {
+  if (!data || typeof data !== 'object') return undefined
+
+  switch (eventType) {
+    case 'BID_REQUESTED': {
+      const d = data as Record<string, unknown>
+      const bids = Array.isArray(d.bids)
+        ? (d.bids as Array<Record<string, unknown>>).map(b => ({ adUnitCode: b.adUnitCode }))
+        : undefined
+      return { bidderCode: d.bidderCode, bids }
+    }
+    case 'BID_RESPONSE': {
+      const d = data as Record<string, unknown>
+      return { bidderCode: d.bidderCode, cpm: d.cpm, currency: d.currency, adUnitCode: d.adUnitCode }
+    }
+    case 'BID_WON': {
+      const d = data as Record<string, unknown>
+      return { bidder: d.bidder, cpm: d.cpm, currency: d.currency, adUnitCode: d.adUnitCode }
+    }
+    case 'BID_TIMEOUT': {
+      if (Array.isArray(data)) {
+        return (data as Array<Record<string, unknown>>).map(b => ({ bidder: b.bidder }))
+      }
+      return undefined
+    }
+    case 'AUCTION_INIT':
+    case 'AUCTION_END': {
+      const d = data as Record<string, unknown>
+      const adUnits = Array.isArray(d.adUnits) ? d.adUnits : undefined
+      return { adUnits: adUnits ? new Array(adUnits.length) : undefined }
+    }
+    default:
+      return undefined
+  }
+}
+
 function notifyUpdate() {
   log('[WPD] Prebid notifyUpdate, bidders:', collectedData.bidders.length)
   safeSendMessage({
     type: MSG_PREBID_DATA,
-    payload: collectedData,
+    payload: {
+      ...collectedData,
+      events: collectedData.events.slice(-MAX_EVENTS_TO_SEND).map(e => ({
+        ...e,
+        data: slimEventData(e.eventType, e.data),
+      })),
+    },
   })
 }
 

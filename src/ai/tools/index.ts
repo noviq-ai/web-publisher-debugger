@@ -7,8 +7,11 @@ import { createGa4Tool } from './ga4'
 import { createPixelsTool } from './pixels'
 import { createSeoTool } from './seo'
 import { createSeoOverviewTool } from './seo-overview'
-import { createAdtechTool } from './adtech'
 import { createAdtechOverviewTool } from './adtech-overview'
+import { createPrebidConfigTool } from './prebid-config'
+import { createPrebidBiddersTool } from './prebid-bidders'
+import { createPrebidAdUnitsTool } from './prebid-adunits'
+import { createGptSlotsTool } from './gpt-slots'
 import { createPrebidQueryTools } from './prebid-query'
 import { createSeoReadmeTool } from './readme-seo'
 import { createAdtechReadmeTool } from './readme-adtech'
@@ -35,7 +38,10 @@ export const TOOL_NAMES = {
   SEO: 'getSeoData',
   ADTECH_README: 'getAdtechReadme',
   ADTECH_OVERVIEW: 'getAdtechOverview',
-  ADTECH: 'getAdtechData',
+  PREBID_CONFIG: 'getPrebidConfig',
+  PREBID_BIDDERS: 'getPrebidBidders',
+  PREBID_ADUNITS: 'getPrebidAdUnits',
+  GPT_SLOTS: 'getGptSlots',
   // Dynamic Prebid query tools
   DIAGNOSE_BIDDER: 'diagnoseBidder',
   ANALYZE_AD_UNIT: 'analyzeAdUnit',
@@ -61,7 +67,10 @@ export function createDataTools(
     [TOOL_NAMES.SEO]: createSeoTool(context, permissions),
     [TOOL_NAMES.ADTECH_README]: createAdtechReadmeTool(),
     [TOOL_NAMES.ADTECH_OVERVIEW]: createAdtechOverviewTool(context, permissions),
-    [TOOL_NAMES.ADTECH]: createAdtechTool(context, permissions),
+    [TOOL_NAMES.PREBID_CONFIG]: createPrebidConfigTool(context, permissions),
+    [TOOL_NAMES.PREBID_BIDDERS]: createPrebidBiddersTool(context, permissions),
+    [TOOL_NAMES.PREBID_ADUNITS]: createPrebidAdUnitsTool(context, permissions),
+    [TOOL_NAMES.GPT_SLOTS]: createGptSlotsTool(context, permissions),
   }
 
   // Add dynamic Prebid query tools if we have a way to get the active tab
@@ -121,18 +130,29 @@ Get full SEO metadata and issues.
 - Returns: Meta tags, OGP, Twitter Card, structured data, headings, detected issues
 
 ### getAdtechReadme
-Returns descriptions of all AdTech tools (getAdtechOverview, getAdtechData, diagnoseBidder, analyzeAdUnit, queryPrebidEvents) — parameters and when to use each.
+Returns descriptions of all AdTech tools — parameters and when to use each.
 - Use this when unsure which AdTech tool to call
 
 ### getAdtechOverview
-Get a lightweight overview of AdTech (Prebid.js) data (no parameters needed).
-- Returns: Detected bidders list, ad unit codes, auction count, module count
-- Use this first to understand what AdTech data is available before calling getAdtechData
+Get a lightweight overview of AdTech data (Prebid.js + GPT) (no parameters needed).
+- Returns: Prebid bidders list, ad unit codes, auction count; GPT slot list, config
+- Use this first to understand what AdTech data is available
 
-### getAdtechData
-Get Prebid.js header bidding data.
-- Parameters: includeAuctions (boolean), includeBidderDetails (boolean), includeConfig (boolean), auctionLimit (number)
-- Returns: Prebid config, bidders, ad units, auction results, winning bids
+### getPrebidConfig
+Get Prebid.js configuration details.
+- Returns: Timeout, modules, user IDs, consent, S2S settings, alias registry, bidder settings
+
+### getPrebidBidders
+Get Prebid.js bidder statistics.
+- Returns: Bid count, win count, average CPM, response time, timeout count per bidder
+
+### getPrebidAdUnits
+Get Prebid.js ad units and winning bids.
+- Returns: Ad units, winning bids, Prebid winning bids, ad server targeting
+
+### getGptSlots
+Get Google Publisher Tag (GPT / Google Ad Manager) data.
+- Returns: Slot configuration, page targeting, render status, ad delivery info
 
 ### diagnoseBidder (Dynamic Query)
 Diagnose a specific Prebid bidder's performance in real-time.

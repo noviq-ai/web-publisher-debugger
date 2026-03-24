@@ -12,13 +12,9 @@ export function createAdtechOverviewTool(context: ToolContext, permissions: Tool
         return { error: 'Access to AdTech data not permitted by user' }
       }
 
-      const { prebidData } = context
+      const { prebidData, gptData } = context
 
-      if (!prebidData || !prebidData.detected) {
-        return { detected: false, message: 'Prebid.js not detected on this page' }
-      }
-
-      return {
+      const prebid = prebidData?.detected ? {
         detected: true,
         version: prebidData.version,
         bidderCount: prebidData.bidders.length,
@@ -31,6 +27,25 @@ export function createAdtechOverviewTool(context: ToolContext, permissions: Tool
         hasConsent: prebidData.config.consentManagement,
         hasUserIds: prebidData.userIds !== null,
         installedModuleCount: prebidData.installedModules.length,
+      } : { detected: false }
+
+      const gpt = gptData?.detected ? {
+        detected: true,
+        version: gptData.version,
+        slotCount: gptData.slots.length,
+        slots: gptData.slots.map((s) => s.slotElementId),
+        eventCount: gptData.events.length,
+        config: gptData.config,
+      } : { detected: false }
+
+      if (!prebidData?.detected && !gptData?.detected) {
+        return { detected: false, message: 'Neither Prebid.js nor GPT detected on this page' }
+      }
+
+      return {
+        detected: true,
+        prebid,
+        gpt,
       }
     },
   })

@@ -58,6 +58,7 @@ export interface ContextOption {
 export const AiPage: React.FC = () => {
   const seoData = useTabDataStore((s) => s.seoData)
   const prebidData = useTabDataStore((s) => s.prebidData)
+  const gptData = useTabDataStore((s) => s.gptData)
   const gtmData = useTabDataStore((s) => s.gtmData)
   const analyticsData = useTabDataStore((s) => s.analyticsData)
   const tabId = useTabDataStore((s) => s.currentTabId)
@@ -131,9 +132,10 @@ export const AiPage: React.FC = () => {
   const toolContext: ToolContext = useMemo(() => ({
     seoData,
     prebidData,
+    gptData,
     gtmData,
     analyticsData,
-  }), [seoData, prebidData, gtmData, analyticsData])
+  }), [seoData, prebidData, gptData, gtmData, analyticsData])
 
   // Tool permissions - what the user allows
   const toolPermissions: ToolPermissions = useMemo(() => ({

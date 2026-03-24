@@ -1,8 +1,9 @@
-import type { SeoData, PrebidData, GtmData, AnalyticsData } from '@/shared/types'
+import type { SeoData, PrebidData, GptData, GtmData, AnalyticsData } from '@/shared/types'
 
 export interface ToolContext {
   seoData: SeoData | null
   prebidData: PrebidData | null
+  gptData: GptData | null
   gtmData: GtmData | null
   analyticsData: AnalyticsData | null
 }

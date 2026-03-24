@@ -11,26 +11,42 @@ export function createAdtechReadmeTool() {
       tools: [
         {
           name: 'getAdtechOverview',
-          description: 'Lightweight snapshot of Prebid.js data on the current page.',
+          description: 'Lightweight snapshot of Prebid.js + GPT data on the current page.',
           parameters: 'none',
-          returns: 'Detected bidders, ad unit codes, auction count, module count, S2S/consent/userId flags',
+          returns: 'Prebid: bidders, ad units, auction count, flags. GPT: slots, config.',
           whenToUse: 'First call when the user asks anything AdTech-related. Use to decide which deeper tool to call.',
         },
         {
-          name: 'getAdtechData',
-          description: 'Full Prebid.js data for the current page.',
-          parameters: [
-            { name: 'includeAuctions', type: 'boolean', default: true, description: 'Include auction results' },
-            { name: 'includeBidderDetails', type: 'boolean', default: true, description: 'Include per-bidder stats' },
-            { name: 'includeConfig', type: 'boolean', default: true, description: 'Include Prebid config' },
-            { name: 'auctionLimit', type: 'number', default: 10, description: 'Max auctions to return' },
-          ],
-          returns: 'Prebid config, bidders, ad units, auctions, winning bids, targeting, user IDs',
-          whenToUse: 'When the user wants a full picture of the header bidding setup.',
+          name: 'getPrebidConfig',
+          description: 'Prebid.js configuration details.',
+          parameters: 'none',
+          returns: 'Timeout, modules, user IDs, consent, S2S settings, alias registry, bidder settings',
+          whenToUse: 'When the user asks about Prebid setup, modules, consent, or user ID configuration.',
+        },
+        {
+          name: 'getPrebidBidders',
+          description: 'Prebid.js bidder performance statistics.',
+          parameters: 'none',
+          returns: 'Bid count, win count, average CPM, response time, timeout count per bidder',
+          whenToUse: 'When the user asks about bidder performance or wants to compare bidders.',
+        },
+        {
+          name: 'getPrebidAdUnits',
+          description: 'Prebid.js ad units and winning bids.',
+          parameters: 'none',
+          returns: 'Ad units, winning bids, Prebid winning bids, ad server targeting',
+          whenToUse: 'When the user asks about ad units, winning bids, or targeting.',
+        },
+        {
+          name: 'getGptSlots',
+          description: 'Google Publisher Tag (GPT / Google Ad Manager) slot data.',
+          parameters: 'none',
+          returns: 'Slot configuration, page targeting, render status, ad delivery info',
+          whenToUse: 'When the user asks about GPT/GAM slots, ad rendering, or targeting.',
         },
         {
           name: 'diagnoseBidder',
-          description: 'Diagnose a specific bidder\'s live performance.',
+          description: 'Diagnose a specific bidder\'s live performance (dynamic query).',
           parameters: [
             { name: 'bidderCode', type: 'string', description: 'Bidder code e.g. "appnexus", "rubicon"' },
           ],
@@ -39,7 +55,7 @@ export function createAdtechReadmeTool() {
         },
         {
           name: 'analyzeAdUnit',
-          description: 'Analyze a specific ad unit in real-time.',
+          description: 'Analyze a specific ad unit in real-time (dynamic query).',
           parameters: [
             { name: 'adUnitCode', type: 'string', description: 'Ad unit code e.g. "div-gpt-ad-12345"' },
           ],
@@ -48,7 +64,7 @@ export function createAdtechReadmeTool() {
         },
         {
           name: 'queryPrebidEvents',
-          description: 'Query the Prebid event history.',
+          description: 'Query the Prebid event history (dynamic query).',
           parameters: [
             { name: 'eventType', type: 'string', optional: true, description: 'e.g. auctionInit, bidResponse, bidWon, bidTimeout' },
             { name: 'limit', type: 'number', description: 'Max events to return' },

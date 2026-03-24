@@ -16,6 +16,7 @@ export class CustomChatTransport implements ChatTransport<UIMessage> {
   private model: LanguageModel
   private systemPrompt?: string
   private tools?: Tools
+  private lastChatId: string | null = null
 
   constructor(model: LanguageModel, systemPrompt?: string, tools?: Tools) {
     this.model = model
@@ -45,6 +46,16 @@ export class CustomChatTransport implements ChatTransport<UIMessage> {
       messageId: string | undefined
     } & ChatRequestOptions
   ): Promise<ReadableStream<UIMessageChunk>> {
+    // chatId が変わったら Browser AI のセッションを破棄（前回の会話コンテキストをリセット）
+    if (this.lastChatId !== null && this.lastChatId !== options.chatId) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const sessionManager = (this.model as any).sessionManager
+      if (sessionManager?.destroySession) {
+        sessionManager.destroySession()
+      }
+    }
+    this.lastChatId = options.chatId
+
     const result = streamText({
       model: this.model,
       system: this.systemPrompt,
