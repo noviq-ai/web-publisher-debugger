@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
-import { ja } from 'date-fns/locale'
+import { enUS } from 'date-fns/locale'
 import {
   IconMessage,
   IconPlus,
@@ -87,9 +87,9 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
       </SheetTrigger>
       <SheetContent side="left" className="w-[280px] sm:w-[280px] sm:max-w-[280px] p-0">
         <SheetHeader className="p-4 pb-2">
-          <SheetTitle>チャット履歴</SheetTitle>
+          <SheetTitle>Chat History</SheetTitle>
           <SheetDescription className="sr-only">
-            過去のチャット一覧
+            Past chat list
           </SheetDescription>
         </SheetHeader>
 
@@ -101,7 +101,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
             onClick={onNewChat}
           >
             <IconPlus size={16} />
-            新しいチャット
+            New Chat
           </Button>
         </div>
 
@@ -109,7 +109,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
             {chats.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
                 <IconMessage size={32} className="mb-2 opacity-50" />
-                <p className="text-sm">履歴がありません</p>
+                <p className="text-sm">No history</p>
               </div>
             ) : (
               <div className="space-y-1">
@@ -160,7 +160,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
                           <p className="text-xs text-muted-foreground truncate">
                             {formatDistanceToNow(chat.updatedAt, {
                               addSuffix: true,
-                              locale: ja,
+                              locale: enUS,
                             })}
                           </p>
                         </button>
@@ -177,15 +177,15 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => handleStartEdit(chat)}>
-                              <IconPencil size={16} className="mr-2" />
-                              名前を変更
+                              <IconPencil size={16} />
+                              Rename
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-destructive"
                               onClick={() => onDeleteChat(chat.id)}
                             >
-                              <IconTrash size={16} className="mr-2" />
-                              削除
+                              <IconTrash size={16} />
+                              Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>

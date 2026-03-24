@@ -320,7 +320,7 @@ export const AiPage: React.FC = () => {
           variant="ghost"
           size="icon"
           onClick={handleNewChat}
-          title="新しいチャット"
+          title="New Chat"
         >
           <IconPlus size={16} />
         </Button>
