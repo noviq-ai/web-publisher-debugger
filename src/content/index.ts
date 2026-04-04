@@ -79,21 +79,17 @@ async function getSettings() {
       enableAnalytics: true,
     }
   }
+  const defaults = {
+    enableAdTech: true,
+    enableGtm: true,
+    enableSeo: true,
+    enableAnalytics: true,
+  }
   try {
     const result = await chrome.storage.local.get(['settings'])
-    return result.settings || {
-      enableAdTech: true,
-      enableGtm: true,
-      enableSeo: true,
-      enableAnalytics: true,
-    }
+    return { ...defaults, ...result.settings }
   } catch {
-    return {
-      enableAdTech: true,
-      enableGtm: true,
-      enableSeo: true,
-      enableAnalytics: true,
-    }
+    return defaults
   }
 }
 

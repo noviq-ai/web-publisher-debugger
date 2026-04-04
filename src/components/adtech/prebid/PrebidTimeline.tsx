@@ -8,7 +8,8 @@ interface PrebidTimelineProps {
 }
 
 const getEventColor = (eventType: string): { bg: string; badge: string; shadow: string } => {
-  switch (eventType) {
+  const normalized = eventType.replace(/([A-Z])/g, '_$1').toUpperCase().replace(/^_/, '')
+  switch (normalized) {
     case 'AUCTION_INIT':
       return { bg: 'bg-blue-500', badge: 'bg-blue-500/10 text-blue-600 dark:text-blue-400', shadow: 'rgba(59, 130, 246, 0.5)' }
     case 'AUCTION_END':

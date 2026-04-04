@@ -18,10 +18,9 @@ export function useTheme() {
   const [theme, setThemeState] = useState<Theme>('system')
 
   useEffect(() => {
-    // Load saved theme
     if (typeof chrome !== 'undefined' && chrome.storage?.local) {
-      chrome.storage.local.get(['settings'], (result) => {
-        const savedTheme = result.settings?.theme as Theme | undefined
+      chrome.storage.local.get(['theme'], (result) => {
+        const savedTheme = result.theme as Theme | undefined
         if (savedTheme) {
           setThemeState(savedTheme)
           applyTheme(savedTheme)
@@ -41,7 +40,6 @@ export function useTheme() {
   }, [])
 
   useEffect(() => {
-    // Listen for system theme changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = () => {
       if (theme === 'system') {
@@ -56,12 +54,8 @@ export function useTheme() {
     setThemeState(newTheme)
     applyTheme(newTheme)
 
-    // Save theme
     if (typeof chrome !== 'undefined' && chrome.storage?.local) {
-      chrome.storage.local.get(['settings'], (result) => {
-        const settings = result.settings || {}
-        chrome.storage.local.set({ settings: { ...settings, theme: newTheme } })
-      })
+      chrome.storage.local.set({ theme: newTheme })
     } else {
       localStorage.setItem('theme', newTheme)
     }
