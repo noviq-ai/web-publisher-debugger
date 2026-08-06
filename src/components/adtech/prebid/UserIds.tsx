@@ -1,6 +1,6 @@
 import React from 'react'
 import type { UserIdInfo } from '@/shared/types/prebid'
-import { IconFingerprint } from '@tabler/icons-react'
+import { IconTouch as IconFingerprint } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { Section } from '@/components/common'
 
 interface UserIdsProps {
@@ -16,7 +16,7 @@ export const UserIds: React.FC<UserIdsProps> = ({ userIds }) => {
         {Object.entries(userIds.ids).map(([key, value]) => (
           <div key={key} className="bg-muted/30 rounded-md p-2">
             <div className="text-xs font-medium mb-0.5">{key}</div>
-            <div className="text-[10px] text-muted-foreground font-mono whitespace-pre-wrap break-all">
+            <div className="whitespace-pre-wrap break-all font-mono text-xs text-muted-foreground">
               {typeof value === 'string' ? value : JSON.stringify(value, null, 2)}
             </div>
           </div>

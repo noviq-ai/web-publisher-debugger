@@ -1,5 +1,5 @@
 import React from 'react'
-import { IconHexagons } from '@tabler/icons-react'
+import { IconFormHexagon as IconHexagons } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { Section } from '@/components/common'
 
 interface PrebidModulesProps {
@@ -9,9 +9,9 @@ interface PrebidModulesProps {
 type Category = 'Bidder Adapter' | 'ID Module' | 'Analytics' | 'RTD' | 'Other'
 
 const CATEGORIES: { label: Category; suffix: string; color: string }[] = [
-  { label: 'Bidder Adapter', suffix: 'BidAdapter', color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400' },
+  { label: 'Bidder Adapter', suffix: 'BidAdapter', color: 'bg-info/15 text-info' },
   { label: 'ID Module',      suffix: 'IdSystem',   color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400' },
-  { label: 'Analytics',      suffix: 'AnalyticsAdapter', color: 'bg-green-500/10 text-green-600 dark:text-green-400' },
+  { label: 'Analytics',      suffix: 'AnalyticsAdapter', color: 'bg-success/15 text-success' },
   { label: 'RTD',            suffix: 'RtdProvider', color: 'bg-orange-500/10 text-orange-600 dark:text-orange-400' },
 ]
 
@@ -41,10 +41,10 @@ export const PrebidModules: React.FC<PrebidModulesProps> = ({ modules }) => {
           const { color } = CATEGORIES.find(c => c.label === cat) ?? { color: 'bg-muted text-muted-foreground' }
           return (
             <div key={cat}>
-              <div className="text-[10px] font-medium text-muted-foreground mb-1">{cat} ({grouped[cat].length})</div>
+              <div className="mb-1 text-xs font-medium text-muted-foreground">{cat} ({grouped[cat].length})</div>
               <div className="flex flex-wrap gap-1">
                 {grouped[cat].sort().map(m => (
-                  <span key={m} className={`text-[10px] px-1.5 py-0.5 rounded ${color}`}>{m}</span>
+                  <span key={m} className={`rounded px-1.5 py-0.5 text-xs ${color}`}>{m}</span>
                 ))}
               </div>
             </div>

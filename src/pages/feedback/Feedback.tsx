@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { IconCheck, IconAlertTriangle } from '@tabler/icons-react'
+import { IconCheckmark1 as IconCheck, IconExclamationTriangle as IconAlertTriangle } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { PageHeader } from '@/components/common/PageHeader'
 import { PageLayout, SectionCard } from '@/components/common/PageLayout'
 import { getContent, detectLanguage } from './content'
@@ -115,7 +115,9 @@ export const Feedback: React.FC = () => {
 
                   <Field>
                     <FieldLabel htmlFor="category">{t.form.category.label}</FieldLabel>
-                    <Select value={category} onValueChange={setCategory}>
+                    <Select value={category} onValueChange={(value) => {
+                      if (value !== null) setCategory(value)
+                    }}>
                       <SelectTrigger id="category" className="bg-background">
                         <SelectValue placeholder={t.form.category.placeholder} />
                       </SelectTrigger>

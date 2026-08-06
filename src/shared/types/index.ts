@@ -6,7 +6,7 @@ export * from './gtm'
 export * from './analytics'
 export * from './techstack'
 
-export type TabId = 'adtech' | 'seo' | 'tracking' | 'ai' | 'techstack'
+export type TabId = 'adtech' | 'ads-txt' | 'seo' | 'tracking' | 'ai' | 'techstack'
 
 export type AiProvider = 'browser' | 'anthropic' | 'openai'
 

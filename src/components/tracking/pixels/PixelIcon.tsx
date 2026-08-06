@@ -1,12 +1,13 @@
 import React from 'react'
 import type { PixelType } from '@/shared/types/analytics'
+import { IconTarget } from '@central-icons-react/round-outlined-radius-2-stroke-1.5'
 
 interface PixelIconProps {
   type: PixelType
-  className?: string
+  className: string
 }
 
-const iconMap: Record<PixelType, string | null> = {
+const SERVICE_ICON_PATHS: Partial<Record<PixelType, string>> = {
   facebook: '/icons/facebook.svg',
   twitter: '/icons/x.svg',
   tiktok: '/icons/tiktok.svg',
@@ -14,15 +15,11 @@ const iconMap: Record<PixelType, string | null> = {
   pinterest: '/icons/pinterest.svg',
   criteo: '/icons/criteo.svg',
   snapchat: '/icons/snapchat.svg',
-  other: null,
 }
 
-export const PixelIcon: React.FC<PixelIconProps> = ({ type, className = 'h-4 w-4' }) => {
-  const icon = iconMap[type]
+export const PixelIcon: React.FC<PixelIconProps> = ({ type, className }) => {
+  const iconPath = SERVICE_ICON_PATHS[type]
+  if (iconPath) return <img src={iconPath} alt="" width={20} height={20} className={`${className} object-contain`} />
 
-  if (!icon) {
-    return <div className={`${className} bg-muted rounded`} />
-  }
-
-  return <img src={icon} alt={type} className={className} />
+  return <IconTarget className={className} />
 }

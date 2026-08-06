@@ -1,26 +1,8 @@
 import { useEffect, useState } from 'react'
 import { cn } from '@/shared/lib/utils'
 import type { WeatherData } from './types'
-
-const SunIcon = ({ size = 40 }: { size?: number }) => (
-  <svg fill="none" height={size} viewBox="0 0 24 24" width={size}>
-    <circle cx="12" cy="12" fill="currentColor" r="5" />
-    <line stroke="currentColor" strokeWidth="2" x1="12" x2="12" y1="1" y2="3" />
-    <line stroke="currentColor" strokeWidth="2" x1="12" x2="12" y1="21" y2="23" />
-    <line stroke="currentColor" strokeWidth="2" x1="4.22" x2="5.64" y1="4.22" y2="5.64" />
-    <line stroke="currentColor" strokeWidth="2" x1="18.36" x2="19.78" y1="18.36" y2="19.78" />
-    <line stroke="currentColor" strokeWidth="2" x1="1" x2="3" y1="12" y2="12" />
-    <line stroke="currentColor" strokeWidth="2" x1="21" x2="23" y1="12" y2="12" />
-    <line stroke="currentColor" strokeWidth="2" x1="4.22" x2="5.64" y1="19.78" y2="18.36" />
-    <line stroke="currentColor" strokeWidth="2" x1="18.36" x2="19.78" y1="5.64" y2="4.22" />
-  </svg>
-)
-
-const MoonIcon = ({ size = 40 }: { size?: number }) => (
-  <svg fill="none" height={size} viewBox="0 0 24 24" width={size}>
-    <path d="M21 12.79A9 9 0 1 1 11.21 3A7 7 0 0 0 21 12.79z" fill="currentColor" />
-  </svg>
-)
+import { IconSunHigh as SunIcon } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconSunHigh'
+import { IconMoon as MoonIcon } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconMoon'
 
 const CloudIcon = ({ size = 24 }: { size?: number }) => (
   <svg fill="none" height={size} viewBox="0 0 24 24" width={size}>

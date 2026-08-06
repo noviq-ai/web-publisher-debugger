@@ -17,13 +17,16 @@ import {
 
 interface PrebidSectionProps {
   data: PrebidData
+  headerAction: React.ReactNode
+  headerContent: React.ReactNode
 }
 
-export const PrebidSection: React.FC<PrebidSectionProps> = ({ data }) => {
+export const PrebidSection: React.FC<PrebidSectionProps> = ({ data, headerAction, headerContent }) => {
   return (
     <>
       {/* Header with stats */}
-      <PrebidHeader data={data} />
+      <PrebidHeader data={data} action={headerAction} />
+      {headerContent}
 
       {/* Event Timeline - 重要なので2番目 */}
       <PrebidTimeline events={data.events} />

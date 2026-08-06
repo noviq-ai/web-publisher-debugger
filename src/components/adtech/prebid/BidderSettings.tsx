@@ -1,18 +1,28 @@
 import React, { useState, useMemo } from 'react'
-import { IconTarget, IconChevronRight, IconCopy, IconCheck } from '@tabler/icons-react'
-import { IconFolderSymlink, IconSettings2 } from '@tabler/icons-react'
+import { IconTarget, IconChevronRightMedium as IconChevronRight, IconFiles as IconCopy, IconCheckmark1 as IconCheck } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
+import { IconFolderLink as IconFolderSymlink, IconSettingsSliderHor as IconSettings2 } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { Section } from '@/components/common'
 
 interface BidderAliasesProps {
   aliases: Record<string, string>
 }
 
+const BIDDER_BACKGROUND_OPACITY = '15%'
+
+function createPaletteEntry(colorVariable: `--color-${string}`) {
+  const foreground = `var(${colorVariable})`
+  return {
+    bg: `color-mix(in srgb, ${foreground} ${BIDDER_BACKGROUND_OPACITY}, transparent)`,
+    fg: foreground,
+  }
+}
+
 const PALETTE = [
-  { bg: 'var(--color-bg-info)',    fg: 'var(--color-text-info)' },
-  { bg: 'var(--color-bg-success)', fg: 'var(--color-text-success)' },
-  { bg: 'var(--color-bg-warning)', fg: 'var(--color-text-warning)' },
-  { bg: 'var(--color-bg-danger)',  fg: 'var(--color-text-danger)' },
-  { bg: 'var(--color-bg-secondary)', fg: 'var(--color-text-secondary)' },
+  createPaletteEntry('--color-text-info'),
+  createPaletteEntry('--color-text-success'),
+  createPaletteEntry('--color-text-warning'),
+  createPaletteEntry('--color-text-danger'),
+  createPaletteEntry('--color-text-secondary'),
 ]
 
 function adapterColor(adapter: string) {
@@ -62,13 +72,16 @@ export const BidderAliases: React.FC<BidderAliasesProps> = ({ aliases }) => {
 
   return (
     <Section title="Bidder Aliases" icon={<IconFolderSymlink size={14} />} count={entries.length}>
-      {/* Search */}
+      <label className="sr-only" htmlFor="bidder-alias-filter">Filter Bidder Aliases</label>
       <input
+        id="bidder-alias-filter"
+        name="bidder-alias-filter"
         type="text"
+        autoComplete="off"
         value={search}
         onChange={e => setSearch(e.target.value)}
-        placeholder="Filter by alias or adapter name..."
-        className="w-full text-[11px] px-2.5 py-1.5 rounded border border-border bg-background text-foreground placeholder:text-muted-foreground outline-none focus:border-primary mb-2"
+        placeholder="Filter by alias or adapter name…"
+        className="mb-2 w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/30"
       />
 
       {/* Tabs */}
@@ -77,12 +90,12 @@ export const BidderAliases: React.FC<BidderAliasesProps> = ({ aliases }) => {
           <button
             key={v}
             onClick={() => setView(v)}
-            className={`text-[11px] px-3 py-1.5 border-b-2 transition-colors ${view === v ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+            className={`border-b-2 px-3 py-1.5 text-xs transition-colors focus-visible:rounded-t focus-visible:ring-2 focus-visible:ring-ring/40 ${view === v ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
           >
             {v === 'grouped' ? 'By adapter' : 'Flat list'}
           </button>
         ))}
-        <span className="ml-auto text-[10px] text-muted-foreground self-center pr-1">{filtered.length} / {adapterCount} adapters</span>
+        <span className="ml-auto self-center pr-1 text-xs text-muted-foreground">{filtered.length} / {adapterCount} adapters</span>
       </div>
 
       {/* Adapter chips */}
@@ -93,7 +106,7 @@ export const BidderAliases: React.FC<BidderAliasesProps> = ({ aliases }) => {
             <button
               key={adapter}
               onClick={() => setSearch(s => s === adapter ? '' : adapter)}
-              className="text-[10px] px-2 py-0.5 rounded-full border-0 cursor-pointer transition-opacity hover:opacity-70"
+              className="cursor-pointer rounded-full border-0 px-2 py-0.5 text-xs transition-opacity hover:opacity-70 focus-visible:ring-2 focus-visible:ring-ring/40"
               style={{ background: col.bg, color: col.fg }}
             >
               {adapter} <span style={{ opacity: 0.6 }}>{aliases.length}</span>
@@ -112,16 +125,17 @@ export const BidderAliases: React.FC<BidderAliasesProps> = ({ aliases }) => {
               <div key={adapter} className="border-b border-border/30 last:border-b-0">
                 <button
                   onClick={() => toggleGroup(adapter)}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-[11px] hover:bg-muted/40 transition-colors text-left"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40"
+                  aria-expanded={open}
                 >
                   <IconChevronRight size={12} className={`text-muted-foreground transition-transform ${open ? 'rotate-90' : ''}`} />
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-medium" style={{ background: col.bg, color: col.fg }}>{adapter}</span>
-                  <span className="text-muted-foreground text-[10px]">{aliasesList.length} alias{aliasesList.length > 1 ? 'es' : ''}</span>
+                  <span className="rounded-full px-2 py-0.5 text-xs font-medium" style={{ background: col.bg, color: col.fg }}>{adapter}</span>
+                  <span className="text-xs text-muted-foreground">{aliasesList.length} alias{aliasesList.length > 1 ? 'es' : ''}</span>
                 </button>
                 {open && (
                   <div className="border-t border-border/20">
                     {aliasesList.map(alias => (
-                      <div key={alias} className="pl-8 pr-3 py-1.5 text-[11px] font-medium hover:bg-muted/30 border-b border-border/10 last:border-b-0">
+                      <div key={alias} className="border-b border-border/10 py-1.5 pl-8 pr-3 text-xs font-medium last:border-b-0 hover:bg-muted/30">
                         {alias}
                       </div>
                     ))}
@@ -134,10 +148,10 @@ export const BidderAliases: React.FC<BidderAliasesProps> = ({ aliases }) => {
           filtered.map(([alias, adapter]) => {
             const col = adapterColor(adapter)
             return (
-              <div key={alias} className="flex items-center gap-2 px-3 py-1.5 text-[11px] border-b border-border/20 last:border-b-0 hover:bg-muted/30">
+              <div key={alias} className="flex items-center gap-2 border-b border-border/20 px-3 py-1.5 text-xs last:border-b-0 hover:bg-muted/30">
                 <span className="font-medium flex-1 truncate">{alias}</span>
                 <span className="text-muted-foreground">→</span>
-                <span className="px-2 py-0.5 rounded-full text-[10px]" style={{ background: col.bg, color: col.fg }}>{adapter}</span>
+                <span className="rounded-full px-2 py-0.5 text-xs" style={{ background: col.bg, color: col.fg }}>{adapter}</span>
               </div>
             )
           })
@@ -146,7 +160,7 @@ export const BidderAliases: React.FC<BidderAliasesProps> = ({ aliases }) => {
 
       {/* Footer */}
       <div className="flex justify-end mt-1.5">
-        <button onClick={copyJSON} className="flex items-center gap-1 text-[10px] text-primary hover:underline">
+        <button onClick={copyJSON} className="flex items-center gap-1 rounded text-xs text-primary hover:underline focus-visible:ring-2 focus-visible:ring-ring/40">
           {copied ? <><IconCheck size={12} />Copied!</> : <><IconCopy size={12} />Copy JSON</>}
         </button>
       </div>
@@ -167,7 +181,7 @@ export const BidderSettings: React.FC<BidderSettingsProps> = ({ settings }) => {
         {Object.entries(settings).map(([bidder, settingsData]) => (
           <div key={bidder} className="bg-muted/30 rounded-md p-2">
             <div className="text-xs font-medium mb-1">{bidder === 'standard' ? 'Standard (Default)' : bidder}</div>
-            <pre className="text-[10px] font-mono bg-muted/50 p-2 rounded overflow-x-auto max-h-24 text-muted-foreground">{JSON.stringify(settingsData, null, 2)}</pre>
+            <pre className="max-h-24 overflow-x-auto rounded bg-muted/50 p-2 font-mono text-xs text-muted-foreground">{JSON.stringify(settingsData, null, 2)}</pre>
           </div>
         ))}
       </div>
@@ -190,9 +204,9 @@ export const AdServerTargeting: React.FC<AdServerTargetingProps> = ({ targeting 
             <div className="text-xs font-medium mb-1.5 truncate" title={adUnit}>{adUnit}</div>
             <div className="space-y-0.5">
               {Object.entries(targetingData).map(([key, value]) => (
-                <div key={key} className="flex items-center text-[10px]">
+                <div key={key} className="flex min-w-0 items-center gap-2 text-xs">
                   <span className="text-muted-foreground w-20 shrink-0">{key}</span>
-                  <span className="font-mono truncate" title={value}>{value}</span>
+                  <span className="min-w-0 truncate font-mono" title={value}>{value}</span>
                 </div>
               ))}
             </div>

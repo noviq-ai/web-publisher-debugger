@@ -1,7 +1,8 @@
-import { IconSettings } from '@tabler/icons-react'
-import SparkleIcon from '@/components/assets/sparkle-icon'
+import { IconSettingsGear2 as IconSettings } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
+import { IconSparklesTwo2 as SparkleIcon } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconSparklesTwo2'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
+import { BorderBeam } from 'border-beam'
 
 interface EmptyStateProps {
   quickPrompts: string[]
@@ -23,14 +24,20 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         transition={{ duration: 0.6, ease: 'easeOut' }}
         className="relative mb-8"
       >
-        {/* Ambient glow */}
-        <div className="absolute inset-0 rounded-full blur-2xl opacity-40 bg-[conic-gradient(from_180deg,#e0c3fc,#8ec5fc,#fbc2eb,#a6c1ee,#e0c3fc)] animate-spin [animation-duration:8s]" />
-        {/* Gradient orb */}
-        <div className="relative size-16 rounded-full bg-[conic-gradient(from_45deg,#f9a8d4,#c084fc,#818cf8,#60a5fa,#34d399,#fbbf24,#f9a8d4)] p-[2px]">
-          <div className="flex items-center justify-center size-full rounded-full bg-background">
-            <SparkleIcon className="size-7 text-foreground" />
+        <BorderBeam
+          size="pulse-outside"
+          colorVariant="colorful"
+          strength={0.7}
+          theme="auto"
+        >
+          <div className="flex size-20 items-center justify-center rounded-2xl border border-border bg-background">
+            <img
+              src="/icons/assistant-welcome.svg"
+              alt=""
+              className="size-16 dark:invert"
+            />
           </div>
-        </div>
+        </BorderBeam>
       </motion.div>
 
       {/* Title */}
@@ -40,7 +47,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         transition={{ delay: 0.2 }}
         className="text-lg font-semibold mb-2"
       >
-        Web Publisher AI
+        Pubsight Assistant
       </motion.h2>
 
       {/* Description */}

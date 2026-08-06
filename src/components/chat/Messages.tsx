@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
-import { IconArrowDown } from '@tabler/icons-react'
+import { IconArrowDown } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { cn } from '@/shared/lib/utils'
 import type { ChatMessage, ChatStatus } from './types'
 import { Message } from './Message'
@@ -14,7 +14,10 @@ interface MessagesProps {
 export const Messages: React.FC<MessagesProps> = ({ messages, status, emptyState }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const endRef = useRef<HTMLDivElement>(null)
+  const responseStartedAtRef = useRef<number | null>(null)
   const [isAtBottom, setIsAtBottom] = useState(true)
+  const [elapsedSeconds, setElapsedSeconds] = useState(0)
+  const [completedDurations, setCompletedDurations] = useState<Record<string, number>>({})
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
     endRef.current?.scrollIntoView({ behavior })
@@ -55,6 +58,39 @@ export const Messages: React.FC<MessagesProps> = ({ messages, status, emptyState
   const isLoading = status === 'streaming' || status === 'submitted'
   const showThinking = status === 'submitted'
 
+  useEffect(() => {
+    if (isLoading && responseStartedAtRef.current === null) {
+      responseStartedAtRef.current = Date.now()
+      setElapsedSeconds(0)
+    }
+
+    if (!isLoading && responseStartedAtRef.current !== null) {
+      const lastAssistantMessage = [...messages].reverse().find((message) => message.role === 'assistant')
+      const durationSeconds = Math.max(1, Math.round((Date.now() - responseStartedAtRef.current) / 1_000))
+      responseStartedAtRef.current = null
+      setElapsedSeconds(durationSeconds)
+
+      if (lastAssistantMessage) {
+        setCompletedDurations((durations) => ({
+          ...durations,
+          [lastAssistantMessage.id]: durationSeconds,
+        }))
+      }
+    }
+  }, [isLoading, messages])
+
+  useEffect(() => {
+    if (!isLoading) return
+
+    const updateElapsedSeconds = () => {
+      if (responseStartedAtRef.current === null) return
+      setElapsedSeconds(Math.max(1, Math.floor((Date.now() - responseStartedAtRef.current) / 1_000)))
+    }
+    updateElapsedSeconds()
+    const intervalId = window.setInterval(updateElapsedSeconds, 1_000)
+    return () => window.clearInterval(intervalId)
+  }, [isLoading])
+
   if (messages.length === 0 && emptyState) {
     return <div className="flex-1 flex flex-col">{emptyState}</div>
   }
@@ -62,15 +98,20 @@ export const Messages: React.FC<MessagesProps> = ({ messages, status, emptyState
   return (
     <div className="relative flex-1">
       <div
-        className="absolute inset-0 touch-pan-y overflow-y-auto"
+        className="absolute inset-0 touch-pan-y overflow-x-hidden overflow-y-auto"
         ref={containerRef}
       >
-        <div className="mx-auto flex min-w-0 max-w-3xl flex-col gap-4 px-6 py-4">
+        <div className="mx-auto flex min-w-0 max-w-3xl flex-col gap-4 overflow-x-hidden px-6 py-4">
           {messages.map((message, index) => (
             <Message
               key={message.id}
               message={message}
               isLoading={isLoading && index === messages.length - 1 && message.role === 'assistant'}
+              durationSeconds={
+                message.metadata?.durationSeconds
+                ?? completedDurations[message.id]
+                ?? (isLoading && index === messages.length - 1 && message.role === 'assistant' ? elapsedSeconds : undefined)
+              }
             />
           ))}
 

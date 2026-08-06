@@ -1,0 +1,28 @@
+diff --git a/dist/index.js b/dist/index.js
+index 3a150c54ac4a466bb2450807c29297ef8747ebce..84fb400c6fa641d45963545e7fd32fa2f1da12a2 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1720,6 +1720,9 @@ var BrowserAIChatLanguageModel = class {
+           }
+           finishStream({ unified: "tool-calls", raw: "tool-calls" });
+         } catch (error) {
++          if (aborted || options.abortSignal?.aborted) {
++            return;
++          }
+           controller.enqueue({ type: "error", error });
+           controller.close();
+         } finally {
+diff --git a/dist/index.mjs b/dist/index.mjs
+index be1ed828caaa5820a9dfbbfce1b7be8b106e4319..402b53effbddac671437c63889a4c23a6a3ddbd1 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -1692,6 +1692,9 @@ var BrowserAIChatLanguageModel = class {
+           }
+           finishStream({ unified: "tool-calls", raw: "tool-calls" });
+         } catch (error) {
++          if (aborted || options.abortSignal?.aborted) {
++            return;
++          }
+           controller.enqueue({ type: "error", error });
+           controller.close();
+         } finally {

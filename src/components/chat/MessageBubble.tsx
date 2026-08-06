@@ -1,4 +1,16 @@
-import { AnimatedMarkdown } from '@nvq/flowtoken'
+import { Streamdown } from 'streamdown'
+import { cjk } from '@streamdown/cjk'
+
+export const CHAT_MARKDOWN_CLASS = 'min-w-0 max-w-full overflow-hidden break-words text-sm prose prose-sm dark:prose-invert prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-1 prose-pre:max-w-full prose-pre:whitespace-pre-wrap prose-pre:break-words prose-pre:p-2 prose-pre:bg-background/50 prose-code:text-xs prose-h1:text-base prose-h2:text-sm prose-h3:text-sm md:prose-h1:text-lg md:prose-h2:text-base md:prose-h3:text-sm [&_a]:[overflow-wrap:anywhere] [&_code]:whitespace-pre-wrap [&_code]:[overflow-wrap:anywhere] [&_td]:break-words [&_th]:break-words [&_table]:w-full [&_table]:table-fixed'
+
+export const STREAMDOWN_ANIMATION = {
+  animation: 'blurIn',
+  duration: 250,
+  easing: 'ease-out',
+  sep: 'word',
+} as const
+
+export const STREAMDOWN_PLUGINS = { cjk }
 
 export interface UIMessage {
   id: string
@@ -22,7 +34,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreami
   if (isUser) {
     return (
       <div className="flex justify-end">
-        <div className="rounded-lg rounded-br-sm p-2 px-4 max-w-[85%] bg-primary text-primary-foreground">
+        <div className="max-w-[85%] rounded-lg rounded-br-sm bg-muted p-2 px-4 text-foreground">
           <div className="text-sm whitespace-pre-wrap">{content}</div>
         </div>
       </div>
@@ -31,14 +43,14 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreami
 
   return (
     <div className="w-full">
-      <div className="text-sm prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-1 prose-pre:p-2 prose-pre:bg-background/50 prose-code:text-xs prose-h1:text-base prose-h2:text-sm prose-h3:text-sm md:prose-h1:text-lg md:prose-h2:text-base md:prose-h3:text-sm">
-        <AnimatedMarkdown
-          content={content}
-          animation={isStreaming ? 'fadeIn' : null}
-          animationDuration="0.3s"
-          animationTimingFunction="ease-out"
-          sep="word"
-        />
+      <div className={CHAT_MARKDOWN_CLASS}>
+        <Streamdown
+          animated={STREAMDOWN_ANIMATION}
+          isAnimating={isStreaming}
+          plugins={STREAMDOWN_PLUGINS}
+        >
+          {content}
+        </Streamdown>
       </div>
     </div>
   )

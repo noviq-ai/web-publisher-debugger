@@ -1,5 +1,5 @@
 import React from 'react'
-import { IconAlertCircle, IconAlertTriangle, IconInfoCircle, IconCircleCheck } from '@tabler/icons-react'
+import { IconExclamationCircle as IconAlertCircle, IconExclamationTriangle as IconAlertTriangle, IconCircleInfo as IconInfoCircle, IconCircleCheck } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { cn } from '@/shared/lib/utils'
 import type { SeoIssue } from '@/shared/types/seo'
 import { Section } from '@/components/common'
@@ -14,25 +14,26 @@ const IssueItem: React.FC<{ issue: SeoIssue }> = ({ issue }) => {
   return (
     <div
       className={cn(
-        'flex items-start gap-2 py-1.5 px-2 rounded text-[11px]',
-        issue.type === 'error' && 'bg-destructive/10',
-        issue.type === 'warning' && 'bg-yellow-500/10',
-        issue.type === 'info' && 'bg-muted/50'
+        'flex items-start gap-2 rounded-md border border-border/60 px-2.5 py-2 text-xs',
+        issue.type === 'error' && 'bg-destructive/15',
+        issue.type === 'warning' && 'bg-warning/15',
+        issue.type === 'info' && 'bg-info/15'
       )}
     >
-      <Icon
-        size={14}
-        className={cn(
-          'shrink-0 mt-0.5',
-          issue.type === 'error' && 'text-destructive',
-          issue.type === 'warning' && 'text-yellow-600',
-          issue.type === 'info' && 'text-muted-foreground'
-        )}
-      />
+      <span className="flex h-4 shrink-0 items-center" aria-hidden="true">
+        <Icon
+          size={14}
+          className={cn(
+            issue.type === 'error' && 'text-destructive',
+            issue.type === 'warning' && 'text-warning',
+            issue.type === 'info' && 'text-info'
+          )}
+        />
+      </span>
       <div className="flex-1 min-w-0">
         <p className="leading-tight">{issue.message}</p>
         {issue.suggestion && (
-          <p className="text-[10px] text-muted-foreground mt-0.5">{issue.suggestion}</p>
+          <p className="mt-1 text-xs leading-4 text-muted-foreground">{issue.suggestion}</p>
         )}
       </div>
     </div>
@@ -46,12 +47,12 @@ export const Issues: React.FC<IssuesProps> = ({ issues }) => {
   const badge = issues.length > 0 ? (
     <div className="flex items-center gap-1">
       {errorCount > 0 && (
-        <span className="text-[10px] px-1.5 py-0.5 bg-destructive/20 text-destructive rounded">
+        <span className="rounded-full bg-destructive/20 px-1.5 py-0.5 text-xs text-destructive">
           {errorCount}
         </span>
       )}
       {warningCount > 0 && (
-        <span className="text-[10px] px-1.5 py-0.5 bg-yellow-500/20 text-yellow-600 rounded">
+        <span className="rounded-full bg-warning/20 px-1.5 py-0.5 text-xs text-warning">
           {warningCount}
         </span>
       )}
@@ -66,7 +67,7 @@ export const Issues: React.FC<IssuesProps> = ({ issues }) => {
       defaultOpen={issues.length > 0}
     >
       {issues.length === 0 ? (
-        <div className="flex items-center gap-2 py-2 text-xs text-green-600">
+        <div className="flex items-center gap-2 py-2 text-xs text-muted-foreground">
           <IconCircleCheck size={14} />
           No issues found
         </div>

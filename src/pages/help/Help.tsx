@@ -1,20 +1,12 @@
 import React, { useState } from 'react'
-import {
-  IconSearch,
-  IconDeviceTv,
-  IconChartBar,
-  IconDatabase,
-  IconShield,
-  IconChevronDown,
-  IconChevronRight,
-} from '@tabler/icons-react'
-import SparkleIcon from '@/components/assets/sparkle-icon'
+import { IconMagnifyingGlass as IconSearch, IconTelevision as IconDeviceTv, IconChart7 as IconChartBar, IconStorage as IconDatabase, IconShield, IconChevronDownMedium as IconChevronDown, IconChevronRightMedium as IconChevronRight } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
+import { IconSparklesTwo2 as SparkleIcon } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconSparklesTwo2'
 import { PageHeader } from '@/components/common/PageHeader'
 import { PageLayout, SectionCard } from '@/components/common/PageLayout'
 import { getContent, detectLanguage } from './content'
 
 const sectionIcons: Record<string, React.ReactNode> = {
-  aiAssistant: <SparkleIcon className="size-5 [&_path]:fill-current" />,
+  aiAssistant: <SparkleIcon className="size-5" />,
   seo: <IconSearch size={20} />,
   adtech: <IconDeviceTv size={20} />,
   tracking: <IconChartBar size={20} />,

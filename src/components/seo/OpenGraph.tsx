@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import type { SeoData } from '@/shared/types/seo'
-import { IconShare, IconExternalLink, IconPhotoOff } from '@tabler/icons-react'
+import { IconShareOs as IconShare, IconArrowOutOfBox as IconExternalLink, IconImages1 as IconPhotoOff } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { Section } from '@/components/common'
 
 interface OpenGraphProps {
@@ -12,14 +12,17 @@ const OgpPreview: React.FC<{ ogp: SeoData['ogp'] }> = ({ ogp }) => {
   const hasImage = ogp.image && !imageError
 
   return (
-    <div className="rounded-lg border border-border/50 overflow-hidden bg-muted/30">
+    <div className="overflow-hidden rounded-lg border border-border/60 bg-card">
       {/* Image Preview */}
       {ogp.image && (
-        <div className="relative aspect-[1.91/1] bg-muted">
+        <div className="relative h-40 bg-muted">
           {hasImage ? (
             <img
               src={ogp.image}
               alt={ogp.title || 'OG Image'}
+              width={1200}
+              height={630}
+              loading="lazy"
               className="w-full h-full object-cover"
               onError={() => setImageError(true)}
             />
@@ -34,14 +37,14 @@ const OgpPreview: React.FC<{ ogp: SeoData['ogp'] }> = ({ ogp }) => {
       {/* Content */}
       <div className="p-2.5">
         {ogp.siteName && (
-          <div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">{ogp.siteName}</div>
+          <div className="mb-0.5 text-xs uppercase tracking-wide text-muted-foreground">{ogp.siteName}</div>
         )}
         <div className="text-xs font-medium line-clamp-2 mb-0.5">{ogp.title || 'No title'}</div>
         {ogp.description && (
-          <div className="text-[11px] text-muted-foreground line-clamp-2">{ogp.description}</div>
+          <div className="line-clamp-2 text-xs text-muted-foreground">{ogp.description}</div>
         )}
         {ogp.url && (
-          <div className="text-[10px] text-muted-foreground mt-1 truncate">{new URL(ogp.url).hostname}</div>
+          <div className="mt-1 truncate text-xs text-muted-foreground">{new URL(ogp.url).hostname}</div>
         )}
       </div>
     </div>
@@ -52,7 +55,7 @@ const OgpField: React.FC<{ label: string; value: string | null; isUrl?: boolean 
   if (!value) return null
 
   return (
-    <div className="flex items-start py-1 text-[11px] border-b border-border/30 last:border-b-0">
+    <div className="flex min-h-8 items-center border-b border-border/30 py-1.5 text-xs last:border-b-0">
       <span className="text-muted-foreground w-28 shrink-0">{label}</span>
       {isUrl ? (
         <a
@@ -75,7 +78,7 @@ export const OpenGraph: React.FC<OpenGraphProps> = ({ ogp }) => {
   const hasContent = ogp.title || ogp.description || ogp.image
 
   return (
-    <Section title="Open Graph" icon={<IconShare size={14} />} defaultOpen={!!hasContent}>
+    <Section title="Open Graph" icon={<IconShare size={14} />}>
       {hasContent ? (
         <div className="space-y-3">
           <OgpPreview ogp={ogp} />

@@ -1,7 +1,11 @@
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useTabDataStore } from '@/store/tabDataStore'
 import { Button } from '@/components/ui/button'
-import { IconSearch, IconRefresh, IconWifiOff } from '@tabler/icons-react'
+import { IconMagnifyingGlass as IconSearch, IconArrowRotateLeftRight as IconRefresh, IconWifiNoSignal as IconWifiOff } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
+import { streamSeoSummary } from '@/ai/browser-ai/summaries/seo'
+import { resolvePreferredResponseLanguage } from '@/ai/browser-ai/shared'
+import { AiSummaryButton, AiSummaryCard } from '@/components/ai-summary'
+import { useAiSummary } from '@/hooks/useAiSummary'
 import {
   SeoHeader,
   MetaTags,
@@ -21,6 +25,15 @@ interface SeoPageProps {
 export const SeoPage: React.FC<SeoPageProps> = ({ onReload }) => {
   const data = useTabDataStore((s) => s.seoData)
   const status = useTabDataStore((s) => s.status)
+  const preferredResponseLanguage = useMemo(
+    () => resolvePreferredResponseLanguage(typeof chrome === 'undefined' || !chrome.i18n ? null : chrome.i18n.getUILanguage(), navigator.languages),
+    [],
+  )
+  const streamSummary = useCallback((abortSignal: AbortSignal) => {
+    if (!data) throw new Error('SEO data is unavailable')
+    return streamSeoSummary(data, abortSignal, preferredResponseLanguage)
+  }, [data, preferredResponseLanguage])
+  const aiSummary = useAiSummary({ sourceKey: data?.url ?? null, streamSummary })
 
   if (status === 'connecting') {
     return (
@@ -63,7 +76,11 @@ export const SeoPage: React.FC<SeoPageProps> = ({ onReload }) => {
 
   return (
     <div className="divide-y divide-border/50">
-      <SeoHeader data={data} />
+      <SeoHeader
+        data={data}
+        action={<AiSummaryButton availability={aiSummary.availability} status={aiSummary.status} onGenerate={() => void aiSummary.generate()} onStop={aiSummary.stop} />}
+      />
+      {aiSummary.status !== 'idle' && <AiSummaryCard status={aiSummary.status} summary={aiSummary.summary} error={aiSummary.error} onCopy={() => void aiSummary.copy()} onRegenerate={() => void aiSummary.generate()} onClose={aiSummary.close} />}
       <Issues issues={data.issues} />
       <MetaTags data={data} />
       <OpenGraph ogp={data.ogp} />

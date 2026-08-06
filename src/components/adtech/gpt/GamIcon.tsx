@@ -1,7 +1,7 @@
 import React from 'react'
 
 export const GamIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg viewBox="0 0 2454.3 2454.3" className={className} fill="none">
+  <svg viewBox="0 0 2454.3 2454.3" className={className} fill="none" aria-hidden="true">
     <path d="M2385.8,1385L1385,2385.8c-91.3,91.3-239.4,91.3-330.7,0c-91.4-91.3-91.3-239.4,0-330.7l1000.9-1000.9c91.3-91.3,239.4-91.3,330.7,0C2477.2,1145.6,2477.2,1293.6,2385.8,1385L2385.8,1385z" fill="#FBBC04"/>
     <ellipse transform="matrix(0.7071 -0.7071 0.7071 0.7071 -1212.9008 1512.7477)" cx="1219.6" cy="2220.5" rx="233.9" ry="233.9" fill="#34A853"/>
     <path d="M1562.3,561.4l-500.5,500.4l330.7,330.7L1893,892.1c91.3-91.3,91.3-239.4,0-330.7C1801.6,470,1653.6,470,1562.3,561.4L1562.3,561.4z" fill="#FBBC04"/>

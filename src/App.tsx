@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Layout } from '@/components/layout/Layout'
 import { useTabDataSync } from '@/hooks/useTabDataSync'
 import { useTabDataStore } from '@/store/tabDataStore'
-import { SeoPage, AdTechPage, TrackingPage, AiPage, TechStackPage } from '@/panel'
+import { SeoPage, AdTechPage, AdsTxtPage, TrackingPage, AiPage, TechStackPage } from '@/panel'
 import type { TabId } from '@/shared/types'
 import { defaultSettings } from '@/shared/types'
 
@@ -50,6 +50,12 @@ export const App: React.FC = () => {
         return (
           <div className="flex-1 overflow-y-auto">
             <AdTechPage onReload={reloadPage} />
+          </div>
+        )
+      case 'ads-txt':
+        return (
+          <div className="flex flex-1 min-h-0 overflow-hidden">
+            <AdsTxtPage />
           </div>
         )
       case 'tracking':

@@ -1,6 +1,6 @@
 import React from 'react'
 import type { SeoData } from '@/shared/types/seo'
-import { IconFileText, IconExternalLink, IconCheck, IconX, IconAlertTriangle } from '@tabler/icons-react'
+import { IconFileText, IconArrowOutOfBox as IconExternalLink, IconCheckmark1 as IconCheck, IconCrossMedium, IconExclamationTriangle as IconAlertTriangle } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { Section } from '@/components/common'
 
 interface MetaTagsProps {
@@ -20,36 +20,36 @@ const MetaRow: React.FC<MetaRowProps> = ({ label, value, maxLength, isUrl }) => 
   const charCount = value?.length || 0
 
   return (
-    <div className="flex items-start py-1.5 border-b border-border/30 last:border-b-0">
-      <div className="flex items-center gap-1.5 w-24 shrink-0">
+    <div className="flex min-h-8 items-center border-b border-border/30 py-1.5 last:border-b-0">
+      <div className="flex w-24 shrink-0 items-center gap-1.5">
         {isEmpty ? (
-          <IconX size={12} className="text-red-500" />
+          <IconCrossMedium size={12} className="text-destructive" />
         ) : isOverLimit ? (
-          <IconAlertTriangle size={12} className="text-yellow-500" />
+          <IconAlertTriangle size={12} className="text-warning" />
         ) : (
-          <IconCheck size={12} className="text-green-500" />
+          <IconCheck size={12} className="text-muted-foreground" />
         )}
-        <span className="text-[11px] text-muted-foreground">{label}</span>
+        <span className="text-xs text-muted-foreground">{label}</span>
       </div>
       <div className="flex-1 min-w-0">
         {isEmpty ? (
-          <span className="text-[11px] text-muted-foreground/50 italic">Not set</span>
+          <span className="text-xs italic text-muted-foreground/50">Not set</span>
         ) : isUrl ? (
           <a
             href={value}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[11px] text-primary hover:underline inline-flex items-center gap-1 break-all"
+            className="inline-flex items-center gap-1 break-all text-xs text-primary hover:underline"
           >
             <span className="truncate">{value}</span>
             <IconExternalLink size={10} className="shrink-0" />
           </a>
         ) : (
-          <span className="text-[11px] break-words">{value}</span>
+          <span className="break-words text-xs">{value}</span>
         )}
       </div>
       {maxLength && value && (
-        <span className={`text-[10px] ml-2 tabular-nums shrink-0 ${isOverLimit ? 'text-yellow-500' : 'text-muted-foreground'}`}>
+        <span className={`ml-2 shrink-0 text-xs tabular-nums ${isOverLimit ? 'text-warning' : 'text-muted-foreground'}`}>
           {charCount}/{maxLength}
         </span>
       )}

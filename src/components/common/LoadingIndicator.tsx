@@ -1,11 +1,11 @@
-import { IconAlertCircle } from '@tabler/icons-react'
-import SparkleIcon from '@/components/assets/sparkle-icon'
+import { IconExclamationCircle as IconAlertCircle } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
+import { IconSparklesTwo2 as SparkleIcon } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconSparklesTwo2'
 
 export const LoadingIndicator: React.FC = () => {
   return (
     <div className="flex items-start gap-3">
       <div className="p-2 rounded-full bg-primary/10">
-        <SparkleIcon className="size-4 [&_path]:fill-current text-primary" />
+        <SparkleIcon className="size-4 text-primary" />
       </div>
       <div className="bg-muted rounded-lg p-3 max-w-[85%]">
         <div className="flex items-center gap-2">

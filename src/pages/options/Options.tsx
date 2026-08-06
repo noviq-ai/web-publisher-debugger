@@ -10,11 +10,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { type Settings, type AiProvider, type TabId, defaultSettings } from '@/shared/types'
-import { IconCheck, IconExternalLink, IconShield } from '@tabler/icons-react'
-import SparkleIcon from '@/components/assets/sparkle-icon'
-import ClaudeIcon from '@/components/assets/claude'
-import OpenaiIcon from '@/components/assets/openai'
+import { type Settings, defaultSettings } from '@/shared/types'
+import { IconCheckmark1 as IconCheck, IconArrowOutOfBox as IconExternalLink, IconShield } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
+import { IconSparklesTwo2 as SparkleIcon } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconSparklesTwo2'
+import { IconClaudeai as ClaudeIcon } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconClaudeai'
+import { IconOpenai as OpenaiIcon } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconOpenai'
 import { PageHeader } from '@/components/common/PageHeader'
 import { PageLayout, SectionCard } from '@/components/common/PageLayout'
 import { getContent, detectLanguage } from './content'
@@ -70,7 +70,7 @@ export const Options: React.FC = () => {
         <SectionCard>
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <SparkleIcon className="size-5 [&_path]:fill-current text-primary" />
+              <SparkleIcon className="size-5 text-primary" />
               <h2 className="text-lg font-semibold">{t.ai.heading}</h2>
               <span className="text-[10px] font-medium uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/10 text-primary">
                 Beta
@@ -94,9 +94,9 @@ export const Options: React.FC = () => {
                 <FieldLabel htmlFor="ai-provider">{t.ai.provider.label}</FieldLabel>
                 <Select
                   value={settings.aiProvider}
-                  onValueChange={(value: AiProvider) =>
-                    setSettings({ ...settings, aiProvider: value })
-                  }
+                  onValueChange={(value) => {
+                    if (value !== null) setSettings({ ...settings, aiProvider: value })
+                  }}
                 >
                   <SelectTrigger id="ai-provider" className="bg-background">
                     <SelectValue placeholder={t.ai.provider.placeholder} />
@@ -104,7 +104,7 @@ export const Options: React.FC = () => {
                   <SelectContent>
                     <SelectItem value="browser">
                       <span className="flex items-center gap-2">
-                        <SparkleIcon className="size-4 [&_path]:fill-current" />
+                        <SparkleIcon className="size-4" />
                         {t.ai.provider.browser}
                       </span>
                     </SelectItem>
@@ -198,9 +198,9 @@ export const Options: React.FC = () => {
               <FieldLabel htmlFor="default-tab">{t.general.defaultTab.label}</FieldLabel>
               <Select
                 value={settings.defaultTab}
-                onValueChange={(value: TabId) =>
-                  setSettings({ ...settings, defaultTab: value })
-                }
+                onValueChange={(value) => {
+                  if (value !== null) setSettings({ ...settings, defaultTab: value })
+                }}
               >
                 <SelectTrigger id="default-tab" className="bg-background">
                   <SelectValue placeholder={t.general.defaultTab.placeholder} />

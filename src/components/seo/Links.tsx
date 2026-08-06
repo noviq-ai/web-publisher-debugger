@@ -1,5 +1,5 @@
 import React from 'react'
-import { IconLink, IconExternalLink, IconArrowRight } from '@tabler/icons-react'
+import { IconChainLink1 as IconLink, IconArrowOutOfBox as IconExternalLink, IconChevronRightMedium as IconArrowRight } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { Section } from '@/components/common'
 
 interface LinksProps {
@@ -12,14 +12,13 @@ const LinkStat: React.FC<{
   icon: React.ReactNode
   label: string
   value: number
-  color: string
-}> = ({ icon, label, value, color }) => (
-  <div className="flex items-center gap-2 py-1.5 px-2 rounded bg-muted/30">
-    <div className={`text-${color}`}>{icon}</div>
+}> = ({ icon, label, value }) => (
+  <div className="flex items-center gap-2 rounded-md border border-border/60 px-2 py-1.5">
+    <div className="text-muted-foreground">{icon}</div>
     <div className="flex-1">
-      <div className="text-[10px] text-muted-foreground">{label}</div>
+      <div className="text-xs text-muted-foreground">{label}</div>
     </div>
-    <div className={`text-sm font-semibold tabular-nums text-${color}`}>{value}</div>
+    <div className="text-sm font-semibold tabular-nums">{value}</div>
   </div>
 )
 
@@ -32,7 +31,7 @@ export const Links: React.FC<LinksProps> = ({ internal, external, nofollow }) =>
       icon={<IconLink size={14} />}
       badge={
         total > 0 ? (
-          <span className="text-[10px] text-muted-foreground">{total} total</span>
+          <span className="text-xs text-muted-foreground">{total} total</span>
         ) : null
       }
     >
@@ -41,45 +40,42 @@ export const Links: React.FC<LinksProps> = ({ internal, external, nofollow }) =>
           icon={<IconArrowRight size={14} />}
           label="Internal Links"
           value={internal}
-          color="blue-500"
         />
         <LinkStat
           icon={<IconExternalLink size={14} />}
           label="External Links"
           value={external}
-          color="green-500"
         />
         <LinkStat
           icon={<IconLink size={14} />}
           label="Nofollow Links"
           value={nofollow}
-          color="orange-500"
         />
       </div>
 
       {/* Visual bar */}
       {total > 0 && (
         <div className="mt-3 pt-2 border-t border-border/30">
-          <div className="flex items-center gap-1 text-[10px] text-muted-foreground mb-1">
+          <div className="mb-1 flex items-center gap-1 text-xs text-muted-foreground">
             <span>Distribution</span>
           </div>
-          <div className="flex h-2 rounded-full overflow-hidden bg-muted">
+          <div className="flex h-1.5 overflow-hidden rounded-full bg-muted">
             {internal > 0 && (
               <div
-                className="bg-blue-500 h-full"
+                className="h-full bg-foreground/70"
                 style={{ width: `${(internal / total) * 100}%` }}
                 title={`Internal: ${internal}`}
               />
             )}
             {external > 0 && (
               <div
-                className="bg-green-500 h-full"
+                className="h-full bg-foreground/25"
                 style={{ width: `${(external / total) * 100}%` }}
                 title={`External: ${external}`}
               />
             )}
           </div>
-          <div className="flex justify-between mt-1 text-[9px] text-muted-foreground">
+          <div className="mt-1 flex justify-between text-xs text-muted-foreground">
             <span>Internal {Math.round((internal / total) * 100)}%</span>
             <span>External {Math.round((external / total) * 100)}%</span>
           </div>

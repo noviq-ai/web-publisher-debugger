@@ -11,13 +11,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { IconArrowUp, IconChevronDown } from '@tabler/icons-react'
-import ToolIcon from '@/components/assets/tool-icon'
-import ChromeIcon from '@/components/assets/chrome'
-import ClaudeIcon from '@/components/assets/claude'
-import OpenaiIcon from '@/components/assets/openai'
+import { IconArrowUp, IconChevronDownMedium as IconChevronDown } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
+import { IconHammer as ToolIcon } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconHammer'
+import { IconStop } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconStop'
+import { IconWindowSparkle as ChromeIcon } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconWindowSparkle'
+import { IconClaudeai as ClaudeIcon } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconClaudeai'
+import { IconOpenai as OpenaiIcon } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconOpenai'
 import { cn } from '@/shared/lib/utils'
 import type { ContextOption } from '@/panel'
+import { BorderBeam } from 'border-beam'
 
 const BYOK_LABELS: Record<'anthropic' | 'openai', string> = {
   anthropic: 'Claude',
@@ -29,6 +31,7 @@ interface ChatInputProps {
   setInputValue: (value: string) => void
   isLoading: boolean
   onSubmit: (e: React.FormEvent) => void
+  onStop: () => void
   contextOpen: boolean
   setContextOpen: (open: boolean) => void
   context: AiContext
@@ -47,6 +50,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   setInputValue,
   isLoading,
   onSubmit,
+  onStop,
   contextOpen,
   setContextOpen,
   context,
@@ -83,7 +87,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <form onSubmit={onSubmit}>
-      <div className="border rounded-lg bg-card shadow-[0_2px_12px_rgba(0,0,0,0.06)] flex flex-col">
+      <div className="flex flex-col rounded-2xl border bg-card shadow-[0_2px_12px_rgba(0,0,0,0.06)] dark:bg-secondary">
         <textarea
           ref={textareaRef}
           value={inputValue}
@@ -91,8 +95,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder="Ask about your page data..."
           disabled={isLoading}
-          rows={1}
-          className="w-full resize-none bg-transparent px-6 py-4 text-sm placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          rows={2}
+          className="w-full resize-none bg-transparent px-[var(--input-padding-inline)] pt-[var(--input-padding-block-start)] pb-[var(--input-padding-block-end)] text-sm placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           style={{ minHeight: '44px', maxHeight: '120px' }}
         />
 
@@ -103,9 +107,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 <Button
                   type="button"
                   variant="ghost"
-                  className="text-muted-foreground hover:text-foreground"
+                  className="h-[var(--control-height-compact)] gap-1.5 rounded-full px-3 py-0 text-muted-foreground hover:text-foreground"
                 >
-                  <ToolIcon />
+                  <ToolIcon className="size-4" />
                   <span className="text-xs">Tools: {activeContextCount}</span>
                   <IconChevronDown className={cn('transition-transform duration-200', contextOpen && 'rotate-180')} />
                 </Button>
@@ -123,7 +127,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                       setContext((prev) => ({ ...prev, [option.key]: checked }))
                     }
                     disabled={!option.hasData}
-                    onSelect={(e) => e.preventDefault()}
+                    closeOnClick={false}
                   >
                     <option.icon className="h-4 w-4" />
                     <span>{option.label}</span>
@@ -141,9 +145,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 <Button
                   type="button"
                   variant="ghost"
-                  className="text-muted-foreground hover:text-foreground"
+                  className="h-[var(--control-height-compact)] gap-1.5 rounded-full px-3 py-0 text-muted-foreground hover:text-foreground"
                 >
-                  {isBrowser ? <ChromeIcon /> : <ByokIcon />}
+                  {isBrowser ? <ChromeIcon className="size-4" /> : <ByokIcon className="size-4" />}
                   <span className="text-xs">{currentLabel}</span>
                   <IconChevronDown className={cn('transition-transform duration-200', modelOpen && 'rotate-180')} />
                 </Button>
@@ -188,13 +192,28 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             </DropdownMenu>
           </div>
 
-          <Button
-            type="submit"
-            size="icon"
-            disabled={isLoading || !inputValue.trim()}
+          <BorderBeam
+            size="md"
+            colorVariant="colorful"
+            theme="auto"
+            active={isLoading}
           >
-            <IconArrowUp />
-          </Button>
+            <Button
+              type={isLoading ? 'button' : 'submit'}
+              size="icon"
+              className={cn(
+                'size-[var(--control-height-compact)] rounded-full',
+                isLoading && 'bg-muted text-foreground shadow-none hover:bg-muted',
+              )}
+              disabled={!isLoading && !inputValue.trim()}
+              onClick={isLoading ? onStop : undefined}
+              aria-label={isLoading ? 'Stop response' : 'Send message'}
+            >
+              {isLoading
+                ? <IconStop className="[&_path]:fill-current [&_path]:stroke-none" />
+                : <IconArrowUp />}
+            </Button>
+          </BorderBeam>
         </div>
       </div>
     </form>

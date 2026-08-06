@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Ga4Consent } from '@/shared/types/analytics'
-import { IconShield } from '@tabler/icons-react'
+import { IconShield } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { Section, ConfigRow } from '@/components/common'
 
 interface Ga4ConsentProps {
@@ -24,10 +24,10 @@ export const Ga4ConsentSection: React.FC<Ga4ConsentProps> = ({ consent }) => {
         <ConfigRow
           label="Type"
           value={
-            <span className={`px-1.5 py-0.5 rounded text-[10px] ${
+            <span className={`rounded-full px-2 py-0.5 text-xs ${
               consent.type === 'default'
-                ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
-                : 'bg-green-500/20 text-green-600 dark:text-green-400'
+                ? 'bg-info/15 text-info'
+                : 'bg-success/15 text-success'
             }`}>
               {consent.type}
             </span>
@@ -44,9 +44,9 @@ export const Ga4ConsentSection: React.FC<Ga4ConsentProps> = ({ consent }) => {
               label={consentLabels[key] || key}
               value={
                 <span className={`inline-flex items-center gap-1 ${
-                  isGranted ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                  isGranted ? 'text-success' : 'text-destructive'
                 }`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${isGranted ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <span className={`size-1.5 rounded-full ${isGranted ? 'bg-success' : 'bg-destructive'}`} />
                   {String(value)}
                 </span>
               }

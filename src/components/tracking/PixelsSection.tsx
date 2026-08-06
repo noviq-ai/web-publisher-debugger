@@ -5,12 +5,15 @@ import { PixelsHeader } from './pixels/PixelsHeader'
 
 interface PixelsSectionProps {
   pixels: PixelData[]
+  headerAction: React.ReactNode
+  headerContent: React.ReactNode
 }
 
-export const PixelsSection: React.FC<PixelsSectionProps> = ({ pixels }) => {
+export const PixelsSection: React.FC<PixelsSectionProps> = ({ pixels, headerAction, headerContent }) => {
   return (
     <>
-      <PixelsHeader pixels={pixels} />
+      <PixelsHeader pixels={pixels} action={headerAction} />
+      {headerContent}
       <div className="p-3">
         <PixelsGrid pixels={pixels} />
       </div>

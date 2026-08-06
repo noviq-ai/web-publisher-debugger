@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { IconSettings, IconTool, IconHelpCircle, IconMessagePlus, IconGlobe, IconMenu2 } from '@tabler/icons-react'
+import { IconSettingsGear2 as IconSettings, IconToolbox as IconTool, IconCircleQuestionmark as IconHelpCircle, IconBubblePlus as IconMessagePlus, IconGlobe, IconListBullets as IconMenu2 } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import {
   Select,
   SelectContent,
@@ -42,7 +42,9 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   const [sheetOpen, setSheetOpen] = useState(false)
 
   const langSelector = onLangChange && lang && (
-    <Select value={lang} onValueChange={onLangChange}>
+    <Select value={lang} onValueChange={(value) => {
+      if (value !== null) onLangChange(value)
+    }}>
       <SelectTrigger className="w-auto gap-1.5 h-8 text-sm">
         <IconGlobe size={14} />
         <SelectValue />

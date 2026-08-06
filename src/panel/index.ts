@@ -1,4 +1,5 @@
 export { AdTechPage } from './AdTechPage'
+export { AdsTxtPage } from './AdsTxtPage'
 export { SeoPage } from './SeoPage'
 export { TrackingPage } from './TrackingPage'
 export { AiPage } from './AiPage'

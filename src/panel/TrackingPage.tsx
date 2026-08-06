@@ -1,10 +1,14 @@
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useTabDataStore } from '@/store/tabDataStore'
-import { IconActivity, IconRefresh, IconWifiOff } from '@tabler/icons-react'
+import { IconLiveActivity as IconActivity, IconArrowRotateLeftRight as IconRefresh, IconWifiNoSignal as IconWifiOff } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { Button } from '@/components/ui/button'
 import { Ga4Section } from '@/components/tracking/Ga4Section'
 import { GtmSection } from '@/components/tracking/GtmSection'
 import { PixelsSection } from '@/components/tracking/PixelsSection'
+import { AiSummaryButton, AiSummaryCard } from '@/components/ai-summary'
+import { useAiSummary } from '@/hooks/useAiSummary'
+import { resolvePreferredResponseLanguage } from '@/ai/browser-ai/shared'
+import { streamTrackingSummary } from '@/ai/browser-ai/summaries/tracking'
 
 interface TrackingPageProps {
   onReload: () => void
@@ -14,13 +18,20 @@ export const TrackingPage: React.FC<TrackingPageProps> = ({ onReload }) => {
   const gtmData = useTabDataStore((s) => s.gtmData)
   const analyticsData = useTabDataStore((s) => s.analyticsData)
   const status = useTabDataStore((s) => s.status)
+  const currentTabId = useTabDataStore((s) => s.currentTabId)
+  const preferredResponseLanguage = useMemo(() => resolvePreferredResponseLanguage(typeof chrome === 'undefined' || !chrome.i18n ? null : chrome.i18n.getUILanguage(), navigator.languages), [])
+  const streamSummary = useCallback((abortSignal: AbortSignal) => {
+    if (!analyticsData && !gtmData) throw new Error('Tracking data is unavailable')
+    return streamTrackingSummary(analyticsData, gtmData, abortSignal, preferredResponseLanguage)
+  }, [analyticsData, gtmData, preferredResponseLanguage])
+  const aiSummary = useAiSummary({ sourceKey: currentTabId === null ? null : String(currentTabId), streamSummary })
 
   if (status === 'connecting') {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-4">
-        <div className="h-4 w-4 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
-        <div className="text-sm text-muted-foreground">Connecting...</div>
-        <p className="text-[10px] text-muted-foreground/70 text-center max-w-48">
+        <div className="size-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent motion-reduce:animate-none" />
+        <div className="text-sm text-muted-foreground">Connecting…</div>
+        <p className="max-w-48 text-center text-xs text-muted-foreground/70">
           If the page was already loaded before opening this panel, reload to capture tracking data.
         </p>
       </div>
@@ -66,9 +77,9 @@ export const TrackingPage: React.FC<TrackingPageProps> = ({ onReload }) => {
         </div>
       )}
 
-      <Ga4Section data={ga4Data} />
-      {hasGtm && <GtmSection data={gtmData} />}
-      <PixelsSection pixels={analyticsData?.pixels || []} />
+      {hasGa4 && <Ga4Section data={ga4Data} headerAction={<AiSummaryButton availability={aiSummary.availability} status={aiSummary.status} onGenerate={() => void aiSummary.generate()} onStop={aiSummary.stop} />} headerContent={aiSummary.status !== 'idle' ? <AiSummaryCard status={aiSummary.status} summary={aiSummary.summary} error={aiSummary.error} onCopy={() => void aiSummary.copy()} onRegenerate={() => void aiSummary.generate()} onClose={aiSummary.close} /> : null} />}
+      {hasGtm && <GtmSection data={gtmData} headerAction={!hasGa4 ? <AiSummaryButton availability={aiSummary.availability} status={aiSummary.status} onGenerate={() => void aiSummary.generate()} onStop={aiSummary.stop} /> : null} headerContent={!hasGa4 && aiSummary.status !== 'idle' ? <AiSummaryCard status={aiSummary.status} summary={aiSummary.summary} error={aiSummary.error} onCopy={() => void aiSummary.copy()} onRegenerate={() => void aiSummary.generate()} onClose={aiSummary.close} /> : null} />}
+      {hasPixels && <PixelsSection pixels={analyticsData?.pixels ?? []} headerAction={!hasGa4 && !hasGtm ? <AiSummaryButton availability={aiSummary.availability} status={aiSummary.status} onGenerate={() => void aiSummary.generate()} onStop={aiSummary.stop} /> : null} headerContent={!hasGa4 && !hasGtm && aiSummary.status !== 'idle' ? <AiSummaryCard status={aiSummary.status} summary={aiSummary.summary} error={aiSummary.error} onCopy={() => void aiSummary.copy()} onRegenerate={() => void aiSummary.generate()} onClose={aiSummary.close} /> : null} />}
     </div>
   )
 }

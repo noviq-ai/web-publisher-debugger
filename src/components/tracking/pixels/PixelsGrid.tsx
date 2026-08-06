@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import type { PixelData, PixelType, PixelEvent } from '@/shared/types/analytics'
 import { PIXEL_INFO } from '@/shared/types/analytics'
-import { IconChevronDown, IconChevronRight } from '@tabler/icons-react'
+import { IconChevronDownMedium as IconChevronDown, IconChevronRightMedium as IconChevronRight } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { PixelIcon } from './PixelIcon'
 
 interface PixelsGridProps {
@@ -21,7 +21,7 @@ export const PixelsGrid: React.FC<PixelsGridProps> = ({ pixels }) => {
   })
 
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-2 items-start gap-2">
       {ALL_PIXEL_TYPES.map((type) => {
         const pixelData = detectedPixels.get(type)
         return (
@@ -50,26 +50,27 @@ const PixelCard: React.FC<PixelCardProps> = ({ type, pixels, detected }) => {
 
   return (
     <div
-      className={`border rounded-lg overflow-hidden transition-all ${
+      className={`overflow-hidden rounded-lg border transition-[border-color,background-color,opacity] ${
         detected
           ? 'border-border bg-card'
           : 'border-border/30 bg-muted/20 opacity-50'
       }`}
     >
       <button
-        className="w-full flex items-center gap-2 p-2 hover:bg-muted/50 text-left"
+        className="flex w-full items-center gap-2 p-2 text-left hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40"
         onClick={() => detected && setIsExpanded(!isExpanded)}
         disabled={!detected}
+        aria-expanded={detected ? isExpanded : undefined}
       >
         <PixelIcon type={type} className="h-5 w-5 flex-shrink-0" />
         <div className="flex-1 min-w-0">
           <div className="text-xs font-medium truncate">{info.name}</div>
           {detected ? (
-            <div className="text-[10px] text-muted-foreground">
+            <div className="text-xs text-muted-foreground">
               {pixels.length} ID{pixels.length > 1 ? 's' : ''} · {totalEvents} event{totalEvents !== 1 ? 's' : ''}
             </div>
           ) : (
-            <div className="text-[10px] text-muted-foreground">Not detected</div>
+            <div className="text-xs text-muted-foreground">Not detected</div>
           )}
         </div>
         {detected && (
@@ -96,12 +97,12 @@ const PixelDetail: React.FC<{ pixel: PixelData }> = ({ pixel }) => {
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-mono text-muted-foreground truncate flex-1">
+        <span className="flex-1 truncate font-mono text-xs text-muted-foreground">
           {pixel.id}
         </span>
         {pixel.events.length > 0 && (
           <button
-            className="text-[10px] text-primary hover:underline"
+            className="rounded text-xs text-primary hover:underline focus-visible:ring-2 focus-visible:ring-ring/40"
             onClick={() => setShowEvents(!showEvents)}
           >
             {showEvents ? 'Hide' : 'Show'} events
@@ -125,20 +126,21 @@ const EventRow: React.FC<{ event: PixelEvent }> = ({ event }) => {
   const hasParams = Object.keys(event.params).length > 0
 
   return (
-    <div className="border border-border/30 rounded overflow-hidden">
+    <div className="overflow-hidden rounded-lg border border-border/30">
       <button
-        className="w-full flex items-center justify-between px-2 py-1 hover:bg-muted/50 text-left"
+        className="flex w-full items-center justify-between px-2 py-1.5 text-left hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40"
         onClick={() => hasParams && setShowParams(!showParams)}
         disabled={!hasParams}
+        aria-expanded={hasParams ? showParams : undefined}
       >
-        <span className="text-[10px] font-medium">{event.eventName}</span>
-        <span className="text-[9px] text-muted-foreground">
+        <span className="text-xs font-medium">{event.eventName}</span>
+        <span className="text-xs tabular-nums text-muted-foreground">
           {new Date(event.timestamp).toLocaleTimeString()}
         </span>
       </button>
       {showParams && (
         <div className="border-t border-border/30 bg-muted/20 p-1.5">
-          <pre className="text-[9px] overflow-auto max-h-20 text-muted-foreground">
+          <pre className="max-h-20 overflow-auto text-xs text-muted-foreground">
             {JSON.stringify(event.params, null, 2)}
           </pre>
         </div>

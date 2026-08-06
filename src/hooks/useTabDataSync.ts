@@ -116,7 +116,19 @@ export function useTabDataSync() {
   // ポート接続（マウント時に一度だけ）
   useEffect(() => {
     if (!isExtension) {
-      setStatus('ready')
+      if (import.meta.env.DEV) {
+        void import('@/dev/mock-data')
+          .then(({ createDevMockData }) => {
+            applyCache(createDevMockData(Date.now()))
+            setStatus('ready')
+          })
+          .catch((error: Error) => {
+            console.error('[WPD] Failed to load development mock data:', error)
+            setStatus('error')
+          })
+      } else {
+        setStatus('ready')
+      }
       return
     }
 
@@ -131,7 +143,7 @@ export function useTabDataSync() {
       }
       clearCollectionTimeout()
     }
-  }, [connectPort, clearCollectionTimeout, setStatus])
+  }, [connectPort, clearCollectionTimeout, setStatus, applyCache])
 
   // 初期データリクエスト
   const requestInitialData = useCallback(async (tabId: number) => {

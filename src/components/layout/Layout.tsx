@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { createContext, useContext, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -10,19 +11,19 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  IconMenu2,
-  IconSearch,
-  IconChartBar,
-  IconChartLine,
-  IconSettings,
-  IconRefresh,
-  IconSun,
-  IconMoon,
-  IconDeviceDesktop,
-  IconLayersSubtract,
-} from '@tabler/icons-react'
-import SparkleIcon from '@/components/assets/sparkle-icon'
+import { IconListBullets as IconMenu2 } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconListBullets'
+import { IconMagnifyingGlass as IconSearch } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconMagnifyingGlass'
+import { IconChart7 as IconChartBar } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconChart7'
+import { IconChart1 as IconChartLine } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconChart1'
+import { IconSettingsGear2 as IconSettings } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconSettingsGear2'
+import { IconArrowRotateLeftRight as IconRefresh } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconArrowRotateLeftRight'
+import { IconSunHigh as IconSun } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconSunHigh'
+import { IconMoon } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconMoon'
+import { IconTelevision as IconDeviceDesktop } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconTelevision'
+import { IconColorPalette } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconColorPalette'
+import { IconLayersThree as IconLayersSubtract } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconLayersThree'
+import { IconFileText } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconFileText'
+import { IconSparklesTwo2 as SparkleIcon } from '@central-icons-react/round-outlined-radius-2-stroke-1.5/IconSparklesTwo2'
 import type { TabId } from '@/shared/types'
 import type { DataCollectionStatus } from '@/store/tabDataStore'
 import { useTheme } from '@/hooks/useTheme'
@@ -36,10 +37,18 @@ interface LayoutProps {
   headerActions?: React.ReactNode
 }
 
+const HeaderActionsOutletContext = createContext<HTMLElement | null>(null)
+
+export const HeaderActionsPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const outlet = useContext(HeaderActionsOutletContext)
+  return outlet ? createPortal(children, outlet) : null
+}
+
 const TAB_OPTIONS: { id: TabId; label: string; icon: React.ElementType }[] = [
-  { id: 'ai', label: 'AI Chat', icon: SparkleIcon },
+  { id: 'ai', label: 'Assistant', icon: SparkleIcon },
   { id: 'seo', label: 'SEO', icon: IconSearch },
   { id: 'adtech', label: 'AdTech', icon: IconChartBar },
+  { id: 'ads-txt', label: 'Ads.txt', icon: IconFileText },
   { id: 'tracking', label: 'Tracking', icon: IconChartLine },
   { id: 'techstack', label: 'Tech Stack', icon: IconLayersSubtract },
 ]
@@ -53,6 +62,7 @@ export const Layout: React.FC<LayoutProps> = ({
   headerActions,
 }) => {
   const { theme, setTheme } = useTheme()
+  const [headerActionsOutlet, setHeaderActionsOutlet] = useState<HTMLDivElement | null>(null)
 
   const openOptions = () => {
     if (typeof chrome !== 'undefined' && chrome.runtime?.openOptionsPage) {
@@ -64,16 +74,15 @@ export const Layout: React.FC<LayoutProps> = ({
   }
 
   const currentTab = TAB_OPTIONS.find((t) => t.id === activeTab)
-  const CurrentIcon = currentTab?.icon || SparkleIcon
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      <header className="px-2 py-2 flex items-center justify-between shrink-0">
+    <HeaderActionsOutletContext.Provider value={headerActionsOutlet}>
+    <div className="flex h-screen flex-col bg-background">
+      <header className="flex shrink-0 items-center justify-between border-b border-border/60 bg-background px-2.5 py-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="gap-2">
+            <Button variant="ghost" size="sm" className="gap-2 rounded-lg px-2.5">
               <IconMenu2 className="h-4 w-4" />
-              <CurrentIcon className="h-4 w-4" />
               <span className="text-sm font-medium">{currentTab?.label}</span>
             </Button>
           </DropdownMenuTrigger>
@@ -91,13 +100,7 @@ export const Layout: React.FC<LayoutProps> = ({
             <DropdownMenuSeparator />
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
-                {theme === 'dark' ? (
-                  <IconMoon className="h-4 w-4" />
-                ) : theme === 'light' ? (
-                  <IconSun className="h-4 w-4" />
-                ) : (
-                  <IconDeviceDesktop className="h-4 w-4" />
-                )}
+                <IconColorPalette className="h-4 w-4" />
                 Theme
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
@@ -126,6 +129,7 @@ export const Layout: React.FC<LayoutProps> = ({
         </DropdownMenu>
 
         <div className="flex items-center gap-1">
+          <div ref={setHeaderActionsOutlet} className="flex items-center gap-1" />
           {headerActions}
           {onRefresh && (
             <Button
@@ -143,5 +147,6 @@ export const Layout: React.FC<LayoutProps> = ({
       </header>
       <main className="flex-1 flex flex-col min-h-0">{children}</main>
     </div>
+    </HeaderActionsOutletContext.Provider>
   )
 }

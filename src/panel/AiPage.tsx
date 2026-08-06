@@ -1,19 +1,20 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import type { AiContext, AiProvider } from '@/shared/types'
 import { useTabDataStore } from '@/store/tabDataStore'
-import type { Icon } from '@tabler/icons-react'
 import { useChat } from '@/ai/use-chat'
 import { createAnthropicProvider } from '@/ai/providers/anthropic'
 import { createOpenAIProvider } from '@/ai/providers/openai'
-import { createBrowserAIModel, doesBrowserSupportBrowserAI } from '@/ai/providers/browser-ai'
+import { createBrowserAIChatModel } from '@/ai/browser-ai/chat'
+import { doesBrowserSupportBrowserAI, resolvePreferredResponseLanguage } from '@/ai/browser-ai/shared'
 import { createDataTools, getToolDescriptions } from '@/ai/tools'
 import type { ToolContext, ToolPermissions } from '@/ai/tools'
-import { IconSearch, IconChartBar, IconTag, IconChartLine, IconPlus } from '@tabler/icons-react'
+import { IconMagnifyingGlass as IconSearch, IconChart7 as IconChartBar, IconTag, IconLineChart2 as IconChartLine, IconPlusMedium as IconPlus } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 
 import { Messages } from '@/components/chat'
 import type { ChatMessage } from '@/components/chat/types'
 import { ChatInput } from '@/components/chat/ChatInput'
 import { EmptyState, ApiKeyMissing } from '@/components/layout/EmptyState'
+import { HeaderActionsPortal } from '@/components/layout/Layout'
 import { ErrorMessage } from '@/components/common/LoadingIndicator'
 import { ChatHistory } from '@/components/chat/ChatHistory'
 import { Button } from '@/components/ui/button'
@@ -35,7 +36,7 @@ const BASE_SYSTEM_PROMPT = `You are a Web Publisher Technical Expert specializin
 5. Only fetch data the user has permitted (check the permissions below)
 
 ## Response Guidelines
-- Always respond in the same language as the user's message
+- Follow the response-language priority supplied below
 - Be concise but thorough
 - Format responses with clear sections when appropriate
 - Use markdown formatting for better readability
@@ -48,10 +49,18 @@ const QUICK_PROMPTS = [
   'Are there any tracking issues?',
 ]
 
+const DEV_THINKING_PREVIEW_PARAM = 'thinking'
+
+const DEV_THINKING_PREVIEW_MESSAGES: ChatMessage[] = [{
+  id: 'dev-thinking-preview-user',
+  role: 'user',
+  parts: [{ type: 'text', text: 'Analyze this page implementation.' }],
+}]
+
 export interface ContextOption {
   key: keyof Pick<AiContext, 'includeSeo' | 'includeAdTech' | 'includeGtm' | 'includeAnalytics'>
   label: string
-  icon: Icon
+  icon: React.ElementType
   hasData: boolean
 }
 
@@ -66,6 +75,10 @@ export const AiPage: React.FC = () => {
   const [apiKey, setApiKey] = useState<string | null>(null)
   const [byokProvider, setByokProvider] = useState<'anthropic' | 'openai'>('anthropic')
   const browserAIAvailable = doesBrowserSupportBrowserAI()
+  const preferredResponseLanguage = useMemo(
+    () => resolvePreferredResponseLanguage(typeof chrome === 'undefined' || !chrome.i18n ? null : chrome.i18n.getUILanguage(), navigator.languages),
+    [],
+  )
   const [aiProvider, setAiProvider] = useState<AiProvider>(browserAIAvailable ? 'browser' : 'anthropic')
   const [context, setContext] = useState<AiContext>({
     includeSeo: true,
@@ -80,6 +93,8 @@ export const AiPage: React.FC = () => {
   const [contextOpen, setContextOpen] = useState(false)
   const [historyOpen, setHistoryOpen] = useState(false)
   const [initialMessages, setInitialMessages] = useState<ChatMessage[]>([])
+  const isThinkingPreview = import.meta.env.DEV
+    && new URLSearchParams(window.location.search).get('preview') === DEV_THINKING_PREVIEW_PARAM
 
   // Chat persistence
   const {
@@ -165,12 +180,16 @@ export const AiPage: React.FC = () => {
       ? `\n\n## User Permissions\nThe user has granted access to: ${permittedSources.join(', ')}\nOnly use tools for data the user has permitted.`
       : '\n\n## User Permissions\nNo data access has been granted. Ask the user to enable data access in the context settings.'
 
-    return `${BASE_SYSTEM_PROMPT}${permissionsSection}\n\n${getToolDescriptions()}`
-  }, [toolPermissions])
+    const languageSection = preferredResponseLanguage
+      ? `\n\n## Response Language Priority\nRespond in ${preferredResponseLanguage}. The browser language has priority over the language of the user's inquiry. Only use the inquiry language when the browser language cannot be determined.`
+      : '\n\n## Response Language Priority\nThe browser language could not be determined. Respond in the language of the user\'s latest inquiry.'
+
+    return `${BASE_SYSTEM_PROMPT}${languageSection}${permissionsSection}\n\n${getToolDescriptions()}`
+  }, [preferredResponseLanguage, toolPermissions])
 
   const model = useMemo(() => {
     if (aiProvider === 'browser') {
-      return createBrowserAIModel()
+      return createBrowserAIChatModel()
     }
     // BYOK mode: use the provider configured in Options
     if (!apiKey) return null
@@ -196,7 +215,7 @@ export const AiPage: React.FC = () => {
     }
   }, [chatId, saveFinishedMessages])
 
-  const { messages, sendMessage, setMessages, status, error } = useChat(
+  const { messages, sendMessage, setMessages, stop, status, error } = useChat(
     model!,
     systemPrompt,
     {
@@ -210,7 +229,9 @@ export const AiPage: React.FC = () => {
     }
   )
 
-  const isLoading = status === 'streaming' || status === 'submitted'
+  const displayStatus = isThinkingPreview ? 'submitted' : status
+  const displayMessages = isThinkingPreview ? DEV_THINKING_PREVIEW_MESSAGES : messages
+  const isLoading = displayStatus === 'streaming' || displayStatus === 'submitted'
 
   // Handle new chat
   const handleNewChat = useCallback(async () => {
@@ -239,40 +260,31 @@ export const AiPage: React.FC = () => {
     }
   }, [removeChat, chatId, handleNewChat])
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (inputValue.trim() && !isLoading && model) {
-      const userMessage: ChatMessage = {
-        id: generateUUID(),
-        role: 'user',
-        parts: [{ type: 'text', text: inputValue.trim() }],
-      }
-
-      // Save user message immediately
-      await saveUserMessage(chatId, userMessage)
-
-      // Send to AI
-      sendMessage({ text: inputValue.trim() })
-      setInputValue('')
-    }
-  }, [inputValue, isLoading, model, chatId, generateUUID, saveUserMessage, sendMessage])
-
-  // Handle quick prompt click
-  const handlePromptClick = useCallback(async (prompt: string) => {
-    if (!model) return
+  const sendChatMessage = useCallback(async (text: string) => {
+    const normalizedText = text.trim()
+    if (!normalizedText || isLoading) return
 
     const userMessage: ChatMessage = {
       id: generateUUID(),
       role: 'user',
-      parts: [{ type: 'text', text: prompt }],
+      parts: [{ type: 'text', text: normalizedText }],
     }
 
-    // Save user message immediately
+    if (!model) return
     await saveUserMessage(chatId, userMessage)
+    sendMessage({ text: normalizedText })
+  }, [chatId, generateUUID, isLoading, model, saveUserMessage, sendMessage, setMessages])
 
-    // Send to AI
-    sendMessage({ text: prompt })
-  }, [model, chatId, generateUUID, saveUserMessage, sendMessage])
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault()
+    await sendChatMessage(inputValue)
+    setInputValue('')
+  }, [inputValue, sendChatMessage])
+
+  // Handle quick prompt click
+  const handlePromptClick = useCallback(async (prompt: string) => {
+    await sendChatMessage(prompt)
+  }, [sendChatMessage])
 
   const contextOptions: ContextOption[] = [
     { key: 'includeSeo', label: 'SEO', icon: IconSearch, hasData: !!seoData },
@@ -304,15 +316,13 @@ export const AiPage: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Chat toolbar */}
-      <div className="flex items-center justify-between px-2 py-1 border-b shrink-0">
+      <HeaderActionsPortal>
         <ChatHistory
           chats={chats}
           currentChatId={chatId}
           isOpen={historyOpen}
           onOpenChange={setHistoryOpen}
           onSelectChat={handleLoadChat}
-          onNewChat={handleNewChat}
           onDeleteChat={handleDeleteChat}
           onRenameChat={renameChat}
         />
@@ -321,14 +331,15 @@ export const AiPage: React.FC = () => {
           size="icon"
           onClick={handleNewChat}
           title="New Chat"
+          aria-label="New Chat"
         >
-          <IconPlus size={16} />
+          <IconPlus />
         </Button>
-      </div>
+      </HeaderActionsPortal>
 
       <Messages
-        messages={messages}
-        status={status}
+        messages={displayMessages}
+        status={displayStatus}
         emptyState={emptyState}
       />
 
@@ -340,13 +351,14 @@ export const AiPage: React.FC = () => {
         </div>
       )}
 
-      <div className="shrink-0 bg-transparent px-4 pb-4">
+      <div className="shrink-0 bg-transparent px-4 pb-3">
         <div className="max-w-3xl mx-auto">
           <ChatInput
             inputValue={inputValue}
             setInputValue={setInputValue}
             isLoading={isLoading}
             onSubmit={handleSubmit}
+            onStop={() => void stop()}
             contextOpen={contextOpen}
             setContextOpen={setContextOpen}
             context={context}

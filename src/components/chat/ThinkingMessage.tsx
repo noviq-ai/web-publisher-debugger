@@ -1,4 +1,4 @@
-import { PixelLoader } from "@/components/assets/pixel-loader";
+import { AssistantLoader } from '@/components/assets/assistant-mark'
 import { Shimmer } from "@/components/ui/text-shimmer";
 
 export const ThinkingMessage: React.FC = () => {
@@ -9,7 +9,7 @@ export const ThinkingMessage: React.FC = () => {
     >
       <div className="flex items-center justify-start gap-1.5">
         <div className="flex size-8 shrink-0 items-center justify-center">
-          <PixelLoader size={24} />
+          <AssistantLoader size={24} />
         </div>
 
         <div className="flex w-full flex-col gap-2">

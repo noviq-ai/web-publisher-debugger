@@ -1,26 +1,19 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { enUS } from 'date-fns/locale'
 import {
-  IconMessage,
-  IconPlus,
-  IconTrash,
+  IconChatBubble7 as IconMessage,
+  IconTrashCanSimple as IconTrash,
   IconHistory,
-  IconDots,
+  IconDotGrid1x3HorizontalTight as IconDots,
   IconPencil,
-  IconCheck,
-  IconX,
-} from '@tabler/icons-react'
+  IconCheckmark1 as IconCheck,
+  IconCrossMedium,
+  IconMagnifyingGlass as IconSearch,
+} from '@central-icons-react/round-outlined-radius-2-stroke-1.5'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,16 +23,16 @@ import {
 import { cn } from '@/shared/lib/utils'
 import type { DBChat } from '@/db'
 
+const HISTORY_POPOVER_SIDE_OFFSET = 4
+
 interface ChatHistoryProps {
   chats: DBChat[]
   currentChatId: string | null
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   onSelectChat: (chatId: string) => void
-  onNewChat: () => void
   onDeleteChat: (chatId: string) => void
   onRenameChat: (chatId: string, title: string) => void
-  trigger?: React.ReactNode
 }
 
 export const ChatHistory: React.FC<ChatHistoryProps> = ({
@@ -48,13 +41,23 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
   isOpen,
   onOpenChange,
   onSelectChat,
-  onNewChat,
   onDeleteChat,
   onRenameChat,
-  trigger,
 }) => {
+  const [query, setQuery] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editTitle, setEditTitle] = useState('')
+
+  const filteredChats = useMemo(() => {
+    const normalizedQuery = query.trim().toLocaleLowerCase()
+    if (!normalizedQuery) return chats
+    return chats.filter((chat) => chat.title.toLocaleLowerCase().includes(normalizedQuery))
+  }, [chats, query])
+
+  const handleOpenChange = (open: boolean) => {
+    onOpenChange(open)
+    if (!open) setQuery('')
+  }
 
   const handleStartEdit = (chat: DBChat) => {
     setEditingId(chat.id)
@@ -62,9 +65,8 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
   }
 
   const handleSaveEdit = (chatId: string) => {
-    if (editTitle.trim()) {
-      onRenameChat(chatId, editTitle.trim())
-    }
+    const normalizedTitle = editTitle.trim()
+    if (normalizedTitle) onRenameChat(chatId, normalizedTitle)
     setEditingId(null)
     setEditTitle('')
   }
@@ -74,129 +76,125 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({
     setEditTitle('')
   }
 
-  const defaultTrigger = (
-    <Button variant="ghost" size="icon">
-      <IconHistory size={16} />
-    </Button>
-  )
-
   return (
-    <Sheet open={isOpen} onOpenChange={onOpenChange}>
-      <SheetTrigger asChild>
-        {trigger || defaultTrigger}
-      </SheetTrigger>
-      <SheetContent side="left" className="w-[280px] sm:w-[280px] sm:max-w-[280px] p-0">
-        <SheetHeader className="p-4 pb-2">
-          <SheetTitle>Chat History</SheetTitle>
-          <SheetDescription className="sr-only">
-            Past chat list
-          </SheetDescription>
-        </SheetHeader>
-
-        <div className="px-4 pb-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full justify-start gap-2"
-            onClick={onNewChat}
-          >
-            <IconPlus size={16} />
-            New Chat
+    <Popover open={isOpen} onOpenChange={handleOpenChange}>
+      <PopoverTrigger
+        render={(
+          <Button variant="ghost" size="icon" aria-label="Chat history" title="Chat history">
+            <IconHistory />
           </Button>
+        )}
+      />
+      <PopoverContent
+        align="end"
+        sideOffset={HISTORY_POPOVER_SIDE_OFFSET}
+        className="w-(--available-width) max-w-72 p-1"
+      >
+        <div className="relative pb-1.5">
+          <IconSearch className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search chats"
+            aria-label="Search chats"
+            className="h-7 rounded-md border-0 bg-transparent pl-7 pr-2 text-sm shadow-none focus-visible:ring-0"
+            autoFocus
+          />
         </div>
 
-        <div className="flex-1 overflow-y-auto px-2 pb-4">
-            {chats.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-                <IconMessage size={32} className="mb-2 opacity-50" />
-                <p className="text-sm">No history</p>
-              </div>
-            ) : (
-              <div className="space-y-1">
-                {chats.map((chat) => (
-                  <div
-                    key={chat.id}
-                    className={cn(
-                      'group flex items-center gap-2 rounded-lg px-2 py-2 text-sm transition-colors hover:bg-accent overflow-hidden',
-                      currentChatId === chat.id && 'bg-accent'
-                    )}
-                  >
-                    {editingId === chat.id ? (
-                      <div className="flex flex-1 items-center gap-1 min-w-0">
-                        <Input
-                          value={editTitle}
-                          onChange={(e) => setEditTitle(e.target.value)}
-                          className="h-7 text-sm flex-1 min-w-0"
-                          autoFocus
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') handleSaveEdit(chat.id)
-                            if (e.key === 'Escape') handleCancelEdit()
-                          }}
-                        />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 shrink-0"
-                          onClick={() => handleSaveEdit(chat.id)}
-                        >
-                          <IconCheck size={12} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 shrink-0"
-                          onClick={handleCancelEdit}
-                        >
-                          <IconX size={12} />
-                        </Button>
-                      </div>
-                    ) : (
-                      <>
-                        <button
-                          className="flex-1 min-w-0 text-left"
-                          onClick={() => onSelectChat(chat.id)}
-                        >
-                          <p className="truncate font-medium">{chat.title}</p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {formatDistanceToNow(chat.updatedAt, {
-                              addSuffix: true,
-                              locale: enUS,
-                            })}
-                          </p>
-                        </button>
+        <div className="max-h-72 overflow-y-auto border-t border-border/60 pt-1">
+          {filteredChats.length === 0 ? (
+            <div className="flex flex-col items-center justify-center px-3 py-8 text-center text-muted-foreground">
+              <IconMessage className="mb-2 opacity-50" />
+              <p className="text-sm">{chats.length === 0 ? 'No history' : 'No matching chats'}</p>
+            </div>
+          ) : (
+            <div className="space-y-0.5">
+              {filteredChats.map((chat) => (
+                <div
+                  key={chat.id}
+                  className={cn(
+                    'group flex min-w-0 items-center gap-1 rounded-md px-2 py-1 text-sm transition-colors hover:bg-accent',
+                    currentChatId === chat.id && 'bg-accent'
+                  )}
+                >
+                  {editingId === chat.id ? (
+                    <div className="flex min-w-0 flex-1 items-center gap-1">
+                      <Input
+                        value={editTitle}
+                        onChange={(event) => setEditTitle(event.target.value)}
+                        className="h-7 min-w-0 flex-1 text-sm"
+                        autoFocus
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter') handleSaveEdit(chat.id)
+                          if (event.key === 'Escape') handleCancelEdit()
+                        }}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-7 shrink-0"
+                        onClick={() => handleSaveEdit(chat.id)}
+                        aria-label="Save chat title"
+                      >
+                        <IconCheck />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-7 shrink-0"
+                        onClick={handleCancelEdit}
+                        aria-label="Cancel renaming"
+                      >
+                        <IconCrossMedium />
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        className="min-w-0 flex-1 text-left"
+                        onClick={() => onSelectChat(chat.id)}
+                      >
+                        <p className="truncate font-medium leading-5">{chat.title}</p>
+                        <p className="truncate text-xs leading-4 text-muted-foreground">
+                          {formatDistanceToNow(chat.updatedAt, { addSuffix: true, locale: enUS })}
+                        </p>
+                      </button>
 
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100"
-                            >
-                              <IconDots size={16} />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleStartEdit(chat)}>
-                              <IconPencil size={16} />
-                              Rename
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => onDeleteChat(chat.id)}
-                            >
-                              <IconTrash size={16} />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-7 shrink-0 opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                            aria-label={`Actions for ${chat.title}`}
+                          >
+                            <IconDots />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleStartEdit(chat)}>
+                            <IconPencil />
+                            Rename
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => onDeleteChat(chat.id)}
+                          >
+                            <IconTrash />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </PopoverContent>
+    </Popover>
   )
 }

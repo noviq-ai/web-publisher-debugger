@@ -1,14 +1,7 @@
 import React, { useState } from 'react'
 import type { SeoData } from '@/shared/types/seo'
-import { IconExternalLink, IconPhotoOff } from '@tabler/icons-react'
+import { IconArrowOutOfBox as IconExternalLink, IconImages1 as IconPhotoOff, IconShareOs as IconShare } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { Section } from '@/components/common'
-
-// Twitter/X Icon
-const XIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-  </svg>
-)
 
 interface TwitterCardProps {
   twitter: SeoData['twitter']
@@ -20,14 +13,17 @@ const TwitterPreview: React.FC<{ twitter: SeoData['twitter'] }> = ({ twitter }) 
   const isSummaryLarge = twitter.card === 'summary_large_image'
 
   return (
-    <div className="rounded-xl border border-border/50 overflow-hidden bg-muted/30">
+    <div className="overflow-hidden rounded-lg border border-border/60 bg-card">
       {/* Image for large card */}
       {twitter.image && isSummaryLarge && (
-        <div className="relative aspect-[2/1] bg-muted">
+        <div className="relative h-40 bg-muted">
           {hasImage ? (
             <img
               src={twitter.image}
               alt={twitter.title || 'Twitter Card'}
+              width={1200}
+              height={600}
+              loading="lazy"
               className="w-full h-full object-cover"
               onError={() => setImageError(true)}
             />
@@ -42,11 +38,14 @@ const TwitterPreview: React.FC<{ twitter: SeoData['twitter'] }> = ({ twitter }) 
       {/* Content with small image */}
       <div className={`p-2.5 ${!isSummaryLarge && twitter.image ? 'flex gap-2.5' : ''}`}>
         {twitter.image && !isSummaryLarge && (
-          <div className="w-16 h-16 shrink-0 rounded bg-muted overflow-hidden">
+          <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-muted">
             {hasImage ? (
               <img
                 src={twitter.image}
                 alt={twitter.title || 'Twitter Card'}
+                width={64}
+                height={64}
+                loading="lazy"
                 className="w-full h-full object-cover"
                 onError={() => setImageError(true)}
               />
@@ -60,10 +59,10 @@ const TwitterPreview: React.FC<{ twitter: SeoData['twitter'] }> = ({ twitter }) 
         <div className="flex-1 min-w-0">
           <div className="text-xs font-medium line-clamp-2 mb-0.5">{twitter.title || 'No title'}</div>
           {twitter.description && (
-            <div className="text-[11px] text-muted-foreground line-clamp-2">{twitter.description}</div>
+            <div className="line-clamp-2 text-xs text-muted-foreground">{twitter.description}</div>
           )}
           {twitter.site && (
-            <div className="text-[10px] text-muted-foreground mt-1">via {twitter.site}</div>
+            <div className="mt-1 text-xs text-muted-foreground">via {twitter.site}</div>
           )}
         </div>
       </div>
@@ -75,7 +74,7 @@ const TwitterField: React.FC<{ label: string; value: string | null; isUrl?: bool
   if (!value) return null
 
   return (
-    <div className="flex items-start py-1 text-[11px] border-b border-border/30 last:border-b-0">
+    <div className="flex min-h-8 items-center border-b border-border/30 py-1.5 text-xs last:border-b-0">
       <span className="text-muted-foreground w-32 shrink-0">{label}</span>
       {isUrl ? (
         <a
@@ -98,7 +97,7 @@ export const TwitterCard: React.FC<TwitterCardProps> = ({ twitter }) => {
   const hasContent = twitter.title || twitter.description || twitter.image || twitter.card
 
   return (
-    <Section title="Twitter Card" icon={<XIcon className="h-3.5 w-3.5" />} defaultOpen={!!hasContent}>
+    <Section title="Twitter Card" icon={<IconShare size={14} />}>
       {hasContent ? (
         <div className="space-y-3">
           <TwitterPreview twitter={twitter} />

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import type { BidderInfo } from '@/shared/types/prebid'
-import { IconTrendingUp, IconClock, IconAlertTriangle, IconChevronUp, IconChevronDown, IconSelector } from '@tabler/icons-react'
-import { IconChartColumn, IconLaurelWreath } from '@tabler/icons-react'
+import { IconTrending1 as IconTrendingUp, IconClock, IconExclamationTriangle as IconAlertTriangle, IconChevronTopMedium as IconChevronUp, IconChevronDownMedium as IconChevronDown, IconSortArrowUpDown as IconSelector } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
+import { IconStackedBarChartAxis2 as IconChartColumn, IconWreath as IconLaurelWreath } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { Section } from '@/components/common'
 
 interface BiddersTableProps {
@@ -51,29 +51,29 @@ export const BiddersTable: React.FC<BiddersTableProps> = ({ bidders }) => {
     return sortDir === 'asc' ? diff : -diff
   })
 
-  const thClass = (_key: SortKey, align: string) =>
-    `${align} py-1.5 px-1 font-medium text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors`
+  const sortButtonClass = (align: string) =>
+    `flex w-full items-center gap-0.5 px-1 py-1.5 font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:rounded focus-visible:ring-2 focus-visible:ring-ring/40 ${align}`
 
   return (
     <Section title="Bidder Performance" icon={<IconChartColumn size={14} />} count={bidders.length}>
-      <div className="overflow-x-auto">
-        <table className="w-full text-[11px]">
+      <div className="overflow-hidden">
+        <table className="w-full table-fixed text-xs">
           <thead>
             <tr className="border-b border-border/50">
-              <th className={thClass('code', 'text-left')} onClick={() => handleSort('code')}>
-                <span className="flex items-center gap-0.5">Bidder <SortIcon col="code" sortKey={sortKey} sortDir={sortDir} /></span>
+              <th className="text-left">
+                <button className={sortButtonClass('justify-start')} onClick={() => handleSort('code')}>Bidder <SortIcon col="code" sortKey={sortKey} sortDir={sortDir} /></button>
               </th>
-              <th className={thClass('bidCount', 'text-center')} onClick={() => handleSort('bidCount')}>
-                <span className="flex items-center justify-center gap-0.5">Bids <SortIcon col="bidCount" sortKey={sortKey} sortDir={sortDir} /></span>
+              <th className="text-center">
+                <button className={sortButtonClass('justify-center')} onClick={() => handleSort('bidCount')}>Bids <SortIcon col="bidCount" sortKey={sortKey} sortDir={sortDir} /></button>
               </th>
-              <th className={thClass('winRate', 'text-center')} onClick={() => handleSort('winRate')}>
-                <span className="flex items-center justify-center gap-0.5">Wins <SortIcon col="winRate" sortKey={sortKey} sortDir={sortDir} /></span>
+              <th className="text-center">
+                <button className={sortButtonClass('justify-center')} onClick={() => handleSort('winRate')}>Wins <SortIcon col="winRate" sortKey={sortKey} sortDir={sortDir} /></button>
               </th>
-              <th className={thClass('avgBidCpm', 'text-right')} onClick={() => handleSort('avgBidCpm')}>
-                <span className="flex items-center justify-end gap-0.5">Avg CPM <SortIcon col="avgBidCpm" sortKey={sortKey} sortDir={sortDir} /></span>
+              <th className="text-right">
+                <button className={sortButtonClass('justify-end')} onClick={() => handleSort('avgBidCpm')}>Avg CPM <SortIcon col="avgBidCpm" sortKey={sortKey} sortDir={sortDir} /></button>
               </th>
-              <th className={thClass('avgResponseTime', 'text-right')} onClick={() => handleSort('avgResponseTime')}>
-                <span className="flex items-center justify-end gap-0.5">Avg Time <SortIcon col="avgResponseTime" sortKey={sortKey} sortDir={sortDir} /></span>
+              <th className="text-right">
+                <button className={sortButtonClass('justify-end')} onClick={() => handleSort('avgResponseTime')}>Avg Time <SortIcon col="avgResponseTime" sortKey={sortKey} sortDir={sortDir} /></button>
               </th>
             </tr>
           </thead>
@@ -83,10 +83,10 @@ export const BiddersTable: React.FC<BiddersTableProps> = ({ bidders }) => {
               return (
                 <tr key={bidder.code} className="border-b border-border/30 last:border-b-0 hover:bg-muted/30">
                   <td className="py-1.5 px-1">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-medium">{bidder.code}</span>
+                    <div className="flex min-w-0 items-center gap-1.5">
+                      <span className="truncate font-medium" title={bidder.code}>{bidder.code}</span>
                       {bidder.timeoutCount > 0 && (
-                        <span className="flex items-center gap-0.5 text-[9px] text-red-500" title={`${bidder.timeoutCount} timeouts`}>
+                        <span className="flex items-center gap-0.5 text-xs text-destructive" title={`${bidder.timeoutCount} timeouts`}>
                           <IconAlertTriangle size={10} />
                           {bidder.timeoutCount}
                         </span>
@@ -96,11 +96,11 @@ export const BiddersTable: React.FC<BiddersTableProps> = ({ bidders }) => {
                   <td className="text-center py-1.5 px-1 tabular-nums">{bidder.bidCount}</td>
                   <td className="text-center py-1.5 px-1">
                     <div className="flex items-center justify-center gap-1">
-                      {bidder.winCount > 0 && <IconLaurelWreath size={12} className="text-yellow-500" />}
-                      <span className={`tabular-nums ${bidder.winCount > 0 ? 'text-green-600 dark:text-green-400 font-medium' : ''}`}>
+                      {bidder.winCount > 0 && <IconLaurelWreath size={12} className="text-warning" />}
+                      <span className={`tabular-nums ${bidder.winCount > 0 ? 'text-success font-medium' : ''}`}>
                         {bidder.winCount}
                       </span>
-                      <span className="text-muted-foreground text-[9px]">({winRate.toFixed(0)}%)</span>
+                      <span className="text-xs text-muted-foreground">({winRate.toFixed(0)}%)</span>
                     </div>
                   </td>
                   <td className="text-right py-1.5 px-1">

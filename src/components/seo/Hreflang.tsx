@@ -1,5 +1,5 @@
 import React from 'react'
-import { IconGlobe, IconExternalLink } from '@tabler/icons-react'
+import { IconGlobe, IconArrowOutOfBox as IconExternalLink } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { Section } from '@/components/common'
 
 interface HreflangItem {
@@ -68,7 +68,7 @@ export const Hreflang: React.FC<HreflangProps> = ({ items }) => {
       icon={<IconGlobe size={14} />}
       badge={
         items.length > 0 ? (
-          <span className="text-[10px] text-muted-foreground">{items.length} languages</span>
+          <span className="text-xs text-muted-foreground">{items.length} languages</span>
         ) : null
       }
     >
@@ -79,17 +79,17 @@ export const Hreflang: React.FC<HreflangProps> = ({ items }) => {
           {items.map((item, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-2 py-1.5 px-2 rounded bg-muted/30 group hover:bg-muted/50 transition-colors"
+              className="group flex items-center gap-2 rounded-md border border-border/60 px-2 py-1.5 transition-colors hover:bg-muted/50"
             >
               <span className="text-sm">{getFlag(item.lang)}</span>
-              <span className="text-[10px] font-mono bg-background px-1.5 py-0.5 rounded border border-border/50 shrink-0">
+              <span className="shrink-0 rounded-full border border-border/60 bg-muted/40 px-1.5 py-0.5 font-mono text-xs">
                 {item.lang}
               </span>
               <a
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 text-[11px] text-muted-foreground hover:text-foreground truncate inline-flex items-center gap-1"
+                className="inline-flex min-w-0 flex-1 items-center gap-1 truncate text-xs text-muted-foreground hover:text-foreground"
                 title={item.href}
               >
                 <span className="truncate">{item.href}</span>

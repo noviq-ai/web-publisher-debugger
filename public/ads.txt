@@ -1,0 +1,29 @@
+# Pubsight development fixture — intentionally includes realistic health issues
+OWNERDOMAIN=publisher.example.com
+MANAGERDOMAIN=monetization-partner.example.com
+CONTACT=adops@publisher.example.com
+
+google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0
+google.com, pub-9876543210987654, RESELLER, f08c47fec0942fa0
+appnexus.com, 12345, DIRECT, f5ab79cb980f11d1
+rubiconproject.com, 23456, DIRECT, 0bfd66d529a55807
+pubmatic.com, 34567, DIRECT, 5d62403b186f2ace
+openx.com, 45678, RESELLER, 6a698e2ec38604c6
+indexexchange.com, 123456, DIRECT, 50b1c356f2c5c8fc
+triplelift.com, 7890, RESELLER, 6c33edb13117fd86
+sharethrough.com, 1234, RESELLER, d53b998a7bd4ecd2
+smartadserver.com, 5678, RESELLER, 060d053dcf45cbf3
+yieldmo.com, 90123, RESELLER
+criteo.com, B-123456, DIRECT, 9fac4a4a87c2a44f
+themediagrid.com, ABCD1234, RESELLER, 35d5010d7789b49d
+sovrn.com, 345678, RESELLER, fafdf38b16bf6b2b
+lijit.com, 345678, RESELLER, fafdf38b16bf6b2b
+gumgum.com, 15678, RESELLER, ffdef49475d318a9
+contextweb.com, 562899, RESELLER, 89ff185a4c4e857c
+rhythmone.com, 1234567890, RESELLER, a670c89d4a324e47
+undertone.com, 4102, RESELLER
+video.unrulymedia.com, 1234567890, RESELLER
+
+# Duplicate and malformed rows let the health UI exercise warning/error states
+google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0
+malformed.example.com, missing-relationship

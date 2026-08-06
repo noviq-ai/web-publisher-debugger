@@ -6,8 +6,23 @@ type UITool = {
   output: unknown | undefined
 }
 
+export interface ChatMessageMetadata {
+  durationSeconds?: number
+}
+
+export interface SessionCompactionActivity {
+  status: 'compacting' | 'compacted' | 'failed'
+  beforeTokens: number
+  afterTokens?: number
+  errorMessage?: string
+}
+
+type ChatDataParts = {
+  compaction: SessionCompactionActivity
+}
+
 // Message type - using generic tool support since tools are dynamically created
-export type ChatMessage = UIMessage<Record<string, unknown>, Record<string, unknown>, Record<string, UITool>>
+export type ChatMessage = UIMessage<ChatMessageMetadata, ChatDataParts, Record<string, UITool>>
 
 export type ChatStatus = 'ready' | 'submitted' | 'streaming' | 'error'
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import type { GptData } from '@/shared/types/gpt'
-import { IconSettings2 } from '@tabler/icons-react'
+import { IconSettingsSliderHor as IconSettings2 } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { Section, ConfigRow, StatusIndicator } from '@/components/common'
 
 interface GptConfigProps {

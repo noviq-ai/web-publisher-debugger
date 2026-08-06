@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import type { Ga4Event } from '@/shared/types/analytics'
-import { IconActivity, IconChevronDown, IconChevronRight } from '@tabler/icons-react'
+import { IconLiveActivity as IconActivity, IconChevronDownMedium as IconChevronDown, IconChevronRightMedium as IconChevronRight } from "@central-icons-react/round-outlined-radius-2-stroke-1.5"
 import { Section } from '@/components/common'
 
 interface Ga4EventsProps {
@@ -27,23 +27,24 @@ const EventItem: React.FC<{ event: Ga4Event }> = ({ event }) => {
   const isSetEvent = event.name === '__set__'
 
   return (
-    <div className="border border-border/50 rounded overflow-hidden">
+    <div className="overflow-hidden rounded-lg border border-border/50">
       <button
-        className="w-full flex items-center justify-between px-2.5 py-1.5 hover:bg-muted/50 text-left"
+        className="flex w-full items-center justify-between px-2.5 py-2 text-left hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40"
         onClick={() => setIsOpen(!isOpen)}
         disabled={!hasParams}
+        aria-expanded={hasParams ? isOpen : undefined}
       >
         <div className="flex items-center gap-2">
-          <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
+          <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
             isSetEvent
               ? 'bg-purple-500/20 text-purple-600 dark:text-purple-400'
-              : 'bg-orange-500/20 text-orange-600 dark:text-orange-400'
+              : 'bg-info/15 text-info'
           }`}>
             {isSetEvent ? 'set' : event.name}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-xs tabular-nums text-muted-foreground">
             {new Date(event.timestamp).toLocaleTimeString()}
           </span>
           {hasParams && (
@@ -53,7 +54,7 @@ const EventItem: React.FC<{ event: Ga4Event }> = ({ event }) => {
       </button>
       {isOpen && hasParams && (
         <div className="border-t border-border/50 bg-muted/30 p-2">
-          <pre className="text-[10px] overflow-auto max-h-32 text-muted-foreground">
+          <pre className="max-h-32 overflow-auto text-xs text-muted-foreground">
             {JSON.stringify(event.params, null, 2)}
           </pre>
         </div>

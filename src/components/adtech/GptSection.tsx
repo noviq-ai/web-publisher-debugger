@@ -10,13 +10,16 @@ import {
 
 interface GptSectionProps {
   data: GptData
+  headerAction: React.ReactNode
+  headerContent: React.ReactNode
 }
 
-export const GptSection: React.FC<GptSectionProps> = ({ data }) => {
+export const GptSection: React.FC<GptSectionProps> = ({ data, headerAction, headerContent }) => {
   return (
     <>
       {/* Header with stats */}
-      <GptHeader data={data} />
+      <GptHeader data={data} action={headerAction} />
+      {headerContent}
 
       {/* Event Timeline - 重要なので2番目 */}
       <GptTimeline events={data.events} />
